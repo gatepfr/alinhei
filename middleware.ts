@@ -24,7 +24,8 @@ export async function middleware(request: NextRequest) {
     }
   )
 
-  const { data: { user } } = await supabase.auth.getUser()
+  const { data: { user }, error: authError } = await supabase.auth.getUser()
+  if (authError) console.error('[middleware] auth.getUser error:', authError.message)
 
   const isProtected =
     (request.nextUrl.pathname.startsWith('/analise') &&
