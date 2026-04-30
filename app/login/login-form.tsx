@@ -34,8 +34,9 @@ export function LoginForm({ next }: LoginFormProps) {
       if (error) {
         setError('E-mail ou senha incorretos.')
       } else {
-        router.push(next ?? '/analise')
+        const destination = next?.startsWith('/') ? next : '/analise'
         router.refresh()
+        router.push(destination)
       }
     } else {
       const { error } = await supabase.auth.signUp({
@@ -55,12 +56,17 @@ export function LoginForm({ next }: LoginFormProps) {
 
   async function handleGoogle() {
     setLoading(true)
-    await supabase.auth.signInWithOAuth({
+    const safeNext = next?.startsWith('/') ? next : '/analise'
+    const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(next ?? '/analise')}`,
+        redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(safeNext)}`,
       },
     })
+    if (error) {
+      setError('Não foi possível entrar com Google. Tente novamente.')
+      setLoading(false)
+    }
   }
 
   return (

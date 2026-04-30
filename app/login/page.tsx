@@ -12,7 +12,8 @@ interface Props {
 export default async function LoginPage({ searchParams }: Props) {
   const supabase = createClient()
   const { data: { user } } = await supabase.auth.getUser()
-  if (user) redirect(searchParams.next ?? '/analise')
+  const safeNext = searchParams.next?.startsWith('/') ? searchParams.next : '/analise'
+  if (user) redirect(safeNext)
 
   return (
     <div className="min-h-screen bg-gray-50">
