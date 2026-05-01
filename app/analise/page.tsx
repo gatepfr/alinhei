@@ -12,38 +12,39 @@ export default async function AnalisePage() {
   const { data: { user } } = await supabase.auth.getUser()
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <nav className="bg-white border-b border-gray-100 px-4 py-3">
+    <div className="min-h-screen bg-background">
+      <nav className="border-b border-border/60 bg-background/80 backdrop-blur-md px-4 py-3">
         <div className="max-w-3xl mx-auto flex items-center justify-between">
-          <Link href="/" className="font-bold text-lg tracking-tight">
+          <Link href="/" className="font-display font-bold text-lg tracking-tight">
             Alinhei
           </Link>
           {user ? (
             <div className="flex items-center gap-4">
-              <Link href="/dashboard" className="text-sm text-muted-foreground hover:text-foreground">
+              <Link href="/dashboard" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                 Minhas análises
               </Link>
               <LogoutButton />
             </div>
           ) : (
-            <Link href="/login" className="text-sm text-muted-foreground hover:text-foreground">
+            <Link href="/login" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
               Entrar
             </Link>
           )}
         </div>
       </nav>
 
-      <div className="max-w-3xl mx-auto px-4 py-12">
-        <div className="mb-8 text-center">
-          <h1 className="text-3xl font-bold tracking-tight mb-2">
+      <div className="max-w-3xl mx-auto px-4 py-14">
+        <div className="mb-10 text-center animate-fade-up">
+          <p className="text-xs font-semibold text-primary uppercase tracking-widest mb-3">Diagnóstico gratuito</p>
+          <h1 className="font-display text-3xl font-bold tracking-tight mb-2">
             Analisar currículo
           </h1>
           <p className="text-muted-foreground">
-            Diagnóstico gratuito em ~30 segundos. Sem cadastro necessário.
+            Resultado em ~30 segundos. Sem cadastro necessário.
           </p>
         </div>
 
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 sm:p-8">
+        <div className="bg-card rounded-2xl border border-border p-6 sm:p-8 animate-fade-up delay-100">
           <UploadForm />
         </div>
       </div>

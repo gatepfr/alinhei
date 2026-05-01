@@ -16,25 +16,33 @@ export default async function LoginPage({ searchParams }: Props) {
   if (user) redirect(safeNext)
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <nav className="bg-white border-b border-gray-100 px-4 py-3">
+    <div className="min-h-screen bg-background">
+      <nav className="border-b border-border/60 bg-background/80 backdrop-blur-md px-4 py-3">
         <div className="max-w-3xl mx-auto">
-          <Link href="/" className="font-bold text-lg tracking-tight">
+          <Link href="/" className="font-display font-bold text-lg tracking-tight">
             Alinhei
           </Link>
         </div>
       </nav>
-      <div className="flex items-center justify-center px-4 py-16">
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-8 w-full max-w-sm">
-          <div className="text-center mb-6">
-            <h1 className="text-xl font-bold">
+
+      {/* Atmospheric glow */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden -z-0">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-primary/[0.05] blur-[100px]" />
+      </div>
+
+      <div className="relative flex items-center justify-center px-4 py-20">
+        <div className="w-full max-w-sm animate-fade-up">
+          <div className="text-center mb-8">
+            <h1 className="font-display text-2xl font-bold">
               {searchParams.next ? 'Faça login para continuar' : 'Acesse sua conta'}
             </h1>
-            <p className="text-muted-foreground text-sm mt-1">
+            <p className="text-muted-foreground text-sm mt-2">
               Diagnóstico grátis sem cadastro. Login para o pacote completo.
             </p>
           </div>
-          <LoginForm next={searchParams.next} />
+          <div className="bg-card rounded-2xl border border-border p-8">
+            <LoginForm next={searchParams.next} />
+          </div>
         </div>
       </div>
     </div>

@@ -1,8 +1,6 @@
 import Link from 'next/link'
-import Image from 'next/image'
 import { buttonVariants } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { CheckCircle, FileText, Zap, Star } from 'lucide-react'
+import { CheckCircle, FileText, Zap, Star, ArrowRight, Sparkles } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { createClient } from '@/lib/supabase/server'
 import { LogoutButton } from '@/components/logout-button'
@@ -12,25 +10,30 @@ export default async function LandingPage() {
   const { data: { user } } = await supabase.auth.getUser()
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-background">
       {/* Nav */}
-      <nav className="border-b border-gray-100 px-4 py-3">
+      <nav className="sticky top-0 z-40 border-b border-border/60 bg-background/80 backdrop-blur-md px-4 py-3">
         <div className="max-w-5xl mx-auto flex items-center justify-between">
-          <Image src="/logo.png" alt="Alinhei" width={120} height={32} className="h-8 w-auto" priority />
+          <span className="font-display text-xl font-bold tracking-tight">
+            Alinhei
+          </span>
           <div className="flex items-center gap-3">
             {user ? (
               <>
-                <Link href="/dashboard" className="text-sm text-muted-foreground hover:text-foreground">
+                <Link href="/dashboard" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                   Minhas análises
                 </Link>
                 <LogoutButton />
               </>
             ) : (
-              <Link href="/login" className="text-sm text-muted-foreground hover:text-foreground">
+              <Link href="/login" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                 Entrar
               </Link>
             )}
-            <Link href="/analise" className={cn(buttonVariants({ size: 'sm' }))}>
+            <Link
+              href="/analise"
+              className={cn(buttonVariants({ size: 'sm' }), 'bg-primary text-primary-foreground hover:bg-primary/90 font-semibold')}
+            >
               Analisar grátis
             </Link>
           </div>
@@ -38,64 +41,88 @@ export default async function LandingPage() {
       </nav>
 
       {/* Hero */}
-      <section className="py-20 px-4 text-center">
-        <div className="max-w-3xl mx-auto">
-          <Badge variant="secondary" className="mb-4">
+      <section className="relative py-28 px-4 overflow-hidden">
+        {/* Atmospheric glow */}
+        <div className="absolute inset-0 pointer-events-none overflow-hidden">
+          <div className="absolute top-[-10%] left-1/2 -translate-x-1/2 w-[900px] h-[700px] rounded-full bg-primary/[0.07] blur-[120px]" />
+          <div className="absolute bottom-0 left-[20%] w-[400px] h-[300px] rounded-full bg-primary/[0.04] blur-[80px]" />
+        </div>
+
+        <div className="relative max-w-3xl mx-auto text-center">
+          <div className="inline-flex items-center gap-2 text-xs font-semibold bg-primary/10 text-primary border border-primary/20 rounded-full px-4 py-1.5 mb-8 animate-fade-up">
+            <Sparkles className="w-3 h-3" />
             Powered by IA · Resultado em 30 segundos
-          </Badge>
-          <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-gray-900 mb-6">
-            Seu currículo está pronto<br />para a vaga dos seus sonhos?
+          </div>
+
+          <h1 className="font-display text-5xl sm:text-6xl font-bold tracking-tight text-foreground mb-6 leading-[1.08] text-balance animate-fade-up delay-100">
+            Seu currículo está pronto<br />
+            <span className="text-primary">para a vaga dos seus sonhos?</span>
           </h1>
-          <p className="text-lg text-muted-foreground mb-8 max-w-xl mx-auto">
+
+          <p className="text-lg text-muted-foreground mb-10 max-w-2xl mx-auto text-balance animate-fade-up delay-200">
             Suba seu currículo, cole a descrição da vaga e receba um diagnóstico honesto
-            com nota de aderência, pontos fortes e gaps críticos — <strong>gratuitamente</strong>.
+            com nota de aderência, pontos fortes e gaps críticos —{' '}
+            <span className="text-foreground font-medium">gratuitamente</span>.
           </p>
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Link href="/analise" className={cn(buttonVariants({ size: 'lg' }), 'text-base h-12 px-8')}>
-              Analisar meu currículo grátis →
+
+          <div className="flex flex-col sm:flex-row gap-3 justify-center animate-fade-up delay-300">
+            <Link
+              href="/analise"
+              className={cn(
+                buttonVariants({ size: 'lg' }),
+                'bg-primary text-primary-foreground hover:bg-primary/90 h-13 px-8 text-base font-semibold group gap-2 amber-glow'
+              )}
+            >
+              Analisar meu currículo grátis
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </Link>
           </div>
-          <p className="text-sm text-muted-foreground mt-4">
-            Sem cadastro para o diagnóstico. Pacote completo por R$ 9,90.
+
+          <p className="text-sm text-muted-foreground mt-5 animate-fade-up delay-400">
+            Sem cadastro para o diagnóstico. Pacote completo a partir de R$ 9,90.
           </p>
         </div>
       </section>
 
       {/* Como funciona */}
-      <section className="py-16 px-4 bg-gray-50">
+      <section className="py-20 px-4">
         <div className="max-w-5xl mx-auto">
-          <h2 className="text-2xl font-bold text-center mb-12">Como funciona</h2>
-          <div className="grid sm:grid-cols-3 gap-8">
+          <p className="text-xs font-semibold text-primary uppercase tracking-widest text-center mb-3">Como funciona</p>
+          <h2 className="font-display text-3xl font-bold text-center mb-14">Três passos. Trinta segundos.</h2>
+          <div className="grid sm:grid-cols-3 gap-6">
             <StepCard
-              step="1"
-              icon={<FileText className="w-6 h-6" />}
+              step="01"
+              icon={<FileText className="w-5 h-5" />}
               title="Suba seu currículo"
-              description="Faça upload do PDF ou cole o texto do currículo. Cole também a descrição da vaga que você quer."
+              description="Faça upload do PDF ou cole o texto. Cole também a descrição da vaga que você quer conquistar."
             />
             <StepCard
-              step="2"
-              icon={<Zap className="w-6 h-6" />}
+              step="02"
+              icon={<Zap className="w-5 h-5" />}
               title="IA analisa em 30s"
               description="Nossa IA compara seu perfil com os requisitos da vaga e calcula uma nota de aderência precisa."
             />
             <StepCard
-              step="3"
-              icon={<Star className="w-6 h-6" />}
-              title="Receba o pacote completo"
+              step="03"
+              icon={<Star className="w-5 h-5" />}
+              title="Receba o pacote"
               description="Diagnóstico, currículo reescrito para ATS, carta de apresentação e 5 perguntas com respostas STAR."
             />
           </div>
         </div>
       </section>
 
-      {/* O que você recebe */}
-      <section className="py-16 px-4">
+      {/* O que está incluído */}
+      <section className="py-20 px-4 bg-card/40">
         <div className="max-w-3xl mx-auto text-center">
-          <h2 className="text-2xl font-bold mb-4">O que está incluído no pacote completo</h2>
-          <p className="text-muted-foreground mb-10">
-            Por R$ 9,90 — o que um coach cobraria R$ 300
+          <p className="text-xs font-semibold text-primary uppercase tracking-widest mb-3">Pacote completo</p>
+          <h2 className="font-display text-3xl font-bold mb-3">
+            O que um coach cobraria R$ 300
+          </h2>
+          <p className="text-muted-foreground mb-12">
+            Você paga <span className="text-foreground font-semibold">R$ 9,90</span>
           </p>
-          <div className="grid sm:grid-cols-2 gap-4 text-left">
+          <div className="grid sm:grid-cols-2 gap-3 text-left mb-12">
             {[
               'Diagnóstico completo com 3 pontos fortes e 3 gaps',
               'Currículo reescrito e otimizado para ATS',
@@ -104,20 +131,30 @@ export default async function LandingPage() {
               '5 perguntas de entrevista com respostas STAR',
               'PDF pronto para download',
             ].map((item) => (
-              <div key={item} className="flex items-start gap-3 p-4 rounded-lg border border-gray-100">
-                <CheckCircle className="w-5 h-5 text-green-500 shrink-0 mt-0.5" />
-                <span className="text-sm">{item}</span>
+              <div
+                key={item}
+                className="flex items-start gap-3 p-4 rounded-xl border border-border bg-card card-glow"
+              >
+                <CheckCircle className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+                <span className="text-sm text-muted-foreground">{item}</span>
               </div>
             ))}
           </div>
-          <Link href="/analise" className={cn(buttonVariants({ size: 'lg' }), 'mt-10 text-base h-12 px-8')}>
-            Começar análise grátis →
+          <Link
+            href="/analise"
+            className={cn(
+              buttonVariants({ size: 'lg' }),
+              'bg-primary text-primary-foreground hover:bg-primary/90 h-13 px-8 text-base font-semibold group gap-2'
+            )}
+          >
+            Começar análise grátis
+            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
           </Link>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-gray-100 py-8 px-4 text-center text-sm text-muted-foreground">
+      <footer className="border-t border-border py-8 px-4 text-center text-sm text-muted-foreground">
         <p>© 2025 Alinhei. Feito no Brasil para brasileiros.</p>
       </footer>
     </div>
@@ -136,13 +173,17 @@ function StepCard({
   description: string
 }) {
   return (
-    <div className="flex flex-col items-center text-center gap-3 p-6 bg-white rounded-xl border border-gray-100 shadow-sm">
-      <div className="w-12 h-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold text-lg">
-        {step}
+    <div className="flex flex-col gap-4 p-6 bg-card rounded-2xl border border-border card-glow">
+      <div className="flex items-center gap-3">
+        <span className="font-display text-3xl font-bold text-primary/30">{step}</span>
+        <div className="w-9 h-9 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center text-primary">
+          {icon}
+        </div>
       </div>
-      <div className="text-primary">{icon}</div>
-      <h3 className="font-semibold">{title}</h3>
-      <p className="text-sm text-muted-foreground">{description}</p>
+      <div>
+        <h3 className="font-display font-semibold text-foreground mb-1">{title}</h3>
+        <p className="text-sm text-muted-foreground leading-relaxed">{description}</p>
+      </div>
     </div>
   )
 }

@@ -74,7 +74,7 @@ export function LoginForm({ next }: LoginFormProps) {
       <Button
         type="button"
         variant="outline"
-        className="w-full"
+        className="w-full border-border bg-secondary hover:bg-secondary/80 text-foreground"
         onClick={handleGoogle}
         disabled={loading}
       >
@@ -88,14 +88,14 @@ export function LoginForm({ next }: LoginFormProps) {
       </Button>
 
       <div className="flex items-center gap-2">
-        <div className="flex-1 border-t border-gray-200" />
+        <div className="flex-1 border-t border-border" />
         <span className="text-xs text-muted-foreground">ou</span>
-        <div className="flex-1 border-t border-gray-200" />
+        <div className="flex-1 border-t border-border" />
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="space-y-1">
-          <Label htmlFor="email">E-mail</Label>
+        <div className="space-y-1.5">
+          <Label htmlFor="email" className="text-sm text-muted-foreground">E-mail</Label>
           <Input
             id="email"
             type="email"
@@ -104,10 +104,11 @@ export function LoginForm({ next }: LoginFormProps) {
             required
             placeholder="voce@exemplo.com"
             disabled={loading}
+            className="bg-secondary border-border focus-visible:ring-primary/50"
           />
         </div>
-        <div className="space-y-1">
-          <Label htmlFor="password">Senha</Label>
+        <div className="space-y-1.5">
+          <Label htmlFor="password" className="text-sm text-muted-foreground">Senha</Label>
           <Input
             id="password"
             type="password"
@@ -117,13 +118,26 @@ export function LoginForm({ next }: LoginFormProps) {
             placeholder="mínimo 6 caracteres"
             minLength={6}
             disabled={loading}
+            className="bg-secondary border-border focus-visible:ring-primary/50"
           />
         </div>
 
-        {error && <p className="text-sm text-red-500">{error}</p>}
-        {message && <p className="text-sm text-green-600">{message}</p>}
+        {error && (
+          <p className="text-sm text-destructive bg-destructive/10 border border-destructive/20 rounded-lg px-3 py-2">
+            {error}
+          </p>
+        )}
+        {message && (
+          <p className="text-sm text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 rounded-lg px-3 py-2">
+            {message}
+          </p>
+        )}
 
-        <Button type="submit" className="w-full" disabled={loading}>
+        <Button
+          type="submit"
+          className="w-full bg-primary text-primary-foreground hover:bg-primary/90 font-semibold"
+          disabled={loading}
+        >
           {loading ? 'Aguarde...' : mode === 'signin' ? 'Entrar' : 'Criar conta'}
         </Button>
       </form>
@@ -135,7 +149,7 @@ export function LoginForm({ next }: LoginFormProps) {
             <button
               type="button"
               onClick={() => setMode('signup')}
-              className="underline text-foreground"
+              className="text-primary hover:text-primary/80 transition-colors font-medium"
             >
               Criar agora
             </button>
@@ -146,7 +160,7 @@ export function LoginForm({ next }: LoginFormProps) {
             <button
               type="button"
               onClick={() => setMode('signin')}
-              className="underline text-foreground"
+              className="text-primary hover:text-primary/80 transition-colors font-medium"
             >
               Entrar
             </button>
