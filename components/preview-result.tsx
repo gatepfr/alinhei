@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { Badge } from '@/components/ui/badge'
 import { Button, buttonVariants } from '@/components/ui/button'
@@ -10,6 +10,7 @@ import { Separator } from '@/components/ui/separator'
 import { Lock, TrendingUp, AlertTriangle } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { PaywallModal } from '@/components/paywall-modal'
+import { trackEvent } from '@/lib/analytics'
 import type { Diagnostico } from '@/lib/schemas'
 
 interface PreviewResultProps {
@@ -36,6 +37,10 @@ function scoreLabel(nota: number) {
 export function PreviewResult({ diagnostic, analysisId, userId, balance }: PreviewResultProps) {
   const { preview_publico, pontos_fortes, gaps_criticos, resumo_nota } = diagnostic
   const [showPaywall, setShowPaywall] = useState(false)
+
+  useEffect(() => {
+    trackEvent('analysis_viewed', { nota: preview_publico.nota, logged_in: !!userId })
+  }, [analysisId, preview_publico.nota, userId])
 
   return (
     <div className="space-y-6">

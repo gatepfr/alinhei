@@ -3,12 +3,19 @@
 type EventName =
   | 'analysis_started'
   | 'analysis_completed'
+  | 'analysis_viewed'
   | 'paywall_shown'
   | 'checkout_started'
   | 'payment_completed'
+  | 'generation_started'
   | 'generation_completed'
   | 'pdf_downloaded'
   | 'linkedin_share_clicked'
+  | 'signup_completed'
+  | 'login_completed'
+  | 'coupon_applied'
+  | 'referral_link_copied'
+  | 'dashboard_viewed'
 
 export function trackEvent(event: EventName, props?: Record<string, string | number | boolean>) {
   if (typeof window === 'undefined') return

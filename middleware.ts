@@ -47,6 +47,26 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(url)
   }
 
+  // Captura ?ref=<userId> e salva em cookie por 30 dias
+  const refParam = request.nextUrl.searchParams.get('ref')
+  if (refParam && /^[0-9a-f-]{36}$/.test(refParam)) {
+    supabaseResponse.cookies.set('vc_ref', refParam, {
+      maxAge: 60 * 60 * 24 * 30,
+      path: '/',
+      sameSite: 'lax',
+    })
+  }
+
+  // Atribui variante A/B para o copy do paywall (50/50, persistida por 90 dias)
+  if (!request.cookies.get('ab_paywall')) {
+    const variant = Math.random() < 0.5 ? 'A' : 'B'
+    supabaseResponse.cookies.set('ab_paywall', variant, {
+      maxAge: 60 * 60 * 24 * 90,
+      path: '/',
+      sameSite: 'lax',
+    })
+  }
+
   return supabaseResponse
 }
 

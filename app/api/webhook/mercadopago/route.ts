@@ -97,5 +97,48 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'failed to grant credits' }, { status: 500 })
   }
 
+  // Incrementa uses_count do cupom se houver (seguro: payment já é idempotente)
+  const couponCode = (payment.metadata as Record<string, unknown> | undefined)?.coupon_code as string | undefined
+  if (couponCode) {
+    const { data: coupon } = await supabase
+      .from('coupons')
+      .select('id, uses_count')
+      .ilike('code', couponCode)
+      .maybeSingle()
+    if (coupon) {
+      await supabase
+        .from('coupons')
+        .update({ uses_count: coupon.uses_count + 1 })
+        .eq('id', coupon.id)
+    }
+  }
+
+  // Concede crédito ao referrer se for primeira compra do usuário indicado
+  const { count: prevPayments } = await supabase
+    .from('payments')
+    .select('id', { count: 'exact', head: true })
+    .eq('user_id', userId)
+    .eq('status', 'approved')
+    .neq('id', paymentRecord.id)
+
+  if ((prevPayments ?? 0) === 0) {
+    const { data: referral } = await supabase
+      .from('referrals')
+      .select('id, referrer_id')
+      .eq('referred_id', userId)
+      .eq('credit_granted', false)
+      .maybeSingle()
+
+    if (referral) {
+      const referralExpiresAt = new Date()
+      referralExpiresAt.setDate(referralExpiresAt.getDate() + 30)
+      await grantCredits(referral.referrer_id, 1, 'referral', referral.id, referralExpiresAt)
+      await supabase
+        .from('referrals')
+        .update({ credit_granted: true })
+        .eq('id', referral.id)
+    }
+  }
+
   return NextResponse.json({ ok: true })
 }

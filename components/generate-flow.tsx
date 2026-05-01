@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { trackEvent } from '@/lib/analytics'
 
 interface GenerateFlowProps {
   analysisId: string
@@ -17,6 +18,7 @@ export function GenerateFlow({ analysisId }: GenerateFlowProps) {
     let cancelled = false
 
     async function generate() {
+      trackEvent('generation_started')
       try {
         const res = await fetch('/api/generate', {
           method: 'POST',
@@ -31,6 +33,7 @@ export function GenerateFlow({ analysisId }: GenerateFlowProps) {
           return
         }
 
+        trackEvent('generation_completed')
         router.refresh()
       } catch {
         if (!cancelled) setError('Erro de conexão. Tente novamente.')

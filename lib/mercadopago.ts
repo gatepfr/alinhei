@@ -10,9 +10,9 @@ export const PRODUCTS = {
 export type ProductSku = keyof typeof PRODUCTS
 
 export function getMpClient() {
-  return new MercadoPagoConfig({
-    accessToken: process.env.MERCADOPAGO_ACCESS_TOKEN!,
-  })
+  const token = (process.env.MERCADOPAGO_ACCESS_TOKEN ?? '').trim()
+  if (!token) throw new Error('MERCADOPAGO_ACCESS_TOKEN não configurado')
+  return new MercadoPagoConfig({ accessToken: token })
 }
 
 export async function createPreference(opts: {
@@ -22,19 +22,22 @@ export async function createPreference(opts: {
   notificationUrl: string
   successUrl: string
   failureUrl: string
+  discountedPrice?: number
+  couponCode?: string
 }) {
   const product = PRODUCTS[opts.sku]
   const preference = new Preference(getMpClient())
+  const unitPrice = opts.discountedPrice ?? product.price
 
   const result = await preference.create({
     body: {
-      items: [{ id: opts.sku, title: `Alinhei — ${product.label}`, currency_id: 'BRL', unit_price: product.price, quantity: 1 }],
+      items: [{ id: opts.sku, title: `Alinhei — ${product.label}`, currency_id: 'BRL', unit_price: unitPrice, quantity: 1 }],
       payer: { email: opts.userEmail },
       payment_methods: { excluded_payment_methods: [], excluded_payment_types: [], installments: 1 },
       notification_url: opts.notificationUrl,
       back_urls: { success: opts.successUrl, failure: opts.failureUrl, pending: opts.successUrl },
       auto_return: 'approved',
-      metadata: { user_id: opts.userId, sku: opts.sku },
+      metadata: { user_id: opts.userId, sku: opts.sku, ...(opts.couponCode ? { coupon_code: opts.couponCode } : {}) },
     },
   })
 
