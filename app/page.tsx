@@ -19,7 +19,12 @@ export default async function LandingPage() {
           <Image src="/logo.png" alt="Alinhei" width={120} height={32} className="h-8 w-auto" priority />
           <div className="flex items-center gap-3">
             {user ? (
-              <LogoutButton />
+              <>
+                <Link href="/dashboard" className="text-sm text-muted-foreground hover:text-foreground">
+                  Minhas análises
+                </Link>
+                <LogoutButton />
+              </>
             ) : (
               <Link href="/login" className="text-sm text-muted-foreground hover:text-foreground">
                 Entrar

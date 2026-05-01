@@ -19,7 +19,12 @@ export default async function AnalisePage() {
             Alinhei
           </Link>
           {user ? (
-            <LogoutButton />
+            <div className="flex items-center gap-4">
+              <Link href="/dashboard" className="text-sm text-muted-foreground hover:text-foreground">
+                Minhas análises
+              </Link>
+              <LogoutButton />
+            </div>
           ) : (
             <Link href="/login" className="text-sm text-muted-foreground hover:text-foreground">
               Entrar

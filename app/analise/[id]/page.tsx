@@ -48,7 +48,14 @@ export default async function AnaliseResultPage({ params, searchParams }: Props)
             <Link href="/analise" className="text-sm text-muted-foreground hover:text-foreground">
               Nova análise
             </Link>
-            {user && <LogoutButton />}
+            {user && (
+              <>
+                <Link href="/dashboard" className="text-sm text-muted-foreground hover:text-foreground">
+                  Minhas análises
+                </Link>
+                <LogoutButton />
+              </>
+            )}
           </div>
         </div>
       </nav>
