@@ -6,12 +6,12 @@ export const DiagnosticoSchema = z.object({
   pontos_fortes: z.array(z.object({
     titulo: z.string(),
     explicacao: z.string(),
-  })).length(3),
+  })).min(1).transform(arr => arr.slice(0, 3)),
   gaps_criticos: z.array(z.object({
     titulo: z.string(),
     explicacao: z.string(),
-    como_resolver: z.string(),
-  })).length(3),
+    como_resolver: z.string().optional().default(''),
+  })).min(1).transform(arr => arr.slice(0, 3)),
   preview_publico: z.object({
     nota: z.number().int().min(0).max(100),
     ponto_forte_destaque: z.string(),
@@ -40,7 +40,7 @@ export const PerguntasSchema = z.object({
       resultado: z.string(),
     }),
     dica: z.string(),
-  })).length(5),
+  })).min(1).transform(arr => arr.slice(0, 5)),
 })
 
 export type Perguntas = z.infer<typeof PerguntasSchema>
