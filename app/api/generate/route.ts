@@ -11,9 +11,8 @@ const RequestSchema = z.object({
   analysis_id: z.string().uuid(),
 })
 
-const resend = new Resend(process.env.RESEND_API_KEY)
-
 export async function POST(req: NextRequest) {
+  const resend = new Resend(process.env.RESEND_API_KEY)
   const supabase = createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) {
