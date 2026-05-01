@@ -4,8 +4,13 @@ import { buttonVariants } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { CheckCircle, FileText, Zap, Star } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { createClient } from '@/lib/supabase/server'
+import { LogoutButton } from '@/components/logout-button'
 
-export default function LandingPage() {
+export default async function LandingPage() {
+  const supabase = createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+
   return (
     <div className="min-h-screen bg-white">
       {/* Nav */}
@@ -13,9 +18,13 @@ export default function LandingPage() {
         <div className="max-w-5xl mx-auto flex items-center justify-between">
           <Image src="/logo.png" alt="Alinhei" width={120} height={32} className="h-8 w-auto" priority />
           <div className="flex items-center gap-3">
-            <Link href="/login" className="text-sm text-muted-foreground hover:text-foreground">
-              Entrar
-            </Link>
+            {user ? (
+              <LogoutButton />
+            ) : (
+              <Link href="/login" className="text-sm text-muted-foreground hover:text-foreground">
+                Entrar
+              </Link>
+            )}
             <Link href="/analise" className={cn(buttonVariants({ size: 'sm' }))}>
               Analisar grátis
             </Link>

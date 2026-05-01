@@ -30,7 +30,7 @@ export async function POST(request: NextRequest) {
   }
 
   const { sku, analysisId } = parsed.data
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL!
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? new URL(request.url).origin
 
   try {
     const result = await createPreference({
@@ -44,9 +44,10 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ ok: true, initPoint: result.init_point })
   } catch (err) {
-    console.error('MP checkout error:', err)
+    const detail = err instanceof Error ? err.message : String(err)
+    console.error('MP checkout error:', detail)
     return NextResponse.json(
-      { ok: false, error: { code: 'MP_ERROR', message: 'Erro ao criar preferência de pagamento' } },
+      { ok: false, error: { code: 'MP_ERROR', message: `Erro ao criar preferência: ${detail}` } },
       { status: 500 }
     )
   }

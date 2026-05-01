@@ -28,7 +28,7 @@ export async function createPreference(opts: {
 
   const result = await preference.create({
     body: {
-      items: [{ id: opts.sku, title: `Alinhei — ${product.label}`, unit_price: product.price, quantity: 1 }],
+      items: [{ id: opts.sku, title: `Alinhei — ${product.label}`, currency_id: 'BRL', unit_price: product.price, quantity: 1 }],
       payer: { email: opts.userEmail },
       payment_methods: { excluded_payment_methods: [], excluded_payment_types: [], installments: 1 },
       notification_url: opts.notificationUrl,

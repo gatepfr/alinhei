@@ -2,6 +2,7 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
+import { LogoutButton } from '@/components/logout-button'
 import { PreviewResult } from '@/components/preview-result'
 import { CheckoutPolling } from '@/components/checkout-polling'
 import { DiagnosticoSchema } from '@/lib/schemas'
@@ -43,9 +44,12 @@ export default async function AnaliseResultPage({ params, searchParams }: Props)
           <Link href="/" className="font-bold text-lg tracking-tight">
             Alinhei
           </Link>
-          <Link href="/analise" className="text-sm text-muted-foreground hover:text-foreground">
-            Nova análise
-          </Link>
+          <div className="flex items-center gap-4">
+            <Link href="/analise" className="text-sm text-muted-foreground hover:text-foreground">
+              Nova análise
+            </Link>
+            {user && <LogoutButton />}
+          </div>
         </div>
       </nav>
 
