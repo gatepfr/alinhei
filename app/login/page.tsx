@@ -12,7 +12,7 @@ interface Props {
 export default async function LoginPage({ searchParams }: Props) {
   const supabase = createClient()
   const { data: { user } } = await supabase.auth.getUser()
-  const safeNext = searchParams.next?.startsWith('/') ? searchParams.next : '/analise'
+  const safeNext = /^\/[^/\\]/.test(searchParams.next ?? '') ? searchParams.next! : '/analise'
   if (user) redirect(safeNext)
 
   return (

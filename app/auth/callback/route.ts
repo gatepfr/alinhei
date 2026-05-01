@@ -11,7 +11,7 @@ export async function GET(request: NextRequest) {
     const supabase = createClient()
     const { error } = await supabase.auth.exchangeCodeForSession(code)
     if (!error) {
-      const safeNext = next.startsWith('/') ? next : '/analise'
+      const safeNext = /^\/[^/\\]/.test(next) ? next : '/analise'
       return NextResponse.redirect(`${origin}${safeNext}`)
     }
   }

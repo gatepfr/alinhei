@@ -34,7 +34,7 @@ export function LoginForm({ next }: LoginFormProps) {
       if (error) {
         setError('E-mail ou senha incorretos.')
       } else {
-        const destination = next?.startsWith('/') ? next : '/analise'
+        const destination = /^\/[^/\\]/.test(next ?? '') ? next! : '/analise'
         router.refresh()
         router.push(destination)
       }
@@ -56,7 +56,7 @@ export function LoginForm({ next }: LoginFormProps) {
 
   async function handleGoogle() {
     setLoading(true)
-    const safeNext = next?.startsWith('/') ? next : '/analise'
+    const safeNext = /^\/[^/\\]/.test(next ?? '') ? next! : '/analise'
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
