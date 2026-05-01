@@ -32,9 +32,17 @@ export async function callWithJson<T>(
 
   const raw = response.content[0].type === 'text' ? response.content[0].text : ''
 
-  // Remove markdown code fences if the model ignored the instruction
+  // Extract JSON: strip complete code fences, or fall back to brace range
+  // (handles unclosed fences where the model omits the closing ```)
   const fenceMatch = raw.match(/```(?:json)?\s*([\s\S]*?)```/)
-  const jsonText = fenceMatch ? fenceMatch[1].trim() : raw.trim()
+  let jsonText: string
+  if (fenceMatch) {
+    jsonText = fenceMatch[1].trim()
+  } else {
+    const start = raw.indexOf('{')
+    const end = raw.lastIndexOf('}')
+    jsonText = start >= 0 && end > start ? raw.slice(start, end + 1) : raw.trim()
+  }
 
   let jsonValue: unknown
   try {
