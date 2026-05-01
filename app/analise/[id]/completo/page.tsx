@@ -1,0 +1,80 @@
+import { notFound, redirect } from 'next/navigation'
+import Link from 'next/link'
+import { createClient, createServiceClient } from '@/lib/supabase/server'
+import { DiagnosticoSchema, CartaSchema, PerguntasSchema } from '@/lib/schemas'
+import { GenerateFlow } from '@/components/generate-flow'
+import { CompleteResult } from '@/components/complete-result'
+
+interface Props {
+  params: { id: string }
+}
+
+export const metadata = {
+  title: 'Pacote completo — VagaCerta',
+}
+
+export default async function CompletePage({ params }: Props) {
+  const supabase = createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) redirect(`/login?next=/analise/${params.id}/completo`)
+
+  const serviceClient = createServiceClient()
+
+  const { data: analysis } = await serviceClient
+    .from('analyses')
+    .select('id, diagnostic')
+    .eq('id', params.id)
+    .maybeSingle()
+
+  if (!analysis) notFound()
+
+  const diagnosticoResult = DiagnosticoSchema.safeParse(analysis.diagnostic)
+  if (!diagnosticoResult.success) notFound()
+
+  const { data: generation } = await serviceClient
+    .from('generations')
+    .select('id, curriculo_otimizado, carta, perguntas')
+    .eq('analysis_id', params.id)
+    .eq('user_id', user.id)
+    .maybeSingle()
+
+  const nav = (
+    <nav className="bg-white border-b border-gray-100 px-4 py-3">
+      <div className="max-w-3xl mx-auto flex items-center justify-between">
+        <Link href="/" className="font-bold text-lg tracking-tight">
+          VagaCerta
+        </Link>
+        <Link href="/analise" className="text-sm text-muted-foreground hover:text-foreground">
+          Nova análise
+        </Link>
+      </div>
+    </nav>
+  )
+
+  // Sem geração ou ainda sem conteúdo → disparar geração no client
+  if (!generation || (!generation.curriculo_otimizado && !generation.carta && !generation.perguntas)) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        {nav}
+        <GenerateFlow analysisId={params.id} />
+      </div>
+    )
+  }
+
+  const cartaResult = CartaSchema.safeParse(generation.carta)
+  const perguntasResult = PerguntasSchema.safeParse(generation.perguntas)
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      {nav}
+      <CompleteResult
+        diagnostico={diagnosticoResult.data}
+        curriculoOtimizado={generation.curriculo_otimizado as string | null}
+        carta={cartaResult.success ? cartaResult.data : null}
+        perguntas={perguntasResult.success ? perguntasResult.data : null}
+        generationId={generation.id}
+        analysisId={params.id}
+      />
+    </div>
+  )
+}
