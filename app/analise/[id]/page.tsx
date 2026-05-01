@@ -1,21 +1,24 @@
+// app/analise/[id]/page.tsx
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import { createServiceClient } from '@/lib/supabase/server'
+import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { PreviewResult } from '@/components/preview-result'
 import { DiagnosticoSchema } from '@/lib/schemas'
+import { getBalance } from '@/lib/credits'
 
 interface Props {
   params: { id: string }
+  searchParams: { checkout?: string }
 }
 
 export const metadata = {
   title: 'Resultado da análise — VagaCerta',
 }
 
-export default async function AnaliseResultPage({ params }: Props) {
-  const supabase = createServiceClient()
+export default async function AnaliseResultPage({ params, searchParams }: Props) {
+  const serviceClient = createServiceClient()
 
-  const { data: analysis } = await supabase
+  const { data: analysis } = await serviceClient
     .from('analyses')
     .select('id, diagnostic')
     .eq('id', params.id)
@@ -25,6 +28,12 @@ export default async function AnaliseResultPage({ params }: Props) {
 
   const parsed = DiagnosticoSchema.safeParse(analysis.diagnostic)
   if (!parsed.success) notFound()
+
+  const supabase = createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+
+  const balance = user ? await getBalance(user.id) : 0
+  const showPolling = searchParams.checkout === 'success' && !!user && balance === 0
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -47,7 +56,15 @@ export default async function AnaliseResultPage({ params }: Props) {
           </p>
         </div>
 
-        <PreviewResult diagnostic={parsed.data} analysisId={analysis.id} />
+        {/* TODO: CheckoutPolling vai aqui após T8 */}
+        {showPolling && <div className="mb-6 text-sm text-blue-600">Verificando pagamento...</div>}
+
+        <PreviewResult
+          diagnostic={parsed.data}
+          analysisId={analysis.id}
+          userId={user?.id ?? null}
+          balance={balance}
+        />
       </div>
     </div>
   )
