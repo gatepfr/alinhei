@@ -1,11 +1,11 @@
 import Anthropic from '@anthropic-ai/sdk'
 import { z } from 'zod'
 
-export const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY,
-})
-
 export const MODEL = 'claude-haiku-4-5-20251001'
+
+export function getAnthropic() {
+  return new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
+}
 
 export async function callWithJson<T>(
   schema: z.ZodType<T>,
@@ -19,7 +19,7 @@ export async function callWithJson<T>(
 ): Promise<{ data: T; inputTokens: number; outputTokens: number }> {
   const temperature = opts.temperature
 
-  const response = await anthropic.messages.create({
+  const response = await getAnthropic().messages.create({
     model: MODEL,
     max_tokens: opts.maxTokens,
     temperature,

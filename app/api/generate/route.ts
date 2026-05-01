@@ -3,7 +3,7 @@ import { z } from 'zod'
 import { Resend } from 'resend'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { debitCredit } from '@/lib/credits'
-import { anthropic, callWithJson, MODEL } from '@/lib/anthropic'
+import { getAnthropic, callWithJson, MODEL } from '@/lib/anthropic'
 import { CURRICULO_SYSTEM, CURRICULO_USER, CARTA_SYSTEM, CARTA_USER, PERGUNTAS_SYSTEM, PERGUNTAS_USER } from '@/lib/prompts'
 import { CartaSchema, PerguntasSchema } from '@/lib/schemas'
 
@@ -99,7 +99,7 @@ export async function POST(req: NextRequest) {
 
   // 3 prompts em paralelo
   const [curriculoResult, cartaResult, perguntasResult] = await Promise.allSettled([
-    anthropic.messages.create({
+    getAnthropic().messages.create({
       model: MODEL,
       max_tokens: 2000,
       temperature: 0.5,
