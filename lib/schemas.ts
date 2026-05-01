@@ -6,12 +6,13 @@ export const DiagnosticoSchema = z.object({
   pontos_fortes: z.array(z.object({
     titulo: z.string(),
     explicacao: z.string(),
-  })).min(1).transform(arr => arr.slice(0, 3)),
+  })).min(1),
   gaps_criticos: z.array(z.object({
     titulo: z.string(),
     explicacao: z.string(),
-    como_resolver: z.string().optional().default(''),
-  })).min(1).transform(arr => arr.slice(0, 3)),
+    // modelo às vezes omite o campo — aceitar ausente e normalizar para string vazia
+    como_resolver: z.preprocess(val => (typeof val === 'string' ? val : ''), z.string()),
+  })).min(1),
   preview_publico: z.object({
     nota: z.number().int().min(0).max(100),
     ponto_forte_destaque: z.string(),
@@ -40,7 +41,7 @@ export const PerguntasSchema = z.object({
       resultado: z.string(),
     }),
     dica: z.string(),
-  })).min(1).transform(arr => arr.slice(0, 5)),
+  })).min(1),
 })
 
 export type Perguntas = z.infer<typeof PerguntasSchema>

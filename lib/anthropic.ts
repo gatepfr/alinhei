@@ -7,8 +7,8 @@ export function getAnthropic() {
   return new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
 }
 
-export async function callWithJson<T>(
-  schema: z.ZodType<T>,
+export async function callWithJson<S extends z.ZodTypeAny>(
+  schema: S,
   opts: {
     system: string
     user: string
@@ -16,7 +16,7 @@ export async function callWithJson<T>(
     maxTokens: number
   },
   retries = 1
-): Promise<{ data: T; inputTokens: number; outputTokens: number }> {
+): Promise<{ data: z.output<S>; inputTokens: number; outputTokens: number }> {
   const temperature = opts.temperature
 
   const response = await getAnthropic().messages.create({
