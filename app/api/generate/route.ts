@@ -157,11 +157,11 @@ export async function POST(req: NextRequest) {
     resend.emails.send({
       from: process.env.RESEND_FROM_EMAIL,
       to: user.email,
-      subject: 'Seu pacote completo está pronto — VagaCerta',
+      subject: 'Seu pacote completo está pronto — Alinhei',
       html: `<p>Olá! Seu pacote completo foi gerado com sucesso.</p>
 <p><a href="${appUrl}/analise/${analysis_id}/completo">Acessar resultado completo →</a></p>
 <p><a href="${appUrl}/api/pdf/${generation.id}">Baixar PDF →</a></p>
-<p style="color:#888;font-size:12px">— VagaCerta</p>`,
+<p style="color:#888;font-size:12px">— Alinhei</p>`,
     }).catch((err: unknown) => console.error('[generate] email error:', err))
   }
 

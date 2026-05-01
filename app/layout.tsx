@@ -5,11 +5,11 @@ import './globals.css'
 const inter = Inter({ subsets: ['latin'], variable: '--font-sans' })
 
 export const metadata: Metadata = {
-  title: 'VagaCerta — Analise seu currículo com IA',
+  title: 'Alinhei — Analise seu currículo com IA',
   description:
     'Suba seu currículo, cole a vaga e receba diagnóstico de aderência, currículo reescrito, carta de apresentação e simulado de entrevista em menos de 1 minuto.',
   openGraph: {
-    title: 'VagaCerta — Analise seu currículo com IA',
+    title: 'Alinhei — Analise seu currículo com IA',
     description: 'Pacote completo de aplicação para a vaga dos seus sonhos por R$ 9,90.',
     locale: 'pt_BR',
     type: 'website',

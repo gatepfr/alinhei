@@ -10,7 +10,7 @@ interface Props {
 }
 
 export const metadata = {
-  title: 'Pacote completo — VagaCerta',
+  title: 'Pacote completo — Alinhei',
 }
 
 export default async function CompletePage({ params }: Props) {
@@ -42,7 +42,7 @@ export default async function CompletePage({ params }: Props) {
     <nav className="bg-white border-b border-gray-100 px-4 py-3">
       <div className="max-w-3xl mx-auto flex items-center justify-between">
         <Link href="/" className="font-bold text-lg tracking-tight">
-          VagaCerta
+          Alinhei
         </Link>
         <Link href="/analise" className="text-sm text-muted-foreground hover:text-foreground">
           Nova análise

@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { LoginForm } from './login-form'
 
-export const metadata = { title: 'Entrar — VagaCerta' }
+export const metadata = { title: 'Entrar — Alinhei' }
 
 interface Props {
   searchParams: { next?: string }
@@ -20,7 +20,7 @@ export default async function LoginPage({ searchParams }: Props) {
       <nav className="bg-white border-b border-gray-100 px-4 py-3">
         <div className="max-w-3xl mx-auto">
           <Link href="/" className="font-bold text-lg tracking-tight">
-            VagaCerta
+            Alinhei
           </Link>
         </div>
       </nav>

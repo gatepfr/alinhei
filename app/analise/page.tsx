@@ -2,7 +2,7 @@ import { UploadForm } from '@/components/upload-form'
 import Link from 'next/link'
 
 export const metadata = {
-  title: 'Analisar currículo — VagaCerta',
+  title: 'Analisar currículo — Alinhei',
 }
 
 export default function AnalisePage() {
@@ -11,7 +11,7 @@ export default function AnalisePage() {
       <nav className="bg-white border-b border-gray-100 px-4 py-3">
         <div className="max-w-3xl mx-auto">
           <Link href="/" className="font-bold text-lg tracking-tight">
-            VagaCerta
+            Alinhei
           </Link>
         </div>
       </nav>

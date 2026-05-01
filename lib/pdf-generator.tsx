@@ -79,7 +79,7 @@ function scoreColor(nota: number) {
   return '#dc2626'
 }
 
-function VagaCertaPDF({ data }: { data: PDFData }) {
+function AlinheiPDF({ data }: { data: PDFData }) {
   const { diagnostico, curriculoOtimizado, carta, perguntas } = data
   const nota = diagnostico.nota_aderencia
 
@@ -89,7 +89,7 @@ function VagaCertaPDF({ data }: { data: PDFData }) {
       <Page style={styles.page}>
         <View style={[styles.row, { marginBottom: 0 }]}>
           <View style={styles.headerLeft}>
-            <Text style={styles.brand}>VagaCerta</Text>
+            <Text style={styles.brand}>Alinhei</Text>
             <Text style={styles.headerSub}>Diagnóstico de aderência ao currículo</Text>
           </View>
           <Text style={[styles.score, { color: scoreColor(nota) }]}>{nota}/100</Text>
@@ -119,7 +119,7 @@ function VagaCertaPDF({ data }: { data: PDFData }) {
       {/* Currículo otimizado */}
       {curriculoOtimizado && (
         <Page style={styles.page}>
-          <Text style={styles.brand}>VagaCerta</Text>
+          <Text style={styles.brand}>Alinhei</Text>
           <View style={styles.headerDivider} />
           <Text style={styles.sectionTitle}>Currículo Otimizado para ATS</Text>
           <Text style={{ fontSize: 9, color: '#333', lineHeight: 1.6 }}>{curriculoOtimizado}</Text>
@@ -129,7 +129,7 @@ function VagaCertaPDF({ data }: { data: PDFData }) {
       {/* Cartas */}
       {carta && (
         <Page style={styles.page}>
-          <Text style={styles.brand}>VagaCerta</Text>
+          <Text style={styles.brand}>Alinhei</Text>
           <View style={styles.headerDivider} />
           <Text style={styles.sectionTitle}>Cartas de Apresentação</Text>
 
@@ -144,7 +144,7 @@ function VagaCertaPDF({ data }: { data: PDFData }) {
       {/* Perguntas STAR */}
       {perguntas && (
         <Page style={styles.page}>
-          <Text style={styles.brand}>VagaCerta</Text>
+          <Text style={styles.brand}>Alinhei</Text>
           <View style={styles.headerDivider} />
           <Text style={styles.sectionTitle}>Simulado de Entrevista — Método STAR</Text>
           {perguntas.perguntas.map((p, i) => (
@@ -165,5 +165,5 @@ function VagaCertaPDF({ data }: { data: PDFData }) {
 }
 
 export async function generatePDF(data: PDFData): Promise<Buffer> {
-  return renderToBuffer(<VagaCertaPDF data={data} />)
+  return renderToBuffer(<AlinheiPDF data={data} />)
 }
