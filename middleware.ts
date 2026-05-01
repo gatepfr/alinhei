@@ -3,6 +3,14 @@ import { createServerClient, type CookieOptions } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
 export async function middleware(request: NextRequest) {
+  // Supabase às vezes redireciona o code OAuth para o Site URL em vez de /auth/callback
+  const code = request.nextUrl.searchParams.get('code')
+  if (code && request.nextUrl.pathname === '/') {
+    const url = request.nextUrl.clone()
+    url.pathname = '/auth/callback'
+    return NextResponse.redirect(url)
+  }
+
   let supabaseResponse = NextResponse.next({ request })
 
   const supabase = createServerClient(
@@ -43,5 +51,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/analise/:path*/completo', '/dashboard/:path*'],
+  matcher: ['/', '/analise/:path*/completo', '/dashboard/:path*'],
 }
