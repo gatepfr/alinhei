@@ -5,7 +5,7 @@ import { callWithJson } from '@/lib/anthropic'
 import { DIAGNOSTICO_SYSTEM, DIAGNOSTICO_USER } from '@/lib/prompts'
 import { DiagnosticoSchema } from '@/lib/schemas'
 import { sanitizeCurriculo, sanitizeVaga } from '@/lib/input-sanitizer'
-import { createServiceClient } from '@/lib/supabase/server'
+import { createClient, createServiceClient } from '@/lib/supabase/server'
 
 const RequestSchema = z.object({
   curriculo: z.string().min(50, 'Currículo muito curto'),
@@ -82,10 +82,12 @@ export async function POST(req: NextRequest) {
   const costBrlCents = Math.round((inputTokens * 0.0008 + outputTokens * 0.004) / 1000 * 5.5 * 100)
 
   const sessionId = req.cookies.get('session_id')?.value ?? null
+  const { data: { user } } = await createClient().auth.getUser()
 
   const { data: analysis, error: dbError } = await supabase
     .from('analyses')
     .insert({
+      user_id: user?.id ?? null,
       session_id: sessionId,
       curriculo_text: curriculo,
       curriculo_hash: curriculoHash,

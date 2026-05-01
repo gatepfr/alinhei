@@ -1,5 +1,6 @@
 // app/dashboard/page.tsx
 import Link from 'next/link'
+import { cookies } from 'next/headers'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { getBalance } from '@/lib/credits'
 import { LogoutButton } from '@/components/logout-button'
@@ -14,13 +15,19 @@ export default async function DashboardPage() {
   if (!user) return null // middleware redireciona antes de chegar aqui
 
   const serviceClient = createServiceClient()
+  const sessionId = cookies().get('session_id')?.value
+
+  // Busca análises pelo user_id (análises feitas logado) OU session_id (feitas antes do login)
+  const orFilter = sessionId
+    ? `user_id.eq.${user.id},session_id.eq.${sessionId}`
+    : `user_id.eq.${user.id}`
 
   const [balance, analysesRes, referralsRes] = await Promise.all([
     getBalance(user.id),
     serviceClient
       .from('analyses')
       .select('id, created_at, diagnostic')
-      .eq('user_id', user.id)
+      .or(orFilter)
       .order('created_at', { ascending: false })
       .limit(20),
     serviceClient
@@ -60,7 +67,7 @@ export default async function DashboardPage() {
           </div>
           {balance === 0 && (
             <Link
-              href="/analise"
+              href={analyses[0] ? `/analise/${analyses[0].id}` : '/analise'}
               className="ml-auto text-sm px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:opacity-90 transition-opacity"
             >
               Comprar créditos
@@ -108,11 +115,11 @@ export default async function DashboardPage() {
               {analyses.map((analysis) => {
                 const diagnostic = analysis.diagnostic as {
                   nota_aderencia?: number
-                  preview_publico?: { cargo_alvo?: string }
+                  preview_publico?: { nota?: number; ponto_forte_destaque?: string }
                 } | null
 
-                const nota = diagnostic?.nota_aderencia
-                const cargo = diagnostic?.preview_publico?.cargo_alvo ?? 'Análise'
+                const nota = diagnostic?.nota_aderencia ?? diagnostic?.preview_publico?.nota
+                const cargo = diagnostic?.preview_publico?.ponto_forte_destaque ?? 'Análise de currículo'
                 const date = new Date(analysis.created_at).toLocaleDateString('pt-BR', {
                   day: '2-digit', month: '2-digit', year: 'numeric'
                 })
