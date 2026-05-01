@@ -39,7 +39,12 @@ export async function createPreference(opts: {
   return result
 }
 
-export function validateWebhookSignature(rawBody: string, xSignature: string, xRequestId: string): boolean {
+export function validateWebhookSignature(
+  rawBody: string,
+  xSignature: string,
+  xRequestId: string,
+  dataId: string,
+): boolean {
   const secret = process.env.MERCADOPAGO_WEBHOOK_SECRET
   if (!secret) return false
 
@@ -53,7 +58,7 @@ export function validateWebhookSignature(rawBody: string, xSignature: string, xR
   const v1 = parts['v1']
   if (!ts || !v1) return false
 
-  const manifest = `id:;request-id:${xRequestId};ts:${ts};`
+  const manifest = `id:${dataId};request-id:${xRequestId};ts:${ts};`
   const expected = crypto.createHmac('sha256', secret).update(manifest).digest('hex')
   return crypto.timingSafeEqual(Buffer.from(expected), Buffer.from(v1))
 }

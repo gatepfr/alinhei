@@ -13,8 +13,9 @@ export async function POST(request: NextRequest) {
   const rawBody = await request.text()
   const xSignature = request.headers.get('x-signature') ?? ''
   const xRequestId = request.headers.get('x-request-id') ?? ''
+  const dataId = request.nextUrl.searchParams.get('data.id') ?? ''
 
-  if (!validateWebhookSignature(rawBody, xSignature, xRequestId)) {
+  if (!validateWebhookSignature(rawBody, xSignature, xRequestId, dataId)) {
     return NextResponse.json({ error: 'invalid signature' }, { status: 401 })
   }
 
@@ -85,11 +86,20 @@ export async function POST(request: NextRequest) {
     .single()
 
   if (paymentError || !paymentRecord) {
+    // unique_violation: outro webhook já processou este pagamento (race condition)
+    if (paymentError?.code === '23505') {
+      return NextResponse.json({ ok: true })
+    }
     console.error('Payment insert error:', paymentError)
     return NextResponse.json({ error: 'failed to save payment' }, { status: 500 })
   }
 
-  await grantCredits(userId, product.credits, `purchase:${sku}`, paymentRecord.id, expiresAt)
+  try {
+    await grantCredits(userId, product.credits, `purchase:${sku}`, paymentRecord.id, expiresAt)
+  } catch (err) {
+    console.error('grantCredits error:', err)
+    return NextResponse.json({ error: 'failed to grant credits' }, { status: 500 })
+  }
 
   return NextResponse.json({ ok: true })
 }

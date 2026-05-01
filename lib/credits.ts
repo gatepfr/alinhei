@@ -17,13 +17,14 @@ export async function grantCredits(
   expiresAt: Date | null
 ): Promise<void> {
   const supabase = createServiceClient()
-  await supabase.from('credits').insert({
+  const { error } = await supabase.from('credits').insert({
     user_id: userId,
     amount,
     source,
     reference_id: referenceId,
     expires_at: expiresAt?.toISOString() ?? null,
   })
+  if (error) throw new Error(`grantCredits failed: ${error.message}`)
 }
 
 export async function getBalance(userId: string): Promise<number> {
