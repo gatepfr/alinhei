@@ -32,7 +32,21 @@ export async function callWithJson<T>(
 
   const raw = response.content[0].type === 'text' ? response.content[0].text : ''
 
-  const parsed = schema.safeParse(JSON.parse(raw))
+  // Remove markdown code fences if the model ignored the instruction
+  const fenceMatch = raw.match(/```(?:json)?\s*([\s\S]*?)```/)
+  const jsonText = fenceMatch ? fenceMatch[1].trim() : raw.trim()
+
+  let jsonValue: unknown
+  try {
+    jsonValue = JSON.parse(jsonText)
+  } catch {
+    if (retries > 0) {
+      return callWithJson(schema, { ...opts, temperature: Math.max(0, temperature - 0.2) }, retries - 1)
+    }
+    throw new Error(`LLM retornou resposta não-JSON: ${raw.slice(0, 200)}`)
+  }
+
+  const parsed = schema.safeParse(jsonValue)
   if (parsed.success) {
     return { data: parsed.data, inputTokens, outputTokens }
   }
