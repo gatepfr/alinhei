@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
-import { Resend } from 'resend'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { debitCredit } from '@/lib/credits'
 import { getAnthropic, callWithJson, MODEL } from '@/lib/anthropic'
@@ -12,7 +11,6 @@ const RequestSchema = z.object({
 })
 
 export async function POST(req: NextRequest) {
-  const resend = new Resend(process.env.RESEND_API_KEY)
   const supabase = createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) {
@@ -150,17 +148,20 @@ export async function POST(req: NextRequest) {
     .update({ curriculo_otimizado, carta, perguntas, tokens_input: totalInput, tokens_output: totalOutput, cost_brl_cents: costBrlCents })
     .eq('id', generation.id)
 
-  // E-mail transacional best-effort
+  // E-mail transacional best-effort (dynamic import evita inicialização em build time)
   if (user.email && process.env.RESEND_API_KEY && process.env.RESEND_FROM_EMAIL) {
     const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? ''
-    resend.emails.send({
-      from: process.env.RESEND_FROM_EMAIL,
-      to: user.email,
-      subject: 'Seu pacote completo está pronto — Alinhei',
-      html: `<p>Olá! Seu pacote completo foi gerado com sucesso.</p>
+    import('resend').then(({ Resend }) => {
+      const resend = new Resend(process.env.RESEND_API_KEY)
+      return resend.emails.send({
+        from: process.env.RESEND_FROM_EMAIL!,
+        to: user.email!,
+        subject: 'Seu pacote completo está pronto — Alinhei',
+        html: `<p>Olá! Seu pacote completo foi gerado com sucesso.</p>
 <p><a href="${appUrl}/analise/${analysis_id}/completo">Acessar resultado completo →</a></p>
 <p><a href="${appUrl}/api/pdf/${generation.id}">Baixar PDF →</a></p>
 <p style="color:#888;font-size:12px">— Alinhei</p>`,
+      })
     }).catch((err: unknown) => console.error('[generate] email error:', err))
   }
 
