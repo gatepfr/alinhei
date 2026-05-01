@@ -9,9 +9,11 @@ export const PRODUCTS = {
 
 export type ProductSku = keyof typeof PRODUCTS
 
-const client = new MercadoPagoConfig({
-  accessToken: process.env.MERCADOPAGO_ACCESS_TOKEN!,
-})
+export function getMpClient() {
+  return new MercadoPagoConfig({
+    accessToken: process.env.MERCADOPAGO_ACCESS_TOKEN!,
+  })
+}
 
 export async function createPreference(opts: {
   sku: ProductSku
@@ -22,7 +24,7 @@ export async function createPreference(opts: {
   failureUrl: string
 }) {
   const product = PRODUCTS[opts.sku]
-  const preference = new Preference(client)
+  const preference = new Preference(getMpClient())
 
   const result = await preference.create({
     body: {

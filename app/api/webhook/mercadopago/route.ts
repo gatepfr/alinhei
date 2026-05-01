@@ -1,13 +1,9 @@
 // app/api/webhook/mercadopago/route.ts
 import { NextRequest, NextResponse } from 'next/server'
-import { MercadoPagoConfig, Payment } from 'mercadopago'
-import { validateWebhookSignature, PRODUCTS, type ProductSku } from '@/lib/mercadopago'
+import { Payment } from 'mercadopago'
+import { validateWebhookSignature, PRODUCTS, getMpClient, type ProductSku } from '@/lib/mercadopago'
 import { createServiceClient } from '@/lib/supabase/server'
 import { grantCredits } from '@/lib/credits'
-
-const mpClient = new MercadoPagoConfig({
-  accessToken: process.env.MERCADOPAGO_ACCESS_TOKEN!,
-})
 
 export async function POST(request: NextRequest) {
   const rawBody = await request.text()
@@ -34,7 +30,7 @@ export async function POST(request: NextRequest) {
 
   let payment: Awaited<ReturnType<InstanceType<typeof Payment>['get']>>
   try {
-    payment = await new Payment(mpClient).get({ id: paymentId })
+    payment = await new Payment(getMpClient()).get({ id: paymentId })
   } catch {
     return NextResponse.json({ error: 'failed to fetch payment' }, { status: 500 })
   }
