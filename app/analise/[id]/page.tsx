@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { PreviewResult } from '@/components/preview-result'
+import { CheckoutPolling } from '@/components/checkout-polling'
 import { DiagnosticoSchema } from '@/lib/schemas'
 import { getBalance } from '@/lib/credits'
 
@@ -56,8 +57,7 @@ export default async function AnaliseResultPage({ params, searchParams }: Props)
           </p>
         </div>
 
-        {/* TODO: CheckoutPolling vai aqui após T8 */}
-        {showPolling && <div className="mb-6 text-sm text-blue-600">Verificando pagamento...</div>}
+        {showPolling && <CheckoutPolling analysisId={params.id} />}
 
         <PreviewResult
           diagnostic={parsed.data}
