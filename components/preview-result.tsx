@@ -2,12 +2,8 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { Badge } from '@/components/ui/badge'
 import { Button, buttonVariants } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
-import { Progress } from '@/components/ui/progress'
-import { Separator } from '@/components/ui/separator'
-import { Lock, TrendingUp, AlertTriangle } from 'lucide-react'
+import { Lock, TrendingUp, AlertTriangle, ArrowRight, Zap } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { PaywallModal } from '@/components/paywall-modal'
 import { trackEvent } from '@/lib/analytics'
@@ -20,18 +16,57 @@ interface PreviewResultProps {
   balance: number
 }
 
-function scoreColor(nota: number) {
-  if (nota >= 75) return 'text-green-600'
-  if (nota >= 60) return 'text-yellow-600'
-  return 'text-red-500'
+function scoreColor(nota: number): string {
+  if (nota >= 75) return '#10b981'
+  if (nota >= 60) return '#f59e0b'
+  return '#ef4444'
 }
 
-function scoreLabel(nota: number) {
+function scoreLabel(nota: number): string {
   if (nota >= 90) return 'Excelente'
   if (nota >= 75) return 'Bom'
   if (nota >= 60) return 'Razoável'
   if (nota >= 40) return 'Fraco'
   return 'Muito fraco'
+}
+
+function ScoreRing({ score }: { score: number }) {
+  const radius = 52
+  const circumference = 2 * Math.PI * radius
+  const offset = circumference - (score / 100) * circumference
+  const color = scoreColor(score)
+
+  return (
+    <div className="relative inline-flex items-center justify-center">
+      <svg width="136" height="136" style={{ transform: 'rotate(-90deg)' }}>
+        <circle
+          cx="68" cy="68" r={radius}
+          fill="none"
+          stroke="oklch(0.22 0.006 265)"
+          strokeWidth="10"
+        />
+        <circle
+          cx="68" cy="68" r={radius}
+          fill="none"
+          stroke={color}
+          strokeWidth="10"
+          strokeDasharray={circumference}
+          strokeDashoffset={offset}
+          strokeLinecap="round"
+          style={{
+            transition: 'stroke-dashoffset 1.4s cubic-bezier(0.16, 1, 0.3, 1)',
+            filter: `drop-shadow(0 0 8px ${color}60)`,
+          }}
+        />
+      </svg>
+      <div className="absolute text-center" style={{ transform: 'rotate(0deg)' }}>
+        <span className="font-display text-4xl font-bold leading-none" style={{ color }}>
+          {score}
+        </span>
+        <span className="text-muted-foreground text-base">%</span>
+      </div>
+    </div>
+  )
 }
 
 export function PreviewResult({ diagnostic, analysisId, userId, balance }: PreviewResultProps) {
@@ -43,70 +78,70 @@ export function PreviewResult({ diagnostic, analysisId, userId, balance }: Previ
   }, [analysisId, preview_publico.nota, userId])
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       {showPaywall && (
         <PaywallModal analysisId={analysisId} onClose={() => setShowPaywall(false)} />
       )}
 
       {/* Score */}
-      <Card>
-        <CardContent className="pt-6">
-          <div className="text-center mb-4">
-            <div className={`text-6xl font-bold ${scoreColor(preview_publico.nota)}`}>
-              {preview_publico.nota}
-            </div>
-            <div className="text-lg font-medium mt-1">
-              {scoreLabel(preview_publico.nota)} · Nota de aderência
-            </div>
-            <p className="text-sm text-muted-foreground mt-2">{resumo_nota}</p>
+      <div className="bg-card rounded-2xl border border-border p-8 text-center animate-fade-up">
+        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest mb-6">
+          Nota de aderência
+        </p>
+        <div className="flex justify-center mb-4">
+          <ScoreRing score={preview_publico.nota} />
+        </div>
+        <p className="font-display text-lg font-semibold mb-2" style={{ color: scoreColor(preview_publico.nota) }}>
+          {scoreLabel(preview_publico.nota)}
+        </p>
+        <p className="text-sm text-muted-foreground max-w-sm mx-auto leading-relaxed">{resumo_nota}</p>
+      </div>
+
+      {/* Ponto forte */}
+      <div className="animate-fade-up delay-100">
+        <div className="flex items-center gap-2 mb-3 px-1">
+          <div className="w-6 h-6 rounded-md bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
+            <TrendingUp className="w-3.5 h-3.5 text-emerald-400" />
           </div>
-          <Progress value={preview_publico.nota} className="h-3" />
-        </CardContent>
-      </Card>
-
-      {/* Ponto forte (preview — só 1) */}
-      <div>
-        <div className="flex items-center gap-2 mb-3">
-          <TrendingUp className="w-4 h-4 text-green-500" />
-          <h3 className="font-semibold">Ponto forte destacado</h3>
-          <Badge variant="secondary" className="text-xs">grátis</Badge>
+          <h3 className="font-display font-semibold text-sm">Ponto forte destacado</h3>
+          <span className="text-xs bg-secondary text-muted-foreground border border-border rounded-full px-2 py-0.5">grátis</span>
         </div>
-        <Card className="border-green-100">
-          <CardContent className="pt-4">
-            <p className="font-medium text-green-700">{pontos_fortes[0].titulo}</p>
-            <p className="text-sm text-muted-foreground mt-1">{pontos_fortes[0].explicacao}</p>
-          </CardContent>
-        </Card>
-        <LockedItems count={2} label="pontos fortes" color="green" />
+        <div className="bg-card rounded-xl border border-emerald-500/20 p-5">
+          <p className="font-semibold text-emerald-400 text-sm mb-1">{pontos_fortes[0].titulo}</p>
+          <p className="text-sm text-muted-foreground leading-relaxed">{pontos_fortes[0].explicacao}</p>
+        </div>
+        <LockedItems count={2} label="pontos fortes" colorClass="border-emerald-500/10 text-emerald-400/50" />
       </div>
 
-      <Separator />
+      <div className="border-t border-border" />
 
-      {/* Gap crítico (preview — só 1) */}
-      <div>
-        <div className="flex items-center gap-2 mb-3">
-          <AlertTriangle className="w-4 h-4 text-amber-500" />
-          <h3 className="font-semibold">Gap crítico identificado</h3>
-          <Badge variant="secondary" className="text-xs">grátis</Badge>
+      {/* Gap crítico */}
+      <div className="animate-fade-up delay-200">
+        <div className="flex items-center gap-2 mb-3 px-1">
+          <div className="w-6 h-6 rounded-md bg-amber-500/10 border border-amber-500/20 flex items-center justify-center">
+            <AlertTriangle className="w-3.5 h-3.5 text-amber-400" />
+          </div>
+          <h3 className="font-display font-semibold text-sm">Gap crítico identificado</h3>
+          <span className="text-xs bg-secondary text-muted-foreground border border-border rounded-full px-2 py-0.5">grátis</span>
         </div>
-        <Card className="border-amber-100">
-          <CardContent className="pt-4">
-            <p className="font-medium text-amber-700">{gaps_criticos[0].titulo}</p>
-            <p className="text-sm text-muted-foreground mt-1">{gaps_criticos[0].explicacao}</p>
-          </CardContent>
-        </Card>
-        <LockedItems count={2} label="gaps críticos com como resolver" color="amber" />
+        <div className="bg-card rounded-xl border border-amber-500/20 p-5">
+          <p className="font-semibold text-amber-400 text-sm mb-1">{gaps_criticos[0].titulo}</p>
+          <p className="text-sm text-muted-foreground leading-relaxed">{gaps_criticos[0].explicacao}</p>
+        </div>
+        <LockedItems count={2} label="gaps críticos com como resolver" colorClass="border-amber-500/10 text-amber-400/50" />
       </div>
 
-      <Separator />
+      <div className="border-t border-border" />
 
-      {/* CTA condicional */}
-      <PaywallCTA
-        analysisId={analysisId}
-        userId={userId}
-        balance={balance}
-        onOpenPaywall={() => setShowPaywall(true)}
-      />
+      {/* CTA */}
+      <div className="animate-fade-up delay-300">
+        <PaywallCTA
+          analysisId={analysisId}
+          userId={userId}
+          balance={balance}
+          onOpenPaywall={() => setShowPaywall(true)}
+        />
+      </div>
     </div>
   )
 }
@@ -122,53 +157,64 @@ function PaywallCTA({
   balance: number
   onOpenPaywall: () => void
 }) {
-  // Logado com crédito → ir direto para gerar
   if (userId && balance > 0) {
     return (
-      <div className="bg-green-50 rounded-xl p-6 text-center border border-green-100">
-        <h3 className="font-bold text-lg mb-2">
+      <div className="bg-emerald-500/[0.07] rounded-2xl p-6 text-center border border-emerald-500/20">
+        <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mx-auto mb-3">
+          <Zap className="w-5 h-5 text-emerald-400" />
+        </div>
+        <h3 className="font-display font-bold text-lg mb-2">
           Você tem {balance} crédito{balance > 1 ? 's' : ''}
         </h3>
-        <p className="text-sm text-muted-foreground mb-4">
+        <p className="text-sm text-muted-foreground mb-5">
           Clique para gerar o currículo reescrito, as cartas e as perguntas STAR.
         </p>
         <Link
           href={`/analise/${analysisId}/completo`}
-          className={cn(buttonVariants({ size: 'lg' }), 'w-full sm:w-auto text-base h-12 px-8')}
+          className={cn(
+            buttonVariants({ size: 'lg' }),
+            'bg-emerald-500 text-white hover:bg-emerald-500/90 h-12 px-8 text-base font-semibold group gap-2'
+          )}
         >
-          Gerar meu pacote completo →
+          Gerar meu pacote completo
+          <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
         </Link>
       </div>
     )
   }
 
-  // Anônimo → convidar a fazer login
-  // Logado sem crédito → abrir paywall modal
   return (
-    <div className="bg-gray-50 rounded-xl p-6 text-center border border-gray-200">
-      <Lock className="w-8 h-8 mx-auto mb-3 text-muted-foreground" />
-      <h3 className="font-bold text-lg mb-2">Pacote completo bloqueado</h3>
-      <p className="text-sm text-muted-foreground mb-4">
+    <div className="bg-card rounded-2xl p-6 text-center border border-border">
+      <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center mx-auto mb-3">
+        <Lock className="w-5 h-5 text-primary" />
+      </div>
+      <h3 className="font-display font-bold text-lg mb-2">Pacote completo bloqueado</h3>
+      <p className="text-sm text-muted-foreground mb-5 max-w-xs mx-auto">
         Desbloqueie o currículo reescrito para ATS, as 2 cartas de apresentação
         e as 5 perguntas de entrevista com respostas STAR.
       </p>
       {userId ? (
         <Button
           size="lg"
-          className="w-full sm:w-auto text-base h-12 px-8"
+          className="h-12 px-8 text-base font-semibold bg-primary text-primary-foreground hover:bg-primary/90 group gap-2"
           onClick={onOpenPaywall}
         >
-          Liberar pacote completo — R$ 9,90 no PIX →
+          Liberar pacote — R$ 9,90 no PIX
+          <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
         </Button>
       ) : (
         <Link
           href={`/login?next=/analise/${analysisId}`}
-          className={cn(buttonVariants({ size: 'lg' }), 'w-full sm:w-auto text-base h-12 px-8')}
+          className={cn(
+            buttonVariants({ size: 'lg' }),
+            'h-12 px-8 text-base font-semibold bg-primary text-primary-foreground hover:bg-primary/90 group gap-2'
+          )}
         >
-          Entrar para liberar o pacote completo →
+          Entrar para liberar o pacote
+          <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
         </Link>
       )}
-      <p className="text-xs text-muted-foreground mt-3">
+      <p className="text-xs text-muted-foreground mt-4">
         Também disponível: 3 análises por R$ 19,90 · 10 análises por R$ 49,90
       </p>
     </div>
@@ -178,17 +224,16 @@ function PaywallCTA({
 function LockedItems({
   count,
   label,
-  color,
+  colorClass,
 }: {
   count: number
   label: string
-  color: 'green' | 'amber'
+  colorClass: string
 }) {
-  const borderColor = color === 'green' ? 'border-green-100' : 'border-amber-100'
   return (
-    <div className={`mt-2 border ${borderColor} rounded-lg p-3 flex items-center gap-2 bg-gray-50`}>
-      <Lock className="w-4 h-4 text-muted-foreground shrink-0" />
-      <p className="text-sm text-muted-foreground">
+    <div className={`mt-2 border ${colorClass} rounded-xl p-3 flex items-center gap-2 bg-secondary/30`}>
+      <Lock className="w-3.5 h-3.5 text-muted-foreground/50 shrink-0" />
+      <p className="text-xs text-muted-foreground/60">
         + {count} outros {label} no pacote completo
       </p>
     </div>

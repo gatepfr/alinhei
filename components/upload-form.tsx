@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Loader2, Upload } from 'lucide-react'
+import { Loader2, Upload, FileCheck, ArrowRight } from 'lucide-react'
 
 export function UploadForm() {
   const router = useRouter()
@@ -66,20 +66,24 @@ export function UploadForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-7">
       {/* Currículo */}
-      <div className="space-y-2">
-        <Label className="text-base font-semibold">Seu currículo</Label>
+      <div className="space-y-3">
+        <Label className="text-sm font-semibold text-foreground">Seu currículo</Label>
         <Tabs defaultValue="texto">
-          <TabsList className="mb-2">
-            <TabsTrigger value="texto">Colar texto</TabsTrigger>
-            <TabsTrigger value="pdf">Subir PDF</TabsTrigger>
+          <TabsList className="bg-secondary border border-border mb-3 h-9">
+            <TabsTrigger value="texto" className="text-xs data-active:bg-primary data-active:text-primary-foreground">
+              Colar texto
+            </TabsTrigger>
+            <TabsTrigger value="pdf" className="text-xs data-active:bg-primary data-active:text-primary-foreground">
+              Subir PDF
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="texto">
             <Textarea
               placeholder="Cole aqui o texto do seu currículo..."
-              className="min-h-[180px] resize-y"
+              className="min-h-[180px] resize-y bg-secondary border-border focus-visible:ring-primary/40 placeholder:text-muted-foreground/50"
               value={curriculo}
               onChange={(e) => setCurriculo(e.target.value)}
             />
@@ -87,7 +91,12 @@ export function UploadForm() {
 
           <TabsContent value="pdf">
             <div
-              className="border-2 border-dashed border-gray-200 rounded-lg p-8 text-center cursor-pointer hover:border-primary transition-colors"
+              className={[
+                'border-2 border-dashed rounded-xl p-10 text-center cursor-pointer transition-all',
+                fileName
+                  ? 'border-primary/40 bg-primary/5'
+                  : 'border-border hover:border-primary/40 hover:bg-primary/[0.03]',
+              ].join(' ')}
               onClick={() => fileRef.current?.click()}
               onDragOver={(e) => e.preventDefault()}
               onDrop={(e) => {
@@ -106,31 +115,32 @@ export function UploadForm() {
                   if (file) handleFile(file)
                 }}
               />
-              <Upload className="w-8 h-8 mx-auto mb-2 text-muted-foreground" />
               {fileName ? (
-                <p className="text-sm font-medium text-green-600">{fileName} carregado ✓</p>
+                <div className="flex flex-col items-center gap-2">
+                  <FileCheck className="w-8 h-8 text-primary" />
+                  <p className="text-sm font-semibold text-primary">{fileName}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {curriculo.length.toLocaleString('pt-BR')} caracteres extraídos
+                  </p>
+                </div>
               ) : (
-                <>
+                <div className="flex flex-col items-center gap-2">
+                  <Upload className="w-7 h-7 text-muted-foreground" />
                   <p className="text-sm text-muted-foreground">Arraste o PDF aqui ou clique para selecionar</p>
-                  <p className="text-xs text-muted-foreground mt-1">Apenas PDF, máx. 5 MB</p>
-                </>
+                  <p className="text-xs text-muted-foreground/60">Apenas PDF · máx. 5 MB</p>
+                </div>
               )}
             </div>
-            {curriculo && fileName && (
-              <p className="text-xs text-muted-foreground mt-2">
-                {curriculo.length.toLocaleString('pt-BR')} caracteres extraídos
-              </p>
-            )}
           </TabsContent>
         </Tabs>
       </div>
 
       {/* Vaga */}
-      <div className="space-y-2">
-        <Label className="text-base font-semibold">Descrição da vaga</Label>
+      <div className="space-y-3">
+        <Label className="text-sm font-semibold text-foreground">Descrição da vaga</Label>
         <Textarea
           placeholder="Cole aqui a descrição completa da vaga (título, requisitos, responsabilidades)..."
-          className="min-h-[140px] resize-y"
+          className="min-h-[140px] resize-y bg-secondary border-border focus-visible:ring-primary/40 placeholder:text-muted-foreground/50"
           value={vaga}
           onChange={(e) => setVaga(e.target.value)}
         />
@@ -138,17 +148,27 @@ export function UploadForm() {
       </div>
 
       {error && (
-        <p className="text-sm text-red-500 bg-red-50 p-3 rounded-lg">{error}</p>
+        <p className="text-sm text-destructive bg-destructive/10 border border-destructive/20 rounded-lg px-4 py-3">
+          {error}
+        </p>
       )}
 
-      <Button type="submit" size="lg" className="w-full h-12 text-base" disabled={loading}>
+      <Button
+        type="submit"
+        size="lg"
+        className="w-full h-12 text-base font-semibold bg-primary text-primary-foreground hover:bg-primary/90 group gap-2"
+        disabled={loading}
+      >
         {loading ? (
           <>
-            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+            <Loader2 className="w-4 h-4 animate-spin" />
             Analisando... (~20 segundos)
           </>
         ) : (
-          'Analisar meu currículo grátis →'
+          <>
+            Analisar meu currículo grátis
+            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+          </>
         )}
       </Button>
     </form>

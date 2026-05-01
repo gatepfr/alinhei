@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { X, Zap, Tag, CheckCircle, AlertCircle } from 'lucide-react'
+import { X, Zap, Tag, CheckCircle, AlertCircle, ArrowRight, Loader2 } from 'lucide-react'
 import { PRODUCTS, type ProductSku } from '@/lib/mercadopago'
 import { trackEvent } from '@/lib/analytics'
 
@@ -113,29 +113,40 @@ export function PaywallModal({ analysisId, onClose }: PaywallModalProps) {
   const copy = COPY[variant]
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div className="absolute inset-0 bg-black/50" onClick={onClose} />
-      <div className="relative bg-white rounded-2xl shadow-2xl p-6 max-w-md w-full mx-4">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center">
+      {/* Backdrop */}
+      <div
+        className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+        onClick={onClose}
+      />
+
+      {/* Modal */}
+      <div className="relative bg-card border border-border rounded-t-3xl sm:rounded-2xl shadow-2xl p-6 w-full sm:max-w-md mx-0 sm:mx-4 max-h-[90vh] overflow-y-auto">
         <button
           type="button"
           onClick={onClose}
-          className="absolute top-4 right-4 text-muted-foreground hover:text-foreground"
+          className="absolute top-4 right-4 w-8 h-8 rounded-lg bg-secondary hover:bg-secondary/80 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
         >
-          <X className="w-5 h-5" />
+          <X className="w-4 h-4" />
         </button>
 
-        <div className="text-center mb-6">
-          <Zap className="w-8 h-8 mx-auto mb-2 text-primary" />
-          <h2 className="text-xl font-bold">{copy.title}</h2>
-          <p className="text-sm text-muted-foreground mt-1">{copy.subtitle}</p>
+        {/* Header */}
+        <div className="text-center mb-7 pr-6">
+          <div className="w-11 h-11 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center mx-auto mb-4">
+            <Zap className="w-5 h-5 text-primary" />
+          </div>
+          <h2 className="font-display text-xl font-bold mb-1">{copy.title}</h2>
+          <p className="text-sm text-muted-foreground">{copy.subtitle}</p>
         </div>
 
-        <div className="space-y-3">
+        {/* SKUs */}
+        <div className="space-y-2.5 mb-5">
           {SKUS.map(({ sku, highlight }) => {
             const product = PRODUCTS[sku]
             const basePrice = product.price
             const finalPrice = appliedCoupon ? applyDiscount(basePrice, appliedCoupon.discount) : basePrice
             const isLoading = loading === sku
+
             return (
               <button
                 key={sku}
@@ -143,19 +154,18 @@ export function PaywallModal({ analysisId, onClose }: PaywallModalProps) {
                 onClick={() => handleCheckout(sku)}
                 disabled={loading !== null}
                 className={[
-                  'w-full p-4 rounded-xl border-2 text-left transition-all',
+                  'w-full p-4 rounded-xl border-2 text-left transition-all disabled:opacity-60',
                   highlight
-                    ? 'border-primary bg-primary/5 ring-1 ring-primary'
-                    : 'border-gray-200 hover:border-gray-300',
-                  'disabled:opacity-60',
+                    ? 'border-primary bg-primary/[0.07] ring-1 ring-primary/30'
+                    : 'border-border hover:border-border/80 bg-secondary/30 hover:bg-secondary/50',
                 ].join(' ')}
               >
                 <div className="flex justify-between items-center">
                   <div>
-                    <p className="font-semibold text-sm">
+                    <p className="font-display font-semibold text-sm flex items-center gap-2">
                       {product.label}
                       {highlight && (
-                        <span className="ml-2 text-xs text-primary font-bold bg-primary/10 px-2 py-0.5 rounded-full">
+                        <span className="text-[10px] text-primary font-bold bg-primary/15 border border-primary/20 px-2 py-0.5 rounded-full">
                           Mais popular
                         </span>
                       )}
@@ -170,15 +180,22 @@ export function PaywallModal({ analysisId, onClose }: PaywallModalProps) {
                         R$ {basePrice.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                       </p>
                     )}
-                    <p className={['font-bold text-lg', appliedCoupon ? 'text-green-600' : ''].join(' ')}>
+                    <p className={['font-display font-bold text-lg', appliedCoupon ? 'text-emerald-400' : 'text-foreground'].join(' ')}>
                       R$ {finalPrice.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                     </p>
                   </div>
                 </div>
                 {isLoading && (
-                  <p className="text-xs text-muted-foreground mt-1 animate-pulse">
-                    Redirecionando para pagamento...
-                  </p>
+                  <div className="flex items-center gap-2 mt-2">
+                    <Loader2 className="w-3 h-3 animate-spin text-primary" />
+                    <p className="text-xs text-muted-foreground">Redirecionando para pagamento...</p>
+                  </div>
+                )}
+                {highlight && !isLoading && (
+                  <div className="flex items-center gap-1 mt-2 text-primary">
+                    <ArrowRight className="w-3 h-3" />
+                    <p className="text-xs font-medium">Melhor custo-benefício</p>
+                  </div>
                 )}
               </button>
             )
@@ -186,14 +203,14 @@ export function PaywallModal({ analysisId, onClose }: PaywallModalProps) {
         </div>
 
         {/* Cupom */}
-        <div className="mt-4">
+        <div className="mb-5">
           {!appliedCoupon ? (
             <>
               {!showCoupon ? (
                 <button
                   type="button"
                   onClick={() => setShowCoupon(true)}
-                  className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
+                  className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
                 >
                   <Tag className="w-3 h-3" />
                   Tenho um cupom de desconto
@@ -206,29 +223,29 @@ export function PaywallModal({ analysisId, onClose }: PaywallModalProps) {
                     onChange={(e) => { setCouponInput(e.target.value.toUpperCase()); setCouponError(null) }}
                     onKeyDown={(e) => { if (e.key === 'Enter') handleApplyCoupon() }}
                     placeholder="CÓDIGO"
-                    className="flex-1 text-sm border border-gray-200 rounded-lg px-3 py-2 font-mono uppercase focus:outline-none focus:ring-2 focus:ring-primary/30"
+                    className="flex-1 text-sm bg-secondary border border-border rounded-lg px-3 py-2 font-mono uppercase focus:outline-none focus:ring-2 focus:ring-primary/30 text-foreground placeholder:text-muted-foreground/50"
                     disabled={couponLoading}
                   />
                   <button
                     type="button"
                     onClick={handleApplyCoupon}
                     disabled={couponLoading || !couponInput.trim()}
-                    className="text-sm px-3 py-2 bg-primary text-primary-foreground rounded-lg disabled:opacity-50"
+                    className="text-sm px-3 py-2 bg-primary text-primary-foreground rounded-lg disabled:opacity-50 font-semibold hover:bg-primary/90 transition-colors"
                   >
-                    {couponLoading ? '...' : 'Aplicar'}
+                    {couponLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : 'Aplicar'}
                   </button>
                 </div>
               )}
               {couponError && (
-                <p className="flex items-center gap-1 text-xs text-red-500 mt-1">
+                <p className="flex items-center gap-1 text-xs text-destructive mt-1.5">
                   <AlertCircle className="w-3 h-3" />
                   {couponError}
                 </p>
               )}
             </>
           ) : (
-            <div className="flex items-center justify-between text-xs">
-              <span className="flex items-center gap-1 text-green-600 font-medium">
+            <div className="flex items-center justify-between text-xs bg-emerald-500/10 border border-emerald-500/20 rounded-lg px-3 py-2">
+              <span className="flex items-center gap-1.5 text-emerald-400 font-medium">
                 <CheckCircle className="w-3.5 h-3.5" />
                 Cupom {appliedCoupon.code} aplicado
                 {appliedCoupon.discount.type === 'percent'
@@ -238,7 +255,7 @@ export function PaywallModal({ analysisId, onClose }: PaywallModalProps) {
               <button
                 type="button"
                 onClick={() => { setAppliedCoupon(null); setCouponInput('') }}
-                className="text-muted-foreground hover:text-foreground"
+                className="text-muted-foreground hover:text-foreground transition-colors ml-2"
               >
                 Remover
               </button>
@@ -246,7 +263,7 @@ export function PaywallModal({ analysisId, onClose }: PaywallModalProps) {
           )}
         </div>
 
-        <p className="text-xs text-center text-muted-foreground mt-4">
+        <p className="text-xs text-center text-muted-foreground">
           PIX ou cartão · Pagamento seguro via Mercado Pago
         </p>
       </div>

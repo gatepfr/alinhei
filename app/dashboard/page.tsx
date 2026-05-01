@@ -5,19 +5,18 @@ import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { getBalance } from '@/lib/credits'
 import { LogoutButton } from '@/components/logout-button'
 import { ReferralCopy } from './referral-copy'
-import { Gift, Coins, FileText, CheckCircle } from 'lucide-react'
+import { Gift, Coins, FileText, CheckCircle, Plus, ArrowRight } from 'lucide-react'
 
 export const metadata = { title: 'Dashboard — Alinhei' }
 
 export default async function DashboardPage() {
   const supabase = createClient()
   const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return null // middleware redireciona antes de chegar aqui
+  if (!user) return null
 
   const serviceClient = createServiceClient()
   const sessionId = cookies().get('session_id')?.value
 
-  // Busca análises pelo user_id (análises feitas logado) OU session_id (feitas antes do login)
   const orFilter = sessionId
     ? `user_id.eq.${user.id},session_id.eq.${sessionId}`
     : `user_id.eq.${user.id}`
@@ -41,12 +40,12 @@ export default async function DashboardPage() {
   const referralConverted = referrals.filter((r) => r.credit_granted).length
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <nav className="bg-white border-b border-gray-100 px-4 py-3">
+    <div className="min-h-screen bg-background">
+      <nav className="border-b border-border/60 bg-background/80 backdrop-blur-md px-4 py-3">
         <div className="max-w-3xl mx-auto flex items-center justify-between">
-          <Link href="/" className="font-bold text-lg tracking-tight">Alinhei</Link>
+          <Link href="/" className="font-display font-bold text-lg tracking-tight">Alinhei</Link>
           <div className="flex items-center gap-4">
-            <Link href="/analise" className="text-sm text-muted-foreground hover:text-foreground">
+            <Link href="/analise" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
               Nova análise
             </Link>
             <LogoutButton />
@@ -54,59 +53,71 @@ export default async function DashboardPage() {
         </div>
       </nav>
 
-      <div className="max-w-3xl mx-auto px-4 py-10 space-y-8">
+      <div className="max-w-3xl mx-auto px-4 py-10 space-y-6">
 
         {/* Saldo */}
-        <div className="bg-white rounded-2xl border border-gray-100 p-6 flex items-center gap-4">
-          <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-            <Coins className="w-6 h-6 text-primary" />
+        <div className="bg-card rounded-2xl border border-border p-6 flex items-center gap-4 animate-fade-up">
+          <div className="w-12 h-12 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center shrink-0">
+            <Coins className="w-5 h-5 text-primary" />
           </div>
           <div>
-            <p className="text-sm text-muted-foreground">Créditos disponíveis</p>
-            <p className="text-3xl font-bold">{balance}</p>
+            <p className="text-xs text-muted-foreground uppercase tracking-wider mb-0.5">Créditos disponíveis</p>
+            <p className="font-display text-3xl font-bold">{balance}</p>
           </div>
           {balance === 0 && (
             <Link
               href={analyses[0] ? `/analise/${analyses[0].id}` : '/analise'}
-              className="ml-auto text-sm px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:opacity-90 transition-opacity"
+              className="ml-auto flex items-center gap-2 text-sm font-semibold bg-primary text-primary-foreground px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors"
             >
+              <Plus className="w-4 h-4" />
               Comprar créditos
             </Link>
           )}
         </div>
 
         {/* Indicação */}
-        <div className="bg-white rounded-2xl border border-gray-100 p-6">
+        <div className="bg-card rounded-2xl border border-border p-6 animate-fade-up delay-100">
           <div className="flex items-center gap-2 mb-1">
-            <Gift className="w-5 h-5 text-primary" />
-            <h2 className="font-semibold">Indique e ganhe</h2>
+            <div className="w-7 h-7 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center">
+              <Gift className="w-3.5 h-3.5 text-primary" />
+            </div>
+            <h2 className="font-display font-semibold">Indique e ganhe</h2>
           </div>
-          <p className="text-sm text-muted-foreground mb-3">
+          <p className="text-sm text-muted-foreground mb-4 ml-9">
             Compartilhe seu link. Quando um amigo comprar pela primeira vez, você ganha 1 crédito grátis.
           </p>
           <ReferralCopy userId={user.id} />
           {referrals.length > 0 && (
-            <p className="text-xs text-muted-foreground mt-3">
+            <p className="text-xs text-muted-foreground mt-3 ml-9">
               {referrals.length} {referrals.length === 1 ? 'pessoa indicada' : 'pessoas indicadas'}
               {referralConverted > 0 && ` · ${referralConverted} ${referralConverted === 1 ? 'converteu' : 'converteram'} (${referralConverted} crédito${referralConverted > 1 ? 's' : ''} ganho${referralConverted > 1 ? 's' : ''})`}
             </p>
           )}
         </div>
 
-        {/* Histórico de análises */}
-        <div>
-          <h2 className="font-semibold mb-3 flex items-center gap-2">
-            <FileText className="w-5 h-5 text-muted-foreground" />
-            Suas análises
-          </h2>
+        {/* Histórico */}
+        <div className="animate-fade-up delay-200">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="font-display font-semibold flex items-center gap-2">
+              <FileText className="w-4 h-4 text-muted-foreground" />
+              Suas análises
+            </h2>
+            <Link
+              href="/analise"
+              className="text-xs text-primary hover:text-primary/80 transition-colors flex items-center gap-1 font-medium"
+            >
+              Nova análise <ArrowRight className="w-3 h-3" />
+            </Link>
+          </div>
 
           {analyses.length === 0 ? (
-            <div className="bg-white rounded-2xl border border-gray-100 p-8 text-center">
-              <p className="text-muted-foreground text-sm">Nenhuma análise ainda.</p>
+            <div className="bg-card rounded-2xl border border-border p-10 text-center">
+              <p className="text-muted-foreground text-sm mb-4">Nenhuma análise ainda.</p>
               <Link
                 href="/analise"
-                className="mt-3 inline-block text-sm px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:opacity-90 transition-opacity"
+                className="inline-flex items-center gap-2 text-sm font-semibold bg-primary text-primary-foreground px-5 py-2.5 rounded-lg hover:bg-primary/90 transition-colors"
               >
+                <Plus className="w-4 h-4" />
                 Fazer primeira análise
               </Link>
             </div>
@@ -124,14 +135,19 @@ export default async function DashboardPage() {
                   day: '2-digit', month: '2-digit', year: 'numeric'
                 })
 
+                const notaColor = nota === undefined ? '' :
+                  nota >= 70 ? 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20' :
+                  nota >= 50 ? 'text-amber-400 bg-amber-500/10 border-amber-500/20' :
+                  'text-red-400 bg-red-500/10 border-red-500/20'
+
                 return (
                   <Link
                     key={analysis.id}
                     href={`/analise/${analysis.id}`}
-                    className="flex items-center justify-between bg-white rounded-xl border border-gray-100 px-5 py-4 hover:border-gray-300 transition-colors group"
+                    className="flex items-center justify-between bg-card rounded-xl border border-border px-5 py-4 hover:border-primary/30 hover:bg-card/80 transition-all group"
                   >
                     <div className="flex items-center gap-3">
-                      <CheckCircle className="w-4 h-4 text-green-500 shrink-0" />
+                      <CheckCircle className="w-4 h-4 text-primary/50 shrink-0" />
                       <div>
                         <p className="text-sm font-medium group-hover:text-primary transition-colors line-clamp-1">
                           {cargo}
@@ -140,12 +156,7 @@ export default async function DashboardPage() {
                       </div>
                     </div>
                     {nota !== undefined && (
-                      <span className={[
-                        'text-sm font-bold px-2 py-0.5 rounded-full',
-                        nota >= 70 ? 'bg-green-100 text-green-700' :
-                        nota >= 50 ? 'bg-yellow-100 text-yellow-700' :
-                        'bg-red-100 text-red-700'
-                      ].join(' ')}>
+                      <span className={`text-xs font-bold px-2.5 py-1 rounded-full border ${notaColor}`}>
                         {nota}%
                       </span>
                     )}
