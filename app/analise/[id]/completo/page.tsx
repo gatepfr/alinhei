@@ -54,7 +54,7 @@ export default async function CompletePage({ params }: Props) {
   // Sem geração ou ainda sem conteúdo → disparar geração no client
   if (!generation || (!generation.curriculo_otimizado && !generation.carta && !generation.perguntas)) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-background">
         {nav}
         <GenerateFlow analysisId={params.id} />
       </div>
@@ -65,7 +65,7 @@ export default async function CompletePage({ params }: Props) {
   const perguntasResult = PerguntasSchema.safeParse(generation.perguntas)
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       {nav}
       <CompleteResult
         diagnostico={diagnosticoResult.data}

@@ -37,6 +37,18 @@ export default async function AnaliseResultPage({ params, searchParams }: Props)
   const balance = user ? await getBalance(user.id) : 0
   const showPolling = searchParams.checkout === 'success' && !!user && balance === 0
 
+  const { data: existingGen } = user
+    ? await serviceClient
+        .from('generations')
+        .select('id')
+        .eq('analysis_id', params.id)
+        .eq('user_id', user.id)
+        .not('curriculo_otimizado', 'is', null)
+        .maybeSingle()
+    : { data: null }
+
+  const hasGeneration = !!existingGen
+
   return (
     <div className="min-h-screen bg-gray-50">
       <nav className="bg-white border-b border-gray-100 px-4 py-3">
@@ -75,6 +87,7 @@ export default async function AnaliseResultPage({ params, searchParams }: Props)
           analysisId={analysis.id}
           userId={user?.id ?? null}
           balance={balance}
+          hasGeneration={hasGeneration}
         />
       </div>
     </div>

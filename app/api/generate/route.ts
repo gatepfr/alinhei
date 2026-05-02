@@ -57,12 +57,54 @@ export async function POST(req: NextRequest) {
   // Idempotência: já existe geração para esse par analysis+user
   const { data: existing } = await serviceClient
     .from('generations')
-    .select('id')
+    .select('id, curriculo_otimizado, carta, perguntas')
     .eq('analysis_id', analysis_id)
     .eq('user_id', user.id)
     .maybeSingle()
 
+  // Tudo já gerado: retorno imediato sem cobrar crédito novamente
+  if (existing && existing.curriculo_otimizado && existing.carta && existing.perguntas) {
+    return NextResponse.json({ ok: true, generationId: existing.id })
+  }
+
+  // Geração parcial: regenerar apenas os campos ausentes sem debitar crédito
   if (existing) {
+    const curriculoText = analysis.curriculo_text as string
+    const vagaText = analysis.vaga_text as string
+    const diagnosticoJson = JSON.stringify(analysis.diagnostic)
+
+    const [curriculoResult, cartaResult, perguntasResult] = await Promise.allSettled([
+      existing.curriculo_otimizado
+        ? Promise.resolve(null)
+        : getAnthropic().messages.create({
+            model: MODEL, max_tokens: 2000, temperature: 0.5,
+            system: CURRICULO_SYSTEM,
+            messages: [{ role: 'user', content: CURRICULO_USER(curriculoText, vagaText, diagnosticoJson) }],
+          }),
+      existing.carta
+        ? Promise.resolve(null)
+        : callWithJson(CartaSchema, { system: CARTA_SYSTEM, user: CARTA_USER(curriculoText, vagaText, 'a empresa'), temperature: 0.7, maxTokens: 1000 }),
+      existing.perguntas
+        ? Promise.resolve(null)
+        : callWithJson(PerguntasSchema, { system: PERGUNTAS_SYSTEM, user: PERGUNTAS_USER(curriculoText, vagaText), temperature: 0.5, maxTokens: 2000 }),
+    ])
+
+    const updates: Record<string, unknown> = {}
+    if (!existing.curriculo_otimizado && curriculoResult.status === 'fulfilled' && curriculoResult.value) {
+      const msg = curriculoResult.value as unknown as { content: Array<{ type: string; text?: string }> }
+      if (msg.content[0]?.type === 'text') updates.curriculo_otimizado = msg.content[0].text
+    }
+    if (!existing.carta && cartaResult.status === 'fulfilled' && cartaResult.value) {
+      updates.carta = (cartaResult.value as unknown as { data: unknown }).data
+    }
+    if (!existing.perguntas && perguntasResult.status === 'fulfilled' && perguntasResult.value) {
+      updates.perguntas = (perguntasResult.value as unknown as { data: unknown }).data
+    }
+
+    if (Object.keys(updates).length > 0) {
+      await serviceClient.from('generations').update(updates).eq('id', existing.id)
+    }
+
     return NextResponse.json({ ok: true, generationId: existing.id })
   }
 

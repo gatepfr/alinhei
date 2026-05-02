@@ -47,6 +47,19 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(url)
   }
 
+  if (request.nextUrl.pathname.startsWith('/admin')) {
+    if (!user) {
+      const url = request.nextUrl.clone()
+      url.pathname = '/login'
+      url.searchParams.set('next', request.nextUrl.pathname)
+      return NextResponse.redirect(url)
+    }
+    const adminEmails = (process.env.ADMIN_EMAIL ?? '').split(',').map(e => e.trim().toLowerCase())
+    if (!user.email || !adminEmails.includes(user.email.toLowerCase())) {
+      return NextResponse.redirect(new URL('/', request.url))
+    }
+  }
+
   // Captura ?ref=<userId> e salva em cookie por 30 dias
   const refParam = request.nextUrl.searchParams.get('ref')
   if (refParam && /^[0-9a-f-]{36}$/.test(refParam)) {
@@ -71,5 +84,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/', '/analise/:path*/completo', '/dashboard/:path*'],
+  matcher: ['/', '/analise/:path*/completo', '/dashboard/:path*', '/admin/:path*'],
 }

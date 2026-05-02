@@ -14,6 +14,7 @@ interface PreviewResultProps {
   analysisId: string
   userId: string | null
   balance: number
+  hasGeneration?: boolean
 }
 
 function scoreColor(nota: number): string {
@@ -69,7 +70,7 @@ function ScoreRing({ score }: { score: number }) {
   )
 }
 
-export function PreviewResult({ diagnostic, analysisId, userId, balance }: PreviewResultProps) {
+export function PreviewResult({ diagnostic, analysisId, userId, balance, hasGeneration = false }: PreviewResultProps) {
   const { preview_publico, pontos_fortes, gaps_criticos, resumo_nota } = diagnostic
   const [showPaywall, setShowPaywall] = useState(false)
 
@@ -139,6 +140,7 @@ export function PreviewResult({ diagnostic, analysisId, userId, balance }: Previ
           analysisId={analysisId}
           userId={userId}
           balance={balance}
+          hasGeneration={hasGeneration}
           onOpenPaywall={() => setShowPaywall(true)}
         />
       </div>
@@ -150,13 +152,39 @@ function PaywallCTA({
   analysisId,
   userId,
   balance,
+  hasGeneration,
   onOpenPaywall,
 }: {
   analysisId: string
   userId: string | null
   balance: number
+  hasGeneration: boolean
   onOpenPaywall: () => void
 }) {
+  if (hasGeneration) {
+    return (
+      <div className="bg-emerald-500/[0.07] rounded-2xl p-6 text-center border border-emerald-500/20">
+        <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mx-auto mb-3">
+          <Zap className="w-5 h-5 text-emerald-400" />
+        </div>
+        <h3 className="font-display font-bold text-lg mb-2">Seu pacote está pronto</h3>
+        <p className="text-sm text-muted-foreground mb-5">
+          Currículo reescrito, cartas e perguntas STAR já foram gerados para você.
+        </p>
+        <Link
+          href={`/analise/${analysisId}/completo`}
+          className={cn(
+            buttonVariants({ size: 'lg' }),
+            'bg-emerald-500 text-white hover:bg-emerald-500/90 h-12 px-8 text-base font-semibold group gap-2'
+          )}
+        >
+          Ver resultado completo
+          <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+        </Link>
+      </div>
+    )
+  }
+
   if (userId && balance > 0) {
     return (
       <div className="bg-emerald-500/[0.07] rounded-2xl p-6 text-center border border-emerald-500/20">
