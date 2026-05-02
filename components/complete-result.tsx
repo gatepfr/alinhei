@@ -2,12 +2,9 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { Download, Copy, Check, Share2, TrendingUp, AlertTriangle } from 'lucide-react'
+import { Download, Copy, Check, Share2, TrendingUp, AlertTriangle, ChevronDown, ChevronUp } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Badge } from '@/components/ui/badge'
-import { Separator } from '@/components/ui/separator'
 import type { Diagnostico, Carta, Perguntas } from '@/lib/schemas'
 
 interface CompleteResultProps {
@@ -30,17 +27,62 @@ function CopyButton({ text, label = 'Copiar' }: { text: string; label?: string }
   }
 
   return (
-    <Button variant="outline" size="sm" onClick={handleCopy} className="gap-2">
-      {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+    <Button
+      variant="outline"
+      size="sm"
+      onClick={handleCopy}
+      className="gap-2 border-border bg-secondary hover:bg-secondary/80 text-foreground"
+    >
+      {copied ? <Check className="w-3.5 h-3.5 text-primary" /> : <Copy className="w-3.5 h-3.5" />}
       {copied ? 'Copiado!' : label}
     </Button>
   )
 }
 
-function scoreColor(nota: number) {
-  if (nota >= 75) return 'text-green-600'
-  if (nota >= 60) return 'text-yellow-600'
-  return 'text-red-500'
+function scoreColor(nota: number): string {
+  if (nota >= 75) return '#10b981'
+  if (nota >= 60) return '#f59e0b'
+  return '#ef4444'
+}
+
+function scoreLabel(nota: number): string {
+  if (nota >= 90) return 'Excelente'
+  if (nota >= 75) return 'Bom'
+  if (nota >= 60) return 'Razoável'
+  if (nota >= 40) return 'Fraco'
+  return 'Muito fraco'
+}
+
+function ScoreRing({ score }: { score: number }) {
+  const radius = 52
+  const circumference = 2 * Math.PI * radius
+  const offset = circumference - (score / 100) * circumference
+  const color = scoreColor(score)
+
+  return (
+    <div className="relative inline-flex items-center justify-center">
+      <svg width="136" height="136" style={{ transform: 'rotate(-90deg)' }}>
+        <circle cx="68" cy="68" r={radius} fill="none" stroke="oklch(0.22 0.006 265)" strokeWidth="10" />
+        <circle
+          cx="68" cy="68" r={radius}
+          fill="none"
+          stroke={color}
+          strokeWidth="10"
+          strokeDasharray={circumference}
+          strokeDashoffset={offset}
+          strokeLinecap="round"
+          style={{
+            transition: 'stroke-dashoffset 1.4s cubic-bezier(0.16, 1, 0.3, 1)',
+            filter: `drop-shadow(0 0 8px ${color}60)`,
+          }}
+        />
+      </svg>
+      <div className="absolute text-center">
+        <span className="font-display text-4xl font-bold leading-none" style={{ color }}>{score}</span>
+        <span className="text-muted-foreground text-base">%</span>
+      </div>
+    </div>
+  )
 }
 
 export function CompleteResult({
@@ -58,21 +100,22 @@ export function CompleteResult({
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-10">
-      {/* Header com score + ações */}
-      <div className="flex items-start justify-between mb-8 flex-wrap gap-4">
+      {/* Header */}
+      <div className="flex items-start justify-between mb-8 flex-wrap gap-4 animate-fade-up">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Pacote completo</h1>
-          <p className="text-muted-foreground mt-1">Currículo, cartas e simulado de entrevista prontos.</p>
+          <p className="text-xs font-semibold text-primary uppercase tracking-widest mb-1">Pacote completo</p>
+          <h1 className="font-display text-2xl font-bold tracking-tight">Tudo pronto para você</h1>
+          <p className="text-muted-foreground mt-1 text-sm">Currículo, cartas e simulado de entrevista.</p>
         </div>
         <div className="flex items-center gap-2">
           <Link href={`/api/pdf/${generationId}`} target="_blank">
-            <Button variant="outline" size="sm" className="gap-2">
+            <Button variant="outline" size="sm" className="gap-2 border-border bg-secondary hover:bg-secondary/80 text-foreground">
               <Download className="w-4 h-4" />
               Baixar PDF
             </Button>
           </Link>
           <Link href={linkedinShareUrl} target="_blank" rel="noopener noreferrer">
-            <Button variant="outline" size="sm" className="gap-2">
+            <Button variant="outline" size="sm" className="gap-2 border-border bg-secondary hover:bg-secondary/80 text-foreground">
               <Share2 className="w-4 h-4" />
               Compartilhar
             </Button>
@@ -80,80 +123,85 @@ export function CompleteResult({
         </div>
       </div>
 
-      <Tabs defaultValue="diagnostico">
-        <TabsList className="w-full grid grid-cols-4 mb-6">
-          <TabsTrigger value="diagnostico">Diagnóstico</TabsTrigger>
-          <TabsTrigger value="curriculo">Currículo</TabsTrigger>
-          <TabsTrigger value="cartas">Cartas</TabsTrigger>
-          <TabsTrigger value="entrevista">Entrevista</TabsTrigger>
+      <Tabs defaultValue="diagnostico" className="animate-fade-up delay-100">
+        <TabsList className="w-full grid grid-cols-4 mb-6 bg-secondary border border-border h-10">
+          <TabsTrigger value="diagnostico" className="text-xs data-active:bg-primary data-active:text-primary-foreground">Diagnóstico</TabsTrigger>
+          <TabsTrigger value="curriculo" className="text-xs data-active:bg-primary data-active:text-primary-foreground">Currículo</TabsTrigger>
+          <TabsTrigger value="cartas" className="text-xs data-active:bg-primary data-active:text-primary-foreground">Cartas</TabsTrigger>
+          <TabsTrigger value="entrevista" className="text-xs data-active:bg-primary data-active:text-primary-foreground">Entrevista</TabsTrigger>
         </TabsList>
 
-        {/* Diagnóstico completo */}
-        <TabsContent value="diagnostico" className="space-y-6">
-          <Card>
-            <CardContent className="pt-6 text-center">
-              <div className={`text-5xl font-bold ${scoreColor(nota)}`}>{nota}</div>
-              <div className="text-base font-medium mt-1">Nota de aderência</div>
-              <p className="text-sm text-muted-foreground mt-2">{diagnostico.resumo_nota}</p>
-            </CardContent>
-          </Card>
+        {/* Diagnóstico */}
+        <TabsContent value="diagnostico" className="space-y-5">
+          <div className="bg-card rounded-2xl border border-border p-8 text-center">
+            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest mb-5">
+              Nota de aderência
+            </p>
+            <div className="flex justify-center mb-4">
+              <ScoreRing score={nota} />
+            </div>
+            <p className="font-display text-lg font-semibold mb-2" style={{ color: scoreColor(nota) }}>
+              {scoreLabel(nota)}
+            </p>
+            <p className="text-sm text-muted-foreground max-w-sm mx-auto leading-relaxed">
+              {diagnostico.resumo_nota}
+            </p>
+          </div>
 
           <div>
-            <div className="flex items-center gap-2 mb-3">
-              <TrendingUp className="w-4 h-4 text-green-500" />
-              <h3 className="font-semibold">Pontos fortes</h3>
-              <Badge variant="secondary" className="text-xs">3 no total</Badge>
+            <div className="flex items-center gap-2 mb-3 px-1">
+              <div className="w-6 h-6 rounded-md bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
+                <TrendingUp className="w-3.5 h-3.5 text-emerald-400" />
+              </div>
+              <h3 className="font-display font-semibold text-sm">Pontos fortes</h3>
+              <span className="text-xs bg-secondary text-muted-foreground border border-border rounded-full px-2 py-0.5">3 no total</span>
             </div>
             <div className="space-y-3">
               {diagnostico.pontos_fortes.map((p, i) => (
-                <Card key={i} className="border-green-100">
-                  <CardContent className="pt-4">
-                    <p className="font-medium text-green-700">{p.titulo}</p>
-                    <p className="text-sm text-muted-foreground mt-1">{p.explicacao}</p>
-                  </CardContent>
-                </Card>
+                <div key={i} className="bg-card rounded-xl border border-emerald-500/20 p-5">
+                  <p className="font-semibold text-emerald-400 text-sm mb-1">{p.titulo}</p>
+                  <p className="text-sm text-muted-foreground leading-relaxed">{p.explicacao}</p>
+                </div>
               ))}
             </div>
           </div>
 
-          <Separator />
+          <div className="border-t border-border" />
 
           <div>
-            <div className="flex items-center gap-2 mb-3">
-              <AlertTriangle className="w-4 h-4 text-amber-500" />
-              <h3 className="font-semibold">Gaps críticos</h3>
-              <Badge variant="secondary" className="text-xs">3 no total</Badge>
+            <div className="flex items-center gap-2 mb-3 px-1">
+              <div className="w-6 h-6 rounded-md bg-amber-500/10 border border-amber-500/20 flex items-center justify-center">
+                <AlertTriangle className="w-3.5 h-3.5 text-amber-400" />
+              </div>
+              <h3 className="font-display font-semibold text-sm">Gaps críticos</h3>
+              <span className="text-xs bg-secondary text-muted-foreground border border-border rounded-full px-2 py-0.5">3 no total</span>
             </div>
             <div className="space-y-3">
               {diagnostico.gaps_criticos.map((g, i) => (
-                <Card key={i} className="border-amber-100">
-                  <CardContent className="pt-4">
-                    <p className="font-medium text-amber-700">{g.titulo}</p>
-                    <p className="text-sm text-muted-foreground mt-1">{g.explicacao}</p>
-                    <p className="text-sm text-indigo-600 mt-2 font-medium">
-                      Como resolver: {g.como_resolver}
-                    </p>
-                  </CardContent>
-                </Card>
+                <div key={i} className="bg-card rounded-xl border border-amber-500/20 p-5">
+                  <p className="font-semibold text-amber-400 text-sm mb-1">{g.titulo}</p>
+                  <p className="text-sm text-muted-foreground leading-relaxed">{g.explicacao}</p>
+                  <p className="text-sm text-primary/80 mt-2 font-medium">
+                    Como resolver: {g.como_resolver}
+                  </p>
+                </div>
               ))}
             </div>
           </div>
         </TabsContent>
 
-        {/* Currículo otimizado */}
+        {/* Currículo */}
         <TabsContent value="curriculo">
           {curriculoOtimizado ? (
             <div className="space-y-3">
               <div className="flex justify-end">
                 <CopyButton text={curriculoOtimizado} label="Copiar currículo" />
               </div>
-              <Card>
-                <CardContent className="pt-6">
-                  <pre className="whitespace-pre-wrap font-mono text-sm leading-relaxed text-gray-800">
-                    {curriculoOtimizado}
-                  </pre>
-                </CardContent>
-              </Card>
+              <div className="bg-card rounded-xl border border-border p-6">
+                <pre className="whitespace-pre-wrap font-mono text-sm leading-relaxed text-muted-foreground">
+                  {curriculoOtimizado}
+                </pre>
+              </div>
               <p className="text-xs text-muted-foreground text-center">
                 Copie o texto acima e cole no seu editor de documentos favorito.
               </p>
@@ -169,34 +217,32 @@ export function CompleteResult({
             <div className="space-y-6">
               <div>
                 <div className="flex items-center justify-between mb-3">
-                  <h3 className="font-semibold flex items-center gap-2">
-                    <Share2 className="w-4 h-4 text-blue-600" />
+                  <h3 className="font-display font-semibold text-sm flex items-center gap-2">
+                    <div className="w-6 h-6 rounded-md bg-blue-500/10 border border-blue-500/20 flex items-center justify-center">
+                      <Share2 className="w-3.5 h-3.5 text-blue-400" />
+                    </div>
                     LinkedIn — candidatura
                   </h3>
                   <CopyButton text={carta.linkedin} label="Copiar" />
                 </div>
-                <Card className="border-blue-100">
-                  <CardContent className="pt-4">
-                    <p className="text-sm leading-relaxed whitespace-pre-wrap">{carta.linkedin}</p>
-                  </CardContent>
-                </Card>
-                <p className="text-xs text-muted-foreground mt-1">
+                <div className="bg-card rounded-xl border border-blue-500/20 p-5">
+                  <p className="text-sm leading-relaxed whitespace-pre-wrap text-muted-foreground">{carta.linkedin}</p>
+                </div>
+                <p className="text-xs text-muted-foreground mt-2">
                   Use em "Adicionar uma nota" ao se candidatar no LinkedIn (max 300 caracteres).
                 </p>
               </div>
 
-              <Separator />
+              <div className="border-t border-border" />
 
               <div>
                 <div className="flex items-center justify-between mb-3">
-                  <h3 className="font-semibold">E-mail de candidatura</h3>
+                  <h3 className="font-display font-semibold text-sm">E-mail de candidatura</h3>
                   <CopyButton text={carta.email} label="Copiar" />
                 </div>
-                <Card>
-                  <CardContent className="pt-4">
-                    <p className="text-sm leading-relaxed whitespace-pre-wrap">{carta.email}</p>
-                  </CardContent>
-                </Card>
+                <div className="bg-card rounded-xl border border-border p-5">
+                  <p className="text-sm leading-relaxed whitespace-pre-wrap text-muted-foreground">{carta.email}</p>
+                </div>
               </div>
             </div>
           ) : (
@@ -204,10 +250,10 @@ export function CompleteResult({
           )}
         </TabsContent>
 
-        {/* Perguntas STAR */}
+        {/* Entrevista STAR */}
         <TabsContent value="entrevista">
           {perguntas ? (
-            <div className="space-y-4">
+            <div className="space-y-3">
               {perguntas.perguntas.map((p, i) => (
                 <STARItem key={i} index={i + 1} item={p} />
               ))}
@@ -225,48 +271,54 @@ type PerguntaItem = Perguntas['perguntas'][number]
 
 function STARItem({ index, item }: { index: number; item: PerguntaItem }) {
   const [open, setOpen] = useState(false)
+  const isBehavioral = item.tipo === 'comportamental'
 
   return (
-    <Card className={item.tipo === 'comportamental' ? 'border-indigo-100' : 'border-slate-200'}>
-      <CardContent className="pt-4">
-        <button
-          className="w-full text-left"
-          onClick={() => setOpen((v) => !v)}
-        >
-          <div className="flex items-start justify-between gap-3">
-            <div className="flex items-start gap-3">
-              <span className="text-muted-foreground font-mono text-sm mt-0.5">{index}.</span>
-              <div>
-                <p className="font-medium text-sm">{item.pergunta}</p>
-                <p className="text-xs text-muted-foreground mt-0.5">{item.por_que_pode_cair}</p>
-              </div>
+    <div className={`bg-card rounded-xl border p-5 transition-colors ${isBehavioral ? 'border-primary/20' : 'border-border'}`}>
+      <button className="w-full text-left" onClick={() => setOpen((v) => !v)}>
+        <div className="flex items-start justify-between gap-3">
+          <div className="flex items-start gap-3">
+            <span className="text-muted-foreground/50 font-mono text-sm mt-0.5 shrink-0">{index}.</span>
+            <div>
+              <p className="font-medium text-sm">{item.pergunta}</p>
+              <p className="text-xs text-muted-foreground mt-0.5">{item.por_que_pode_cair}</p>
             </div>
-            <Badge variant="outline" className="text-xs shrink-0 capitalize">
+          </div>
+          <div className="flex items-center gap-2 shrink-0">
+            <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border capitalize ${
+              isBehavioral
+                ? 'bg-primary/10 text-primary border-primary/20'
+                : 'bg-secondary text-muted-foreground border-border'
+            }`}>
               {item.tipo}
-            </Badge>
+            </span>
+            {open
+              ? <ChevronUp className="w-4 h-4 text-muted-foreground" />
+              : <ChevronDown className="w-4 h-4 text-muted-foreground" />
+            }
           </div>
-        </button>
+        </div>
+      </button>
 
-        {open && (
-          <div className="mt-4 pt-4 border-t space-y-2">
-            <STARRow label="Situação" text={item.resposta_star.situacao} />
-            <STARRow label="Tarefa" text={item.resposta_star.tarefa} />
-            <STARRow label="Ação" text={item.resposta_star.acao} />
-            <STARRow label="Resultado" text={item.resposta_star.resultado} />
-            {item.dica && (
-              <p className="text-xs text-indigo-600 pt-1">Dica: {item.dica}</p>
-            )}
-          </div>
-        )}
-      </CardContent>
-    </Card>
+      {open && (
+        <div className="mt-4 pt-4 border-t border-border space-y-2.5">
+          <STARRow label="Situação" text={item.resposta_star.situacao} />
+          <STARRow label="Tarefa" text={item.resposta_star.tarefa} />
+          <STARRow label="Ação" text={item.resposta_star.acao} />
+          <STARRow label="Resultado" text={item.resposta_star.resultado} />
+          {item.dica && (
+            <p className="text-xs text-primary/80 pt-1 font-medium">Dica: {item.dica}</p>
+          )}
+        </div>
+      )}
+    </div>
   )
 }
 
 function STARRow({ label, text }: { label: string; text: string }) {
   return (
     <div className="text-sm">
-      <span className="font-semibold">{label}: </span>
+      <span className="font-semibold text-foreground">{label}: </span>
       <span className="text-muted-foreground">{text}</span>
     </div>
   )
@@ -274,6 +326,8 @@ function STARRow({ label, text }: { label: string; text: string }) {
 
 function EmptyState({ message }: { message: string }) {
   return (
-    <div className="text-center py-12 text-muted-foreground text-sm">{message}</div>
+    <div className="text-center py-14 text-muted-foreground text-sm bg-card rounded-xl border border-border">
+      {message}
+    </div>
   )
 }
