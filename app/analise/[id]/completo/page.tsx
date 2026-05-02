@@ -55,7 +55,7 @@ export default async function CompletePage({ params }: Props) {
     return (
       <div className="min-h-screen bg-background">
         {nav}
-        <GenerateFlow analysisId={params.id} />
+        <GenerateFlow analysisId={params.id} userEmail={user.email ?? ''} />
       </div>
     )
   }

@@ -58,7 +58,25 @@ REGRAS INVIOLÁVEIS:
 - Português brasileiro formal mas direto. Evite clichês ("profissional dinâmico", "perfil proativo", "busco oportunidade").
 - Saída em Markdown limpo, pronto para colar em editor.`
 
-export function CURRICULO_USER(curriculo: string, vaga: string, diagnosticoJson: string) {
+export interface ContactInfo {
+  name?: string
+  email?: string
+  phone?: string
+  linkedin_url?: string
+  city?: string
+}
+
+export function CURRICULO_USER(curriculo: string, vaga: string, diagnosticoJson: string, contact?: ContactInfo) {
+  const hasContact = contact && Object.values(contact).some(Boolean)
+  const contactBlock = hasContact ? `
+DADOS DE CONTATO DO CANDIDATO (use exatamente estes valores no cabeçalho do currículo reescrito):
+- Nome completo: ${contact.name ?? '[extrair do currículo]'}
+- E-mail: ${contact.email ?? '[extrair do currículo]'}
+- Telefone: ${contact.phone ?? '[extrair do currículo]'}
+- LinkedIn: ${contact.linkedin_url ?? '[extrair do currículo]'}
+- Cidade: ${contact.city ?? '[extrair do currículo]'}
+` : ''
+
   return `CURRÍCULO ORIGINAL:
 """
 ${curriculo}
@@ -71,7 +89,7 @@ ${vaga}
 
 DIAGNÓSTICO PRÉVIO (use para priorizar ajustes):
 ${diagnosticoJson}
-
+${contactBlock}
 Reescreva o currículo otimizando para esta vaga. Retorne APENAS o markdown do currículo reescrito, sem comentários antes ou depois.`
 }
 

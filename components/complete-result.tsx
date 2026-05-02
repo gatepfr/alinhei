@@ -107,11 +107,17 @@ export function CompleteResult({
           <h1 className="font-display text-2xl font-bold tracking-tight">Tudo pronto para você</h1>
           <p className="text-muted-foreground mt-1 text-sm">Currículo, cartas e simulado de entrevista.</p>
         </div>
-        <div className="flex items-center gap-2">
-          <Link href={`/api/pdf/${generationId}`} target="_blank">
+        <div className="flex items-center gap-2 flex-wrap">
+          <Link href={`/api/pdf/${generationId}/curriculo`} target="_blank">
             <Button variant="outline" size="sm" className="gap-2 border-border bg-secondary hover:bg-secondary/80 text-foreground">
               <Download className="w-4 h-4" />
-              Baixar PDF
+              Currículo ATS
+            </Button>
+          </Link>
+          <Link href={`/api/pdf/${generationId}/diagnostico`} target="_blank">
+            <Button variant="outline" size="sm" className="gap-2 border-border bg-secondary hover:bg-secondary/80 text-foreground">
+              <Download className="w-4 h-4" />
+              Diagnóstico
             </Button>
           </Link>
           <Link href={linkedinShareUrl} target="_blank" rel="noopener noreferrer">

@@ -3,11 +3,20 @@ import { z } from 'zod'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { debitCredit } from '@/lib/credits'
 import { getAnthropic, callWithJson, MODEL } from '@/lib/anthropic'
-import { CURRICULO_SYSTEM, CURRICULO_USER, CARTA_SYSTEM, CARTA_USER, PERGUNTAS_SYSTEM, PERGUNTAS_USER } from '@/lib/prompts'
+import { CURRICULO_SYSTEM, CURRICULO_USER, CARTA_SYSTEM, CARTA_USER, PERGUNTAS_SYSTEM, PERGUNTAS_USER, type ContactInfo } from '@/lib/prompts'
 import { CartaSchema, PerguntasSchema } from '@/lib/schemas'
+
+const ContactInfoSchema = z.object({
+  name: z.string().max(200).optional(),
+  email: z.string().max(300).optional(),
+  phone: z.string().max(50).optional(),
+  linkedin_url: z.string().max(300).optional(),
+  city: z.string().max(100).optional(),
+})
 
 const RequestSchema = z.object({
   analysis_id: z.string().uuid(),
+  contact_info: ContactInfoSchema.optional(),
 })
 
 export async function POST(req: NextRequest) {
@@ -38,8 +47,22 @@ export async function POST(req: NextRequest) {
     )
   }
 
-  const { analysis_id } = parsed.data
+  const { analysis_id, contact_info } = parsed.data
   const serviceClient = createServiceClient()
+
+  // Persist contact info to user metadata (best-effort, non-blocking)
+  if (contact_info) {
+    const meta: Record<string, string> = {}
+    if (contact_info.name) meta.full_name = contact_info.name
+    if (contact_info.phone) meta.phone = contact_info.phone
+    if (contact_info.linkedin_url) meta.linkedin_url = contact_info.linkedin_url
+    if (contact_info.city) meta.city = contact_info.city
+    if (Object.keys(meta).length > 0) {
+      serviceClient.auth.admin.updateUserById(user.id, {
+        user_metadata: { ...(user.user_metadata ?? {}), ...meta },
+      }).catch((err: unknown) => console.error('[generate] profile save error:', err))
+    }
+  }
 
   const { data: analysis } = await serviceClient
     .from('analyses')
@@ -79,7 +102,7 @@ export async function POST(req: NextRequest) {
         : getAnthropic().messages.create({
             model: MODEL, max_tokens: 2000, temperature: 0.5,
             system: CURRICULO_SYSTEM,
-            messages: [{ role: 'user', content: CURRICULO_USER(curriculoText, vagaText, diagnosticoJson) }],
+            messages: [{ role: 'user', content: CURRICULO_USER(curriculoText, vagaText, diagnosticoJson, contact_info as ContactInfo | undefined) }],
           }),
       existing.carta
         ? Promise.resolve(null)
@@ -144,7 +167,7 @@ export async function POST(req: NextRequest) {
       max_tokens: 2000,
       temperature: 0.5,
       system: CURRICULO_SYSTEM,
-      messages: [{ role: 'user', content: CURRICULO_USER(curriculoText, vagaText, diagnosticoJson) }],
+      messages: [{ role: 'user', content: CURRICULO_USER(curriculoText, vagaText, diagnosticoJson, contact_info as ContactInfo | undefined) }],
     }),
     callWithJson(CartaSchema, {
       system: CARTA_SYSTEM,
@@ -201,7 +224,8 @@ export async function POST(req: NextRequest) {
         subject: 'Seu pacote completo está pronto — Alinhei',
         html: `<p>Olá! Seu pacote completo foi gerado com sucesso.</p>
 <p><a href="${appUrl}/analise/${analysis_id}/completo">Acessar resultado completo →</a></p>
-<p><a href="${appUrl}/api/pdf/${generation.id}">Baixar PDF →</a></p>
+<p><a href="${appUrl}/api/pdf/${generation.id}/curriculo">Baixar Currículo ATS (PDF) →</a></p>
+<p><a href="${appUrl}/api/pdf/${generation.id}/diagnostico">Baixar Diagnóstico (PDF) →</a></p>
 <p style="color:#888;font-size:12px">— Alinhei</p>`,
       })
     }).catch((err: unknown) => console.error('[generate] email error:', err))
