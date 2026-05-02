@@ -7,9 +7,15 @@ export const metadata = {
   title: 'Analisar currículo — Alinhei',
 }
 
-export default async function AnalisePage() {
+export default async function AnalisePage({
+  searchParams,
+}: {
+  searchParams: { [key: string]: string | string[] | undefined }
+}) {
   const supabase = createClient()
   const { data: { user } } = await supabase.auth.getUser()
+
+  const initialVaga = typeof searchParams.vaga === 'string' ? searchParams.vaga : ''
 
   return (
     <div className="min-h-screen bg-background">
@@ -45,7 +51,7 @@ export default async function AnalisePage() {
         </div>
 
         <div className="bg-card rounded-2xl border border-border p-6 sm:p-8 animate-fade-up delay-100">
-          <UploadForm />
+          <UploadForm initialVaga={initialVaga} />
         </div>
       </div>
     </div>

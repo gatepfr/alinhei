@@ -1,6 +1,8 @@
 import { z } from 'zod'
 
 export const DiagnosticoSchema = z.object({
+  cargo: z.string(),
+  empresa: z.string(),
   nota_aderencia: z.number().int().min(0).max(100),
   resumo_nota: z.string(),
   pontos_fortes: z.array(z.object({

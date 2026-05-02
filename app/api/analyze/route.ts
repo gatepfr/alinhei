@@ -93,6 +93,8 @@ export async function POST(req: NextRequest) {
       curriculo_hash: curriculoHash,
       vaga_text: vaga,
       vaga_hash: vagaHash,
+      job_title: diagnostic.cargo,
+      company_name: diagnostic.empresa,
       diagnostic,
       tokens_input: inputTokens,
       tokens_output: outputTokens,

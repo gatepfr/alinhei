@@ -1,0 +1,24 @@
+{
+  "manifest_version": 3,
+  "name": "Alinhar Agora - Alinhei",
+  "version": "1.0",
+  "description": "Capture vagas do LinkedIn e Gupy para analisar no Alinhei.",
+  "permissions": ["activeTab", "scripting"],
+  "host_permissions": [
+    "https://www.linkedin.com/*",
+    "https://*.gupy.io/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "https://www.linkedin.com/jobs/*",
+        "https://*.gupy.io/*"
+      ],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "icons": {
+    "128": "icon.png"
+  }
+}
