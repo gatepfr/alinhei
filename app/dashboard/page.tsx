@@ -7,6 +7,7 @@ import { generateReferralCode } from '@/lib/referral'
 import { LogoutButton } from '@/components/logout-button'
 import { ReferralCopy } from './referral-copy'
 import { CRMBoard } from './crm-board'
+import { DashboardPurchaseButton } from './purchase-button'
 import { Gift, Coins, FileText, Plus, ArrowRight } from 'lucide-react'
 
 export const metadata = { title: 'Dashboard — Alinhei' }
@@ -39,7 +40,7 @@ export default async function DashboardPage() {
       .from('profiles')
       .select('referral_code')
       .eq('user_id', user.id)
-      .single(),
+      .maybeSingle(),
   ])
 
   let referralCode = profileRes.data?.referral_code
@@ -132,21 +133,6 @@ export default async function DashboardPage() {
               <Link
                 href="/analise"
                 className="inline-flex items-center gap-2 text-sm font-semibold bg-primary text-primary-foreground px-5 py-2.5 rounded-lg hover:bg-primary/90 transition-colors"
-              >
-                <Plus className="w-4 h-4" />
-                Fazer primeira análise
-              </Link>
-            </div>
-          ) : (
-            <CRMBoard analyses={analyses as any} />
-          )}
-        </div>
-
-      </div>
-    </div>
-  )
-}
-tems-center gap-2 text-sm font-semibold bg-primary text-primary-foreground px-5 py-2.5 rounded-lg hover:bg-primary/90 transition-colors"
               >
                 <Plus className="w-4 h-4" />
                 Fazer primeira análise
