@@ -16,7 +16,10 @@ interface Analysis {
   status: Status
   job_title: string | null
   company_name: string | null
-  diagnostic: any
+  diagnostic: {
+    nota_aderencia?: number
+    preview_publico?: { nota?: number; ponto_forte_destaque?: string }
+  }
 }
 
 interface CRMBoardProps {
@@ -47,7 +50,7 @@ export function CRMBoard({ analyses: initialAnalyses }: CRMBoardProps) {
       })
 
       if (!res.ok) throw new Error('Failed to update status')
-    } catch (error) {
+    } catch {
       setAnalyses(previousAnalyses)
       alert('Erro ao atualizar status. Tente novamente.')
     }

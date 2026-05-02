@@ -51,7 +51,10 @@ export function validateWebhookSignature(
   dataId: string,
 ): boolean {
   const secret = process.env.MERCADOPAGO_WEBHOOK_SECRET
-  if (!secret) return false
+  if (!secret) {
+    console.error('[MP Webhook] Secret não configurado')
+    return false
+  }
 
   const parts = xSignature.split(',').reduce<Record<string, string>>((acc, part) => {
     const [k, v] = part.split('=')
@@ -61,9 +64,25 @@ export function validateWebhookSignature(
 
   const ts = parts['ts']
   const v1 = parts['v1']
-  if (!ts || !v1) return false
+  if (!ts || !v1) {
+    console.error('[MP Webhook] Assinatura incompleta:', { xSignature })
+    return false
+  }
 
   const manifest = `id:${dataId};request-id:${xRequestId};ts:${ts};`
-  const expected = crypto.createHmac('sha256', secret).update(manifest).digest('hex')
-  return crypto.timingSafeEqual(Buffer.from(expected), Buffer.from(v1))
+  const hmac = crypto.createHmac('sha256', secret)
+  const expected = hmac.update(manifest).digest('hex')
+  
+  const isValid = expected === v1
+  if (!isValid) {
+    console.error('[MP Webhook] Assinatura inválida!', {
+      expected,
+      received: v1,
+      manifest,
+      dataId,
+      xRequestId
+    })
+  }
+
+  return isValid
 }
