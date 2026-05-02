@@ -39,19 +39,18 @@ export default async function CompletePage({ params }: Props) {
     .maybeSingle()
 
   const nav = (
-    <nav className="bg-white border-b border-gray-100 px-4 py-3">
+    <nav className="border-b border-border/60 bg-background/80 backdrop-blur-md px-4 py-3">
       <div className="max-w-3xl mx-auto flex items-center justify-between">
-        <Link href="/" className="font-bold text-lg tracking-tight">
+        <Link href="/" className="font-display font-bold text-lg tracking-tight">
           Alinhei
         </Link>
-        <Link href="/analise" className="text-sm text-muted-foreground hover:text-foreground">
+        <Link href="/analise" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
           Nova análise
         </Link>
       </div>
     </nav>
   )
 
-  // Sem geração ou ainda sem conteúdo → disparar geração no client
   if (!generation || (!generation.curriculo_otimizado && !generation.carta && !generation.perguntas)) {
     return (
       <div className="min-h-screen bg-background">

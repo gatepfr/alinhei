@@ -47,8 +47,14 @@ export function GenerateFlow({ analysisId }: GenerateFlowProps) {
   if (error) {
     return (
       <div className="max-w-lg mx-auto px-4 py-20 text-center">
-        <p className="text-red-600 font-medium mb-4">{error}</p>
-        <Button variant="outline" onClick={() => router.push(`/analise/${analysisId}`)}>
+        <p className="text-destructive font-medium mb-4 bg-destructive/10 border border-destructive/20 rounded-xl px-4 py-3">
+          {error}
+        </p>
+        <Button
+          variant="outline"
+          className="border-border bg-secondary hover:bg-secondary/80"
+          onClick={() => router.push(`/analise/${analysisId}`)}
+        >
           Voltar para análise
         </Button>
       </div>
@@ -56,10 +62,12 @@ export function GenerateFlow({ analysisId }: GenerateFlowProps) {
   }
 
   return (
-    <div className="max-w-lg mx-auto px-4 py-20 text-center">
-      <Loader2 className="w-10 h-10 animate-spin mx-auto mb-4 text-indigo-500" />
-      <h2 className="text-xl font-bold mb-2">Gerando seu pacote completo…</h2>
-      <p className="text-muted-foreground text-sm">
+    <div className="max-w-lg mx-auto px-4 py-24 text-center">
+      <div className="w-16 h-16 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center mx-auto mb-6">
+        <Loader2 className="w-7 h-7 animate-spin text-primary" />
+      </div>
+      <h2 className="font-display text-xl font-bold mb-3">Gerando seu pacote completo…</h2>
+      <p className="text-muted-foreground text-sm leading-relaxed">
         Estamos reescrevendo seu currículo, criando as cartas e preparando o simulado de entrevista.
         Isso leva cerca de 30 segundos.
       </p>
