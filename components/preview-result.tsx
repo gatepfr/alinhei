@@ -15,6 +15,7 @@ interface PreviewResultProps {
   userId: string | null
   balance: number
   hasGeneration?: boolean
+  showPaywallInitial?: boolean
 }
 
 function scoreColor(nota: number): string {
@@ -70,9 +71,16 @@ function ScoreRing({ score }: { score: number }) {
   )
 }
 
-export function PreviewResult({ diagnostic, analysisId, userId, balance, hasGeneration = false }: PreviewResultProps) {
+export function PreviewResult({
+  diagnostic,
+  analysisId,
+  userId,
+  balance,
+  hasGeneration = false,
+  showPaywallInitial = false,
+}: PreviewResultProps) {
   const { preview_publico, pontos_fortes, gaps_criticos, resumo_nota } = diagnostic
-  const [showPaywall, setShowPaywall] = useState(false)
+  const [showPaywall, setShowPaywall] = useState(showPaywallInitial)
 
   useEffect(() => {
     trackEvent('analysis_viewed', { nota: preview_publico.nota, logged_in: !!userId })

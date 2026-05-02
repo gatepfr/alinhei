@@ -88,7 +88,7 @@ export default async function DashboardPage() {
             <p className="font-display text-3xl font-bold">{balance}</p>
           </div>
           <Link
-            href={analyses[0] ? `/analise/${analyses[0].id}` : '/analise'}
+            href={analyses[0] ? `/analise/${analyses[0].id}?buy=true` : '/analise'}
             className="ml-auto flex items-center gap-2 text-sm font-semibold bg-primary text-primary-foreground px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors"
           >
             <Plus className="w-4 h-4" />
