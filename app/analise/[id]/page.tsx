@@ -38,19 +38,19 @@ export default async function AnaliseResultPage({ params, searchParams }: Props)
   const showPolling = searchParams.checkout === 'success' && !!user && balance === 0
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <nav className="bg-white border-b border-gray-100 px-4 py-3">
+    <div className="min-h-screen bg-background">
+      <nav className="border-b border-border/60 bg-background/80 backdrop-blur-md px-4 py-3">
         <div className="max-w-3xl mx-auto flex items-center justify-between">
-          <Link href="/" className="font-bold text-lg tracking-tight">
+          <Link href="/" className="font-display font-bold text-lg tracking-tight">
             Alinhei
           </Link>
           <div className="flex items-center gap-4">
-            <Link href="/analise" className="text-sm text-muted-foreground hover:text-foreground">
+            <Link href="/analise" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
               Nova análise
             </Link>
             {user && (
               <>
-                <Link href="/dashboard" className="text-sm text-muted-foreground hover:text-foreground">
+                <Link href="/dashboard" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                   Minhas análises
                 </Link>
                 <LogoutButton />
@@ -61,10 +61,11 @@ export default async function AnaliseResultPage({ params, searchParams }: Props)
       </nav>
 
       <div className="max-w-3xl mx-auto px-4 py-12">
-        <div className="mb-8">
-          <h1 className="text-2xl font-bold tracking-tight">Resultado da análise</h1>
-          <p className="text-muted-foreground mt-1">
-            Veja abaixo o diagnóstico gratuito. Desbloqueie o pacote completo para o currículo reescrito e mais.
+        <div className="mb-8 animate-fade-up">
+          <p className="text-xs font-semibold text-primary uppercase tracking-widest mb-2">Diagnóstico gratuito</p>
+          <h1 className="font-display text-2xl font-bold tracking-tight">Resultado da análise</h1>
+          <p className="text-muted-foreground mt-1 text-sm">
+            Veja o diagnóstico abaixo. Desbloqueie o pacote completo para o currículo reescrito e mais.
           </p>
         </div>
 
