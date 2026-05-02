@@ -34,7 +34,7 @@ interface Discount {
 }
 
 interface PaywallModalProps {
-  analysisId: string
+  analysisId?: string
   onClose: () => void
 }
 
