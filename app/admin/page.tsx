@@ -6,6 +6,7 @@ import { UserRow } from './user-row'
 import { CouponsSection } from './coupons-section'
 import { Users, BarChart2, Coins, FileText } from 'lucide-react'
 
+export const dynamic = 'force-dynamic'
 export const metadata = { title: 'Admin — Alinhei' }
 
 function adminClient() {
