@@ -10,7 +10,7 @@ import { getBalance } from '@/lib/credits'
 
 interface Props {
   params: { id: string }
-  searchParams: { checkout?: string }
+  searchParams: { checkout?: string; buy?: string }
 }
 
 export const metadata = {
@@ -19,6 +19,7 @@ export const metadata = {
 
 export default async function AnaliseResultPage({ params, searchParams }: Props) {
   const serviceClient = createServiceClient()
+  const showPaywall = searchParams.buy === 'true'
 
   const { data: analysis } = await serviceClient
     .from('analyses')
@@ -89,6 +90,7 @@ export default async function AnaliseResultPage({ params, searchParams }: Props)
           userId={user?.id ?? null}
           balance={balance}
           hasGeneration={hasGeneration}
+          showPaywallInitial={showPaywall}
         />
       </div>
     </div>

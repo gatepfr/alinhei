@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { cookies } from 'next/headers'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { getBalance } from '@/lib/credits'
+import { generateReferralCode } from '@/lib/referral'
 import { LogoutButton } from '@/components/logout-button'
 import { ReferralCopy } from './referral-copy'
 import { Gift, Coins, FileText, CheckCircle, Plus, ArrowRight } from 'lucide-react'
@@ -21,7 +22,7 @@ export default async function DashboardPage() {
     ? `user_id.eq.${user.id},session_id.eq.${sessionId}`
     : `user_id.eq.${user.id}`
 
-  const [balance, analysesRes, referralsRes] = await Promise.all([
+  const [balance, analysesRes, referralsRes, profileRes] = await Promise.all([
     getBalance(user.id),
     serviceClient
       .from('analyses')
@@ -33,7 +34,29 @@ export default async function DashboardPage() {
       .from('referrals')
       .select('id, credit_granted')
       .eq('referrer_id', user.id),
+    serviceClient
+      .from('profiles')
+      .select('referral_code')
+      .eq('user_id', user.id)
+      .single(),
   ])
+
+  let referralCode = profileRes.data?.referral_code
+
+  if (!referralCode) {
+    referralCode = generateReferralCode()
+    const { error } = await serviceClient
+      .from('profiles')
+      .insert({ user_id: user.id, referral_code: referralCode })
+    
+    // Se falhar por colisão (raro), tentamos mais uma vez
+    if (error) {
+      referralCode = generateReferralCode()
+      await serviceClient
+        .from('profiles')
+        .insert({ user_id: user.id, referral_code: referralCode })
+    }
+  }
 
   const analyses = analysesRes.data ?? []
   const referrals = referralsRes.data ?? []
@@ -64,15 +87,13 @@ export default async function DashboardPage() {
             <p className="text-xs text-muted-foreground uppercase tracking-wider mb-0.5">Créditos disponíveis</p>
             <p className="font-display text-3xl font-bold">{balance}</p>
           </div>
-          {balance === 0 && (
-            <Link
-              href={analyses[0] ? `/analise/${analyses[0].id}` : '/analise'}
-              className="ml-auto flex items-center gap-2 text-sm font-semibold bg-primary text-primary-foreground px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors"
-            >
-              <Plus className="w-4 h-4" />
-              Comprar créditos
-            </Link>
-          )}
+          <Link
+            href={analyses[0] ? `/analise/${analyses[0].id}?buy=true` : '/analise'}
+            className="ml-auto flex items-center gap-2 text-sm font-semibold bg-primary text-primary-foreground px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors"
+          >
+            <Plus className="w-4 h-4" />
+            {balance === 0 ? 'Comprar créditos' : 'Comprar mais'}
+          </Link>
         </div>
 
         {/* Indicação */}
@@ -86,7 +107,7 @@ export default async function DashboardPage() {
           <p className="text-sm text-muted-foreground mb-4 ml-9">
             Compartilhe seu link. Quando um amigo comprar pela primeira vez, você ganha 1 crédito grátis.
           </p>
-          <ReferralCopy userId={user.id} />
+          <ReferralCopy referralCode={referralCode} />
           {referrals.length > 0 && (
             <p className="text-xs text-muted-foreground mt-3 ml-9">
               {referrals.length} {referrals.length === 1 ? 'pessoa indicada' : 'pessoas indicadas'}
