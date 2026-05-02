@@ -6,7 +6,8 @@ import { getBalance } from '@/lib/credits'
 import { generateReferralCode } from '@/lib/referral'
 import { LogoutButton } from '@/components/logout-button'
 import { ReferralCopy } from './referral-copy'
-import { Gift, Coins, FileText, CheckCircle, Plus, ArrowRight } from 'lucide-react'
+import { CRMBoard } from './crm-board'
+import { Gift, Coins, FileText, Plus, ArrowRight } from 'lucide-react'
 
 export const metadata = { title: 'Dashboard — Alinhei' }
 
@@ -26,7 +27,7 @@ export default async function DashboardPage() {
     getBalance(user.id),
     serviceClient
       .from('analyses')
-      .select('id, created_at, diagnostic')
+      .select('id, created_at, diagnostic, status, job_title, company_name')
       .or(orFilter)
       .order('created_at', { ascending: false })
       .limit(20),
@@ -143,48 +144,7 @@ export default async function DashboardPage() {
               </Link>
             </div>
           ) : (
-            <div className="space-y-2">
-              {analyses.map((analysis) => {
-                const diagnostic = analysis.diagnostic as {
-                  nota_aderencia?: number
-                  preview_publico?: { nota?: number; ponto_forte_destaque?: string }
-                } | null
-
-                const nota = diagnostic?.nota_aderencia ?? diagnostic?.preview_publico?.nota
-                const cargo = diagnostic?.preview_publico?.ponto_forte_destaque ?? 'Análise de currículo'
-                const date = new Date(analysis.created_at).toLocaleDateString('pt-BR', {
-                  day: '2-digit', month: '2-digit', year: 'numeric'
-                })
-
-                const notaColor = nota === undefined ? '' :
-                  nota >= 70 ? 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20' :
-                  nota >= 50 ? 'text-amber-400 bg-amber-500/10 border-amber-500/20' :
-                  'text-red-400 bg-red-500/10 border-red-500/20'
-
-                return (
-                  <Link
-                    key={analysis.id}
-                    href={`/analise/${analysis.id}`}
-                    className="flex items-center justify-between bg-card rounded-xl border border-border px-5 py-4 hover:border-primary/30 hover:bg-card/80 transition-all group"
-                  >
-                    <div className="flex items-center gap-3">
-                      <CheckCircle className="w-4 h-4 text-primary/50 shrink-0" />
-                      <div>
-                        <p className="text-sm font-medium group-hover:text-primary transition-colors line-clamp-1">
-                          {cargo}
-                        </p>
-                        <p className="text-xs text-muted-foreground">{date}</p>
-                      </div>
-                    </div>
-                    {nota !== undefined && (
-                      <span className={`text-xs font-bold px-2.5 py-1 rounded-full border ${notaColor}`}>
-                        {nota}%
-                      </span>
-                    )}
-                  </Link>
-                )
-              })}
-            </div>
+            <CRMBoard analyses={analyses as any} />
           )}
         </div>
 

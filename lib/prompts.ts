@@ -23,6 +23,8 @@ ${vaga}
 Avalie a aderência do currículo à vaga e retorne JSON com este formato exato:
 
 {
+  "cargo": "<nome do cargo/título da vaga extraído da descrição>",
+  "empresa": "<nome da empresa extraído da descrição, ou 'Não informada' se não encontrar>",
   "nota_aderencia": <inteiro 0-100>,
   "resumo_nota": "<frase de 1 linha explicando a nota>",
   "pontos_fortes": [

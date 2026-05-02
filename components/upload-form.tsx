@@ -8,12 +8,12 @@ import { Label } from '@/components/ui/label'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Loader2, Upload, FileCheck, ArrowRight } from 'lucide-react'
 
-export function UploadForm() {
+export function UploadForm({ initialVaga = '' }: { initialVaga?: string }) {
   const router = useRouter()
   const fileRef = useRef<HTMLInputElement>(null)
 
   const [curriculo, setCurriculo] = useState('')
-  const [vaga, setVaga] = useState('')
+  const [vaga, setVaga] = useState(initialVaga)
   const [fileName, setFileName] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')

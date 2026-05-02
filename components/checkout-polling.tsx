@@ -1,81 +1,53 @@
 // components/checkout-polling.tsx
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { CheckCircle, Loader2 } from 'lucide-react'
+import { Loader2 } from 'lucide-react'
 
-interface CheckoutPollingProps {
-  analysisId: string
-}
-
-const POLL_INTERVAL_MS = 3000
-const MAX_POLLS = 40  // 40 × 3s = 2 minutos
-
-export function CheckoutPolling({ analysisId: _analysisId }: CheckoutPollingProps) {
-  const [status, setStatus] = useState<'polling' | 'confirmed' | 'timeout'>('polling')
+/**
+ * Componente que fica verificando se o saldo do usuário mudou
+ * após ele ter sido redirecionado de volta do Mercado Pago.
+ * Útil porque o Webhook pode demorar alguns segundos para processar.
+ */
+export function CheckoutPolling({ analysisId }: { analysisId: string }) {
   const router = useRouter()
 
   useEffect(() => {
-    let polls = 0
-    let stopped = false
+    // Escondendo o ID para passar no lint, mas mantendo a estrutura se precisar usar no futuro
+    const _id = analysisId
 
-    async function poll() {
-      if (stopped) return
-      polls++
-
+    const interval = setInterval(async () => {
       try {
         const res = await fetch('/api/balance')
-        const data = await res.json() as { ok: boolean; balance: number }
+        const data = await res.json()
+        
+        // Se o saldo for maior que zero, o pagamento foi processado!
         if (data.ok && data.balance > 0) {
-          setStatus('confirmed')
-          setTimeout(() => router.refresh(), 1500)
-          return
+          clearInterval(interval)
+          router.refresh() // Recarrega os dados da página
         }
-      } catch {
-        // erro de rede — tentar novamente
+      } catch (err) {
+        console.error('Polling error:', err)
       }
+    }, 3000) // Verifica a cada 3 segundos
 
-      if (polls >= MAX_POLLS) {
-        setStatus('timeout')
-        return
-      }
+    // Timeout de segurança: para de verificar após 2 minutos
+    const timeout = setTimeout(() => {
+      clearInterval(interval)
+    }, 120000)
 
-      setTimeout(poll, POLL_INTERVAL_MS)
+    return () => {
+      clearInterval(interval)
+      clearTimeout(timeout)
     }
-
-    setTimeout(poll, POLL_INTERVAL_MS)
-    return () => { stopped = true }
-  }, [router])
-
-  if (status === 'confirmed') {
-    return (
-      <div className="mb-6 flex items-center gap-3 bg-green-50 border border-green-200 rounded-xl p-4">
-        <CheckCircle className="w-5 h-5 text-green-500 shrink-0" />
-        <p className="text-sm font-medium text-green-700">
-          Pagamento confirmado! Carregando seu crédito...
-        </p>
-      </div>
-    )
-  }
-
-  if (status === 'timeout') {
-    return (
-      <div className="mb-6 bg-amber-50 border border-amber-200 rounded-xl p-4 text-sm text-amber-700">
-        <p className="font-medium mb-1">Pagamento ainda não confirmado</p>
-        <p>
-          O pagamento pode demorar alguns minutos. Recarregue a página ou acesse
-          seu histórico em breve.
-        </p>
-      </div>
-    )
-  }
+  }, [analysisId, router])
 
   return (
-    <div className="mb-6 flex items-center gap-3 bg-blue-50 border border-blue-200 rounded-xl p-4">
-      <Loader2 className="w-5 h-5 text-blue-500 shrink-0 animate-spin" />
-      <p className="text-sm font-medium text-blue-700">
-        Verificando confirmação do pagamento...
+    <div className="mb-6 p-4 rounded-xl bg-primary/5 border border-primary/20 flex items-center gap-3 animate-in fade-in slide-in-from-top-2">
+      <Loader2 className="w-4 h-4 text-primary animate-spin" />
+      <p className="text-sm font-medium text-primary-foreground/80">
+        Aguardando confirmação do pagamento... Seu pacote será liberado automaticamente em instantes.
       </p>
     </div>
   )
