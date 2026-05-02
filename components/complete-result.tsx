@@ -62,7 +62,7 @@ function ScoreRing({ score }: { score: number }) {
   return (
     <div className="relative inline-flex items-center justify-center">
       <svg width="136" height="136" style={{ transform: 'rotate(-90deg)' }}>
-        <circle cx="68" cy="68" r={radius} fill="none" stroke="oklch(0.22 0.006 265)" strokeWidth="10" />
+        <circle cx="68" cy="68" r={radius} fill="none" stroke="oklch(0.929 0.013 255.508)" strokeWidth="10" />
         <circle
           cx="68" cy="68" r={radius}
           fill="none"
