@@ -68,8 +68,12 @@ export async function POST(request: NextRequest) {
       userId: user.id,
       userEmail: user.email!,
       notificationUrl: `${appUrl}/api/webhook/mercadopago`,
-      successUrl: `${appUrl}/analise/${analysisId}?checkout=success`,
-      failureUrl: `${appUrl}/analise/${analysisId}?checkout=failure`,
+      successUrl: analysisId 
+        ? `${appUrl}/analise/${analysisId}?checkout=success`
+        : `${appUrl}/dashboard?checkout=success`,
+      failureUrl: analysisId
+        ? `${appUrl}/analise/${analysisId}?checkout=failure`
+        : `${appUrl}/dashboard?checkout=failure`,
       discountedPrice,
       couponCode: validatedCouponCode,
     })

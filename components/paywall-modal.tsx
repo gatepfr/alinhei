@@ -94,7 +94,7 @@ export function PaywallModal({ analysisId, onClose }: PaywallModalProps) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           sku,
-          analysisId,
+          ...(analysisId ? { analysisId } : {}),
           ...(appliedCoupon ? { couponCode: appliedCoupon.code } : {}),
         }),
       })
