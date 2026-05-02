@@ -64,15 +64,13 @@ export default async function DashboardPage() {
             <p className="text-xs text-muted-foreground uppercase tracking-wider mb-0.5">Créditos disponíveis</p>
             <p className="font-display text-3xl font-bold">{balance}</p>
           </div>
-          {balance === 0 && (
-            <Link
-              href={analyses[0] ? `/analise/${analyses[0].id}` : '/analise'}
-              className="ml-auto flex items-center gap-2 text-sm font-semibold bg-primary text-primary-foreground px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors"
-            >
-              <Plus className="w-4 h-4" />
-              Comprar créditos
-            </Link>
-          )}
+          <Link
+            href={analyses[0] ? `/analise/${analyses[0].id}` : '/analise'}
+            className="ml-auto flex items-center gap-2 text-sm font-semibold bg-primary text-primary-foreground px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors"
+          >
+            <Plus className="w-4 h-4" />
+            {balance === 0 ? 'Comprar créditos' : 'Comprar mais'}
+          </Link>
         </div>
 
         {/* Indicação */}
