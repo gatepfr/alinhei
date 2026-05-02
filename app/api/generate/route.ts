@@ -86,7 +86,7 @@ export async function POST(req: NextRequest) {
         : callWithJson(CartaSchema, { system: CARTA_SYSTEM, user: CARTA_USER(curriculoText, vagaText, 'a empresa'), temperature: 0.7, maxTokens: 1000 }),
       existing.perguntas
         ? Promise.resolve(null)
-        : callWithJson(PerguntasSchema, { system: PERGUNTAS_SYSTEM, user: PERGUNTAS_USER(curriculoText, vagaText), temperature: 0.5, maxTokens: 2000 }),
+        : callWithJson(PerguntasSchema, { system: PERGUNTAS_SYSTEM, user: PERGUNTAS_USER(curriculoText, vagaText), temperature: 0.5, maxTokens: 3000 }),
     ])
 
     const updates: Record<string, unknown> = {}

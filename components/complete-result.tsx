@@ -154,7 +154,7 @@ export function CompleteResult({
                 <TrendingUp className="w-3.5 h-3.5 text-emerald-400" />
               </div>
               <h3 className="font-display font-semibold text-sm">Pontos fortes</h3>
-              <span className="text-xs bg-secondary text-muted-foreground border border-border rounded-full px-2 py-0.5">3 no total</span>
+              <span className="text-xs bg-secondary text-muted-foreground border border-border rounded-full px-2 py-0.5">{diagnostico.pontos_fortes.length} no total</span>
             </div>
             <div className="space-y-3">
               {diagnostico.pontos_fortes.map((p, i) => (
@@ -174,7 +174,7 @@ export function CompleteResult({
                 <AlertTriangle className="w-3.5 h-3.5 text-amber-400" />
               </div>
               <h3 className="font-display font-semibold text-sm">Gaps críticos</h3>
-              <span className="text-xs bg-secondary text-muted-foreground border border-border rounded-full px-2 py-0.5">3 no total</span>
+              <span className="text-xs bg-secondary text-muted-foreground border border-border rounded-full px-2 py-0.5">{diagnostico.gaps_criticos.length} no total</span>
             </div>
             <div className="space-y-3">
               {diagnostico.gaps_criticos.map((g, i) => (
