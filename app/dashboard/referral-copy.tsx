@@ -4,9 +4,9 @@ import { useState } from 'react'
 import { Copy, Check } from 'lucide-react'
 import { trackEvent } from '@/lib/analytics'
 
-export function ReferralCopy({ userId }: { userId: string }) {
+export function ReferralCopy({ referralCode }: { referralCode: string }) {
   const [copied, setCopied] = useState(false)
-  const referralUrl = `${typeof window !== 'undefined' ? window.location.origin : ''}/?ref=${userId}`
+  const referralUrl = `${typeof window !== 'undefined' ? window.location.origin : ''}/r/${referralCode}`
 
   async function handleCopy() {
     try {

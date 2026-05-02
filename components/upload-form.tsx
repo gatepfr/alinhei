@@ -144,7 +144,19 @@ export function UploadForm() {
           value={vaga}
           onChange={(e) => setVaga(e.target.value)}
         />
-        <p className="text-xs text-muted-foreground">Quanto mais detalhada a vaga, mais precisa a análise</p>
+        <div className="flex justify-between items-start gap-4">
+          <div className="space-y-1">
+            <p className="text-xs text-muted-foreground">Quanto mais detalhada a vaga, mais precisa a análise</p>
+            {vaga.length > 5000 && (
+              <p className="text-[10px] text-amber-500 font-medium leading-tight">
+                Texto será cortado em 5.000 caracteres. A análise usará apenas os primeiros 5.000.
+              </p>
+            )}
+          </div>
+          <span className={`text-[10px] whitespace-nowrap mt-0.5 ${vaga.length > 4500 ? 'text-amber-500 font-medium' : 'text-muted-foreground/60'}`}>
+            {vaga.length.toLocaleString('pt-BR')} / 5.000
+          </span>
+        </div>
       </div>
 
       {error && (

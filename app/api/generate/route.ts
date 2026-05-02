@@ -179,9 +179,9 @@ export async function POST(req: NextRequest) {
       system: PERGUNTAS_SYSTEM,
       user: PERGUNTAS_USER(curriculoText, vagaText),
       temperature: 0.5,
-      maxTokens: 2000,
+      maxTokens: 3000,
     }),
-  ])
+    ])
 
   const curriculo_otimizado =
     curriculoResult.status === 'fulfilled' && curriculoResult.value.content[0]?.type === 'text'

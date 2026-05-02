@@ -65,7 +65,7 @@ export async function POST(req: NextRequest) {
       system: DIAGNOSTICO_SYSTEM,
       user: DIAGNOSTICO_USER(curriculo, vaga),
       temperature: 0.3,
-      maxTokens: 1500,
+      maxTokens: 2500,
     })
     diagnostic = result.data
     inputTokens = result.inputTokens
