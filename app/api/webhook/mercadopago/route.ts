@@ -12,34 +12,35 @@ export async function POST(request: NextRequest) {
     const xRequestId = request.headers.get('x-request-id') ?? ''
     const dataIdFromQuery = request.nextUrl.searchParams.get('data.id') ?? ''
 
-    console.log('[MP Webhook] Início:', { 
-      dataIdFromQuery, 
-      xRequestId, 
-      signaturePresent: !!xSignature,
-      body: rawBody.substring(0, 100) + '...'
+    console.log('[MP Webhook] Início do processamento:', { 
+      dataId: dataIdFromQuery, 
+      requestId: xRequestId 
     })
 
+    // 1. Validar Assinatura
     if (!validateWebhookSignature(rawBody, xSignature, xRequestId, dataIdFromQuery)) {
-      console.warn('[MP Webhook] Assinatura inválida')
+      console.warn('[MP Webhook] Assinatura inválida detectada')
       return NextResponse.json({ error: 'invalid signature' }, { status: 401 })
     }
 
-    let payload: { type?: string; data?: { id?: string | number } }
+    // 2. Parse do Payload
+    let payload: any
     try {
       payload = JSON.parse(rawBody)
     } catch {
-      console.error('[MP Webhook] JSON inválido:', rawBody)
       return NextResponse.json({ error: 'invalid json' }, { status: 400 })
     }
 
+    // 3. Verificar se é um evento de pagamento
     if (payload.type !== 'payment' || !payload.data?.id) {
-      console.log('[MP Webhook] Ignorando tipo não-pagamento:', payload.type)
+      console.log('[MP Webhook] Ignorando evento tipo:', payload.type)
       return NextResponse.json({ ok: true })
     }
 
     const paymentId = String(payload.data.id)
-    console.log('[MP Webhook] Buscando pagamento no MP:', paymentId)
+    console.log('[MP Webhook] Buscando detalhes do pagamento:', paymentId)
 
+    // 4. Buscar detalhes no Mercado Pago
     const mpClient = getMpClient()
     let payment: any
     try {
@@ -49,45 +50,45 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'failed to fetch payment' }, { status: 500 })
     }
 
-    console.log('[MP Webhook] Status MP:', payment.status)
+    console.log('[MP Webhook] Status atual:', payment.status)
 
+    // 5. Só processa se estiver aprovado
     if (payment.status !== 'approved') {
       return NextResponse.json({ ok: true })
     }
 
-    const userId = payment.metadata?.user_id as string | undefined
-    const sku = payment.metadata?.sku as ProductSku | undefined
+    // 6. Extrair metadados (garantir que existem)
+    const userId = payment.metadata?.user_id
+    const sku = payment.metadata?.sku as ProductSku
 
     if (!userId || !sku || !PRODUCTS[sku]) {
-      console.error('[MP Webhook] Metadados ausentes:', payment.metadata)
+      console.error('[MP Webhook] Metadados cruciais ausentes:', payment.metadata)
       return NextResponse.json({ error: 'missing metadata' }, { status: 400 })
     }
 
     const supabase = createServiceClient()
 
-    // Idempotência
+    // 7. Checar Idempotência (se já processamos esse pagamento)
     const { data: existing, error: existingError } = await supabase
       .from('payments')
       .select('id')
       .eq('mp_payment_id', paymentId)
       .maybeSingle()
 
-    if (existingError) {
-      console.error('[MP Webhook] Erro ao verificar idempotência:', existingError)
-      throw existingError
-    }
-
+    if (existingError) throw existingError
     if (existing) {
-      console.log('[MP Webhook] Pagamento já processado:', paymentId)
+      console.log('[MP Webhook] Pagamento já processado anteriormente:', paymentId)
       return NextResponse.json({ ok: true })
     }
 
+    // 8. Preparar dados do produto
     const product = PRODUCTS[sku]
     const expiresAt = new Date()
     expiresAt.setDate(expiresAt.getDate() + product.expirationDays)
 
-    console.log('[MP Webhook] Gravando pagamento e concedendo créditos:', { userId, sku, credits: product.credits })
+    console.log('[MP Webhook] Registrando pagamento e concedendo', product.credits, 'créditos ao usuário', userId)
 
+    // 9. Registrar pagamento e conceder créditos (Fluxo principal)
     const { data: paymentRecord, error: paymentError } = await supabase
       .from('payments')
       .insert({
@@ -108,20 +109,25 @@ export async function POST(request: NextRequest) {
 
     if (paymentError || !paymentRecord) {
       if (paymentError?.code === '23505') return NextResponse.json({ ok: true })
-      console.error('[MP Webhook] Erro ao inserir pagamento:', paymentError)
+      console.error('[MP Webhook] Erro ao salvar pagamento:', paymentError)
       return NextResponse.json({ error: 'failed to save payment' }, { status: 500 })
     }
 
+    // Conceder os créditos de fato
     await grantCredits(userId, product.credits, `purchase:${sku}`, paymentRecord.id, expiresAt)
 
-    // Opcionais (Cupons, Referrals)
+    // 10. Tarefas Secundárias (não travam o processo principal)
     try {
+      // Atualizar cupom
       const couponCode = (payment.metadata as any)?.coupon_code
       if (couponCode) {
         const { data: coupon } = await supabase.from('coupons').select('id, uses_count').ilike('code', couponCode).maybeSingle()
-        if (coupon) await supabase.from('coupons').update({ uses_count: coupon.uses_count + 1 }).eq('id', coupon.id)
+        if (coupon) {
+          await supabase.from('coupons').update({ uses_count: coupon.uses_count + 1 }).eq('id', coupon.id)
+        }
       }
 
+      // Referral (Indicação)
       const { count: prevPayments } = await supabase.from('payments').select('id', { count: 'exact', head: true }).eq('user_id', userId).eq('status', 'approved').neq('id', paymentRecord.id)
       if ((prevPayments ?? 0) === 0) {
         const { data: referral } = await supabase.from('referrals').select('id, referrer_id').eq('referred_id', userId).eq('credit_granted', false).maybeSingle()
@@ -131,16 +137,15 @@ export async function POST(request: NextRequest) {
           await supabase.from('referrals').update({ credit_granted: true }).eq('id', referral.id)
         }
       }
-    } catch (optErr) {
-      console.error('[MP Webhook] Erro em tarefas opcionais:', optErr)
-      // Não falha a requisição se o crédito principal já foi dado
+    } catch (secErr) {
+      console.error('[MP Webhook] Erro em tarefas secundárias:', secErr)
     }
 
-    console.log('[MP Webhook] Sucesso total:', paymentId)
+    console.log('[MP Webhook] Processamento concluído com sucesso para o pagamento:', paymentId)
     return NextResponse.json({ ok: true })
 
   } catch (err: any) {
-    console.error('[MP Webhook] CRASH FATAL:', err)
+    console.error('[MP Webhook] ERRO FATAL NO WORKER:', err)
     return NextResponse.json(
       { error: 'internal server error', message: err?.message || 'Unknown error' },
       { status: 500 }
