@@ -7,6 +7,7 @@ import { PreviewResult } from '@/components/preview-result'
 import { CheckoutPolling } from '@/components/checkout-polling'
 import { DiagnosticoSchema } from '@/lib/schemas'
 import { getBalance } from '@/lib/credits'
+import { getDynamicProducts } from '@/lib/mercadopago'
 
 interface Props {
   params: { id: string }
@@ -26,19 +27,25 @@ export default async function AnaliseResultPage({ params, searchParams }: Props)
     notFound()
   }
 
-  const { data: analysis } = await serviceClient
-    .from('analyses')
-    .select('id, diagnostic')
-    .eq('id', id)
-    .maybeSingle()
+  const [analysisRes, products] = await Promise.all([
+    serviceClient
+      .from('analyses')
+      .select('id, diagnostic')
+      .eq('id', id)
+      .maybeSingle(),
+    getDynamicProducts(),
+  ])
 
+  const analysis = analysisRes.data
   if (!analysis) notFound()
 
+  // Validação resiliente para evitar 404 em dados legados
   const parsed = DiagnosticoSchema.safeParse(analysis.diagnostic)
   if (!parsed.success) {
     console.error(`[analise/${id}] Invalid diagnostic data:`, parsed.error.format())
-    notFound()
   }
+
+  const diagnosticData = parsed.success ? parsed.data : (analysis.diagnostic as any)
 
   const supabase = createClient()
   const { data: { user } } = await supabase.auth.getUser()
@@ -93,12 +100,13 @@ export default async function AnaliseResultPage({ params, searchParams }: Props)
         {showPolling && <CheckoutPolling analysisId={params.id} />}
 
         <PreviewResult
-          diagnostic={parsed.data}
+          diagnostic={diagnosticData}
           analysisId={analysis.id}
           userId={user?.id ?? null}
           balance={balance}
           hasGeneration={hasGeneration}
           showPaywallInitial={showPaywall}
+          products={products}
         />
       </div>
     </div>

@@ -4,7 +4,9 @@ import { createServiceClient } from '@/lib/supabase/server'
 import { LogoutButton } from '@/components/logout-button'
 import { UserRow } from './user-row'
 import { CouponsSection } from './coupons-section'
-import { Users, BarChart2, Coins, FileText } from 'lucide-react'
+import { PriceEditor } from './price-editor'
+import { DEFAULT_PRODUCTS } from '@/lib/mercadopago'
+import { Users, BarChart2, Coins, FileText, Settings } from 'lucide-react'
 
 export const dynamic = 'force-dynamic'
 export const metadata = { title: 'Admin — Alinhei' }
@@ -26,13 +28,17 @@ export default async function AdminPage() {
     { data: payments },
     { data: creditRows },
     { data: coupons },
+    { data: settingsRes },
   ] = await Promise.all([
     supabase.auth.admin.listUsers({ perPage: 200 }),
     service.from('analyses').select('user_id').not('user_id', 'is', null),
     service.from('payments').select('user_id, amount_brl_cents, status, credits_granted'),
     service.from('credits').select('user_id, amount, expires_at'),
     service.from('coupons').select('*').order('created_at', { ascending: false }),
+    service.from('settings').select('value').eq('id', 'prices').maybeSingle(),
   ])
+
+  const currentPrices = (settingsRes?.value as any) || DEFAULT_PRODUCTS
 
   // Compute per-user balance from credits rows
   const now = new Date()
@@ -89,36 +95,48 @@ export default async function AdminPage() {
         </div>
       </nav>
 
-      <div className="max-w-4xl mx-auto px-4 py-10 space-y-8">
+      <div className="max-w-4xl mx-auto px-4 py-10 space-y-12">
 
         {/* Stats */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           {stats.map(s => (
-            <div key={s.label} className="bg-card rounded-xl border border-border p-4 flex items-center gap-3">
+            <div key={s.label} className="bg-card rounded-xl border border-border p-4 flex items-center gap-3 shadow-sm">
               <div className="w-9 h-9 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center shrink-0">
                 <s.icon className="w-4 h-4 text-primary" />
               </div>
               <div>
-                <p className="text-xs text-muted-foreground">{s.label}</p>
+                <p className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">{s.label}</p>
                 <p className="font-bold text-lg leading-tight">{s.value}</p>
               </div>
             </div>
           ))}
         </div>
 
+        {/* Preços */}
+        <section>
+          <div className="flex items-center gap-2 mb-4">
+            <Settings className="w-5 h-5 text-muted-foreground" />
+            <h2 className="font-display font-bold text-xl">Configurações de Venda</h2>
+          </div>
+          <PriceEditor initialPrices={currentPrices} />
+        </section>
+
         {/* Usuários */}
-        <div>
-          <h2 className="font-semibold mb-4">Usuários</h2>
+        <section>
+          <div className="flex items-center gap-2 mb-4">
+            <Users className="w-5 h-5 text-muted-foreground" />
+            <h2 className="font-display font-bold text-xl">Usuários</h2>
+          </div>
           {userRows.length === 0 ? (
             <p className="text-sm text-muted-foreground">Nenhum usuário ainda.</p>
           ) : (
-            <div className="bg-card rounded-xl border border-border overflow-hidden">
+            <div className="bg-card rounded-xl border border-border overflow-hidden shadow-sm">
               {userRows.map(u => (
                 <UserRow key={u.id} user={u} />
               ))}
             </div>
           )}
-        </div>
+        </section>
 
         {/* Cupons */}
         <CouponsSection coupons={(coupons ?? []) as Parameters<typeof CouponsSection>[0]['coupons']} />

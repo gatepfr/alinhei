@@ -4,6 +4,7 @@ import { cookies } from 'next/headers'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { getBalance } from '@/lib/credits'
 import { generateReferralCode } from '@/lib/referral'
+import { getDynamicProducts } from '@/lib/mercadopago'
 import { LogoutButton } from '@/components/logout-button'
 import { ReferralCopy } from './referral-copy'
 import { CRMBoard } from './crm-board'
@@ -24,7 +25,7 @@ export default async function DashboardPage() {
     ? `user_id.eq.${user.id},session_id.eq.${sessionId}`
     : `user_id.eq.${user.id}`
 
-  const [balance, analysesRes, referralsRes, profileRes] = await Promise.all([
+  const [balance, analysesRes, referralsRes, profileRes, products] = await Promise.all([
     getBalance(user.id),
     serviceClient
       .from('analyses')
@@ -41,6 +42,7 @@ export default async function DashboardPage() {
       .select('referral_code')
       .eq('user_id', user.id)
       .maybeSingle(),
+    getDynamicProducts(),
   ])
 
   let referralCode = profileRes.data?.referral_code
@@ -89,7 +91,7 @@ export default async function DashboardPage() {
             <p className="text-xs text-muted-foreground uppercase tracking-wider mb-0.5">Créditos disponíveis</p>
             <p className="font-display text-3xl font-bold">{balance}</p>
           </div>
-          <DashboardPurchaseButton balance={balance} />
+          <DashboardPurchaseButton balance={balance} products={products} />
         </div>
 
         {/* Indicação */}

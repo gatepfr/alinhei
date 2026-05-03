@@ -66,10 +66,18 @@ export function CRMBoard({ analyses: initialAnalyses }: CRMBoardProps) {
   return (
     <Tabs defaultValue="analisado" className="w-full">
       <TabsList className="grid grid-cols-4 w-full mb-6">
-        <TabsTrigger value="analisado" className="text-xs sm:text-sm">Analisado</TabsTrigger>
-        <TabsTrigger value="candidatado" className="text-xs sm:text-sm">Candidatado</TabsTrigger>
-        <TabsTrigger value="entrevista" className="text-xs sm:text-sm">Entrevista</TabsTrigger>
-        <TabsTrigger value="finalizado" className="text-xs sm:text-sm">Finalizado</TabsTrigger>
+        <TabsTrigger value="analisado" className="text-xs sm:text-sm gap-1.5">
+          Analisado <span className="opacity-50 text-[10px] sm:text-xs">({grouped.analisado.length})</span>
+        </TabsTrigger>
+        <TabsTrigger value="candidatado" className="text-xs sm:text-sm gap-1.5">
+          Candidatado <span className="opacity-50 text-[10px] sm:text-xs">({grouped.candidatado.length})</span>
+        </TabsTrigger>
+        <TabsTrigger value="entrevista" className="text-xs sm:text-sm gap-1.5">
+          Entrevista <span className="opacity-50 text-[10px] sm:text-xs">({grouped.entrevista.length})</span>
+        </TabsTrigger>
+        <TabsTrigger value="finalizado" className="text-xs sm:text-sm gap-1.5">
+          Finalizado <span className="opacity-50 text-[10px] sm:text-xs">({grouped.finalizado.length})</span>
+        </TabsTrigger>
       </TabsList>
 
       {Object.entries(grouped).map(([key, items]) => (
@@ -139,48 +147,53 @@ function AnalysisCard({ analysis, onStatusChange }: { analysis: Analysis, onStat
           </Link>
         </div>
 
-        <div className="bg-muted/30 px-5 py-3 border-t border-border/40 flex items-center justify-between gap-2">
-          <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Mover para:</span>
-          <div className="flex items-center gap-1.5">
+        <div className="bg-muted/30 px-5 py-2.5 border-t border-border/40 flex items-center justify-end gap-3">
+          <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 mr-auto">Mover:</span>
+          <div className="flex items-center gap-1">
             {analysis.status !== 'analisado' && (
               <button 
                 onClick={() => onStatusChange('analisado')}
-                className="text-[10px] font-bold px-2 py-1 rounded bg-background border border-border hover:border-blue-500/50 hover:text-blue-400 transition-colors"
+                title="Analisado"
+                className="text-[10px] font-bold px-2 py-1 rounded bg-background border border-border hover:border-blue-500/50 hover:text-blue-400 transition-colors shadow-sm"
               >
-                Analisado
+                A
               </button>
             )}
             {analysis.status !== 'candidatado' && (
               <button 
                 onClick={() => onStatusChange('candidatado')}
-                className="text-[10px] font-bold px-2 py-1 rounded bg-background border border-border hover:border-purple-500/50 hover:text-purple-400 transition-colors"
+                title="Candidatado"
+                className="text-[10px] font-bold px-2 py-1 rounded bg-background border border-border hover:border-purple-500/50 hover:text-purple-400 transition-colors shadow-sm"
               >
-                Candidatado
+                C
               </button>
             )}
             {analysis.status !== 'entrevista' && (
               <button 
                 onClick={() => onStatusChange('entrevista')}
-                className="text-[10px] font-bold px-2 py-1 rounded bg-background border border-border hover:border-amber-500/50 hover:text-amber-400 transition-colors"
+                title="Entrevista"
+                className="text-[10px] font-bold px-2 py-1 rounded bg-background border border-border hover:border-amber-500/50 hover:text-amber-400 transition-colors shadow-sm"
               >
-                Entrevista
+                E
               </button>
             )}
-            {analysis.status !== 'feedback' && analysis.status !== 'reprovado' && (
-              <>
-                <button 
-                  onClick={() => onStatusChange('feedback')}
-                  className="text-[10px] font-bold px-2 py-1 rounded bg-background border border-border hover:border-emerald-500/50 hover:text-emerald-400 transition-colors"
-                >
-                  Feedback
-                </button>
-                <button 
-                  onClick={() => onStatusChange('reprovado')}
-                  className="text-[10px] font-bold px-2 py-1 rounded bg-background border border-border hover:border-red-500/50 hover:text-red-400 transition-colors"
-                >
-                  Reprovado
-                </button>
-              </>
+            {analysis.status !== 'feedback' && (
+              <button 
+                onClick={() => onStatusChange('feedback')}
+                title="Feedback"
+                className="text-[10px] font-bold px-2 py-1 rounded bg-background border border-border hover:border-emerald-500/50 hover:text-emerald-400 transition-colors shadow-sm"
+              >
+                F
+              </button>
+            )}
+            {analysis.status !== 'reprovado' && (
+              <button 
+                onClick={() => onStatusChange('reprovado')}
+                title="Reprovado"
+                className="text-[10px] font-bold px-2 py-1 rounded bg-background border border-border hover:border-red-500/50 hover:text-red-400 transition-colors shadow-sm"
+              >
+                R
+              </button>
             )}
           </div>
         </div>

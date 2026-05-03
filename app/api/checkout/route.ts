@@ -37,6 +37,9 @@ export async function POST(request: NextRequest) {
   let discountedPrice: number | undefined
   let validatedCouponCode: string | undefined
 
+  const { getDynamicProducts } = await import('@/lib/mercadopago')
+  const products = await getDynamicProducts()
+
   if (couponCode) {
     const serviceClient = createServiceClient()
     const { data: coupon } = await serviceClient
@@ -51,8 +54,7 @@ export async function POST(request: NextRequest) {
       (!coupon.valid_until || new Date(coupon.valid_until) > new Date()) &&
       (coupon.max_uses === null || coupon.uses_count < coupon.max_uses)
     ) {
-      const { PRODUCTS } = await import('@/lib/mercadopago')
-      const basePrice = PRODUCTS[sku].price
+      const basePrice = products[sku].price
       if (coupon.discount_type === 'percent') {
         discountedPrice = +(basePrice * (1 - Number(coupon.discount_value) / 100)).toFixed(2)
       } else {

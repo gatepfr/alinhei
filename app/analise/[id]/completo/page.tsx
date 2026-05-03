@@ -36,8 +36,9 @@ export default async function CompletePage({ params }: Props) {
   const diagnosticoResult = DiagnosticoSchema.safeParse(analysis.diagnostic)
   if (!diagnosticoResult.success) {
     console.error(`[analise/${id}/completo] Invalid diagnostic data:`, diagnosticoResult.error.format())
-    notFound()
   }
+
+  const diagnosticoData = diagnosticoResult.success ? diagnosticoResult.data : (analysis.diagnostic as any)
 
   const { data: generation } = await serviceClient
     .from('generations')
@@ -75,7 +76,7 @@ export default async function CompletePage({ params }: Props) {
     <div className="min-h-screen bg-background">
       {nav}
       <CompleteResult
-        diagnostico={diagnosticoResult.data}
+        diagnostico={diagnosticoData}
         curriculoOtimizado={generation.curriculo_otimizado as string | null}
         carta={cartaResult.success ? cartaResult.data : null}
         perguntas={perguntasResult.success ? perguntasResult.data : null}
