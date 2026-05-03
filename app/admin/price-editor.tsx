@@ -57,7 +57,7 @@ export function PriceEditor({ initialPrices }: Props) {
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
-        {(Object.keys(prices) as Array<keyof Prices>).map((sku) => (
+        {(Object.keys(prices) as Array<keyof Products>).map((sku) => (
           <div key={sku} className="space-y-3 p-4 bg-muted/30 rounded-lg border border-border/40">
             <h3 className="font-bold text-sm uppercase tracking-wider text-primary">{sku}</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
