@@ -30,7 +30,7 @@ const STATUS_CONFIG = {
   analisado: { label: 'Pendente', color: 'bg-blue-500/10 text-blue-400 border-blue-500/20', icon: Clock },
   candidatado: { label: 'Enviado', color: 'bg-purple-500/10 text-purple-400 border-purple-500/20', icon: CheckCircle },
   entrevista: { label: 'Entrevista', color: 'bg-amber-500/10 text-amber-400 border-amber-500/20', icon: MessageSquare },
-  feedback: { label: 'Feedback', color: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20', icon: CheckCircle },
+  feedback: { label: 'Aprovado', color: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20', icon: CheckCircle },
   reprovado: { label: 'Reprovado', color: 'bg-red-500/10 text-red-400 border-red-500/20', icon: XCircle },
 }
 
@@ -67,30 +67,30 @@ export function CRMBoard({ analyses: initialAnalyses }: CRMBoardProps) {
 
   return (
     <Tabs defaultValue="analisado" className="w-full">
-      <TabsList className="grid grid-cols-4 w-full mb-6 bg-muted p-1 rounded-xl border border-border/50">
+      <TabsList className="flex w-full mb-6 bg-muted p-1 rounded-xl border border-border/50 h-auto overflow-x-auto sm:overflow-x-visible">
         <TabsTrigger 
           value="analisado" 
-          className="text-xs sm:text-sm gap-1.5 py-2.5 data-[state=active]:bg-background data-[state=active]:text-primary data-[state=active]:shadow-sm data-[state=active]:ring-1 data-[state=active]:ring-primary/20 transition-all duration-200"
+          className="flex-1 text-[11px] sm:text-sm gap-1.5 py-2.5 px-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md transition-all duration-200 rounded-lg whitespace-nowrap"
         >
-          Pendente <span className="opacity-50 text-[10px] sm:text-xs">({grouped.analisado.length})</span>
+          Pendente <span className="opacity-70 text-[10px]">({grouped.analisado.length})</span>
         </TabsTrigger>
         <TabsTrigger 
           value="candidatado" 
-          className="text-xs sm:text-sm gap-1.5 py-2.5 data-[state=active]:bg-background data-[state=active]:text-primary data-[state=active]:shadow-sm data-[state=active]:ring-1 data-[state=active]:ring-primary/20 transition-all duration-200"
+          className="flex-1 text-[11px] sm:text-sm gap-1.5 py-2.5 px-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md transition-all duration-200 rounded-lg whitespace-nowrap"
         >
-          Enviado <span className="opacity-50 text-[10px] sm:text-xs">({grouped.candidatado.length})</span>
+          Enviado <span className="opacity-70 text-[10px]">({grouped.candidatado.length})</span>
         </TabsTrigger>
         <TabsTrigger 
           value="entrevista" 
-          className="text-xs sm:text-sm gap-1.5 py-2.5 data-[state=active]:bg-background data-[state=active]:text-primary data-[state=active]:shadow-sm data-[state=active]:ring-1 data-[state=active]:ring-primary/20 transition-all duration-200"
+          className="flex-1 text-[11px] sm:text-sm gap-1.5 py-2.5 px-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md transition-all duration-200 rounded-lg whitespace-nowrap"
         >
-          Entrevista <span className="opacity-50 text-[10px] sm:text-xs">({grouped.entrevista.length})</span>
+          Entrevista <span className="opacity-70 text-[10px]">({grouped.entrevista.length})</span>
         </TabsTrigger>
         <TabsTrigger 
           value="finalizado" 
-          className="text-xs sm:text-sm gap-1.5 py-2.5 data-[state=active]:bg-background data-[state=active]:text-primary data-[state=active]:shadow-sm data-[state=active]:ring-1 data-[state=active]:ring-primary/20 transition-all duration-200"
+          className="flex-1 text-[11px] sm:text-sm gap-1.5 py-2.5 px-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md transition-all duration-200 rounded-lg whitespace-nowrap"
         >
-          Finalizado <span className="opacity-50 text-[10px] sm:text-xs">({grouped.finalizado.length})</span>
+          Finalizado <span className="opacity-70 text-[10px]">({grouped.finalizado.length})</span>
         </TabsTrigger>
       </TabsList>
 
