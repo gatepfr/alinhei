@@ -6,7 +6,7 @@ import { createPreference } from '@/lib/mercadopago'
 
 const BodySchema = z.object({
   sku: z.enum(['single', 'pack3', 'pack10']),
-  analysisId: z.string().uuid(),
+  analysisId: z.string().uuid().optional(),
   couponCode: z.string().trim().toUpperCase().optional(),
 })
 

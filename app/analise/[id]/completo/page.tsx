@@ -20,16 +20,24 @@ export default async function CompletePage({ params }: Props) {
 
   const serviceClient = createServiceClient()
 
+  const { id } = params
+  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)) {
+    notFound()
+  }
+
   const { data: analysis } = await serviceClient
     .from('analyses')
     .select('id, diagnostic')
-    .eq('id', params.id)
+    .eq('id', id)
     .maybeSingle()
 
   if (!analysis) notFound()
 
   const diagnosticoResult = DiagnosticoSchema.safeParse(analysis.diagnostic)
-  if (!diagnosticoResult.success) notFound()
+  if (!diagnosticoResult.success) {
+    console.error(`[analise/${id}/completo] Invalid diagnostic data:`, diagnosticoResult.error.format())
+    notFound()
+  }
 
   const { data: generation } = await serviceClient
     .from('generations')

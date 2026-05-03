@@ -1,9 +1,9 @@
 import { z } from 'zod'
 
 export const DiagnosticoSchema = z.object({
-  cargo: z.string(),
-  empresa: z.string(),
-  nota_aderencia: z.number().int().min(0).max(100),
+  cargo: z.string().optional(),
+  empresa: z.string().optional(),
+  nota_aderencia: z.coerce.number().int().min(0).max(100),
   resumo_nota: z.string(),
   pontos_fortes: z.array(z.object({
     titulo: z.string(),
@@ -16,7 +16,7 @@ export const DiagnosticoSchema = z.object({
     como_resolver: z.preprocess(val => (typeof val === 'string' ? val : ''), z.string()),
   })).min(1),
   preview_publico: z.object({
-    nota: z.number().int().min(0).max(100),
+    nota: z.coerce.number().int().min(0).max(100),
     ponto_forte_destaque: z.string(),
     gap_destaque: z.string(),
   }),
