@@ -70,25 +70,25 @@ export function CRMBoard({ analyses: initialAnalyses }: CRMBoardProps) {
       <TabsList className="flex w-full mb-6 bg-muted p-1 rounded-xl border border-border/50 h-auto overflow-x-auto sm:overflow-x-visible">
         <TabsTrigger 
           value="analisado" 
-          className="flex-1 text-[11px] sm:text-sm gap-1.5 py-2.5 px-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md transition-all duration-200 rounded-lg whitespace-nowrap"
+          className="flex-1 text-[11px] sm:text-sm gap-1.5 py-2.5 px-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all duration-200 rounded-lg whitespace-nowrap"
         >
           Pendente <span className="opacity-70 text-[10px]">({grouped.analisado.length})</span>
         </TabsTrigger>
         <TabsTrigger 
           value="candidatado" 
-          className="flex-1 text-[11px] sm:text-sm gap-1.5 py-2.5 px-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md transition-all duration-200 rounded-lg whitespace-nowrap"
+          className="flex-1 text-[11px] sm:text-sm gap-1.5 py-2.5 px-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all duration-200 rounded-lg whitespace-nowrap"
         >
           Enviado <span className="opacity-70 text-[10px]">({grouped.candidatado.length})</span>
         </TabsTrigger>
         <TabsTrigger 
           value="entrevista" 
-          className="flex-1 text-[11px] sm:text-sm gap-1.5 py-2.5 px-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md transition-all duration-200 rounded-lg whitespace-nowrap"
+          className="flex-1 text-[11px] sm:text-sm gap-1.5 py-2.5 px-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all duration-200 rounded-lg whitespace-nowrap"
         >
           Entrevista <span className="opacity-70 text-[10px]">({grouped.entrevista.length})</span>
         </TabsTrigger>
         <TabsTrigger 
           value="finalizado" 
-          className="flex-1 text-[11px] sm:text-sm gap-1.5 py-2.5 px-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md transition-all duration-200 rounded-lg whitespace-nowrap"
+          className="flex-1 text-[11px] sm:text-sm gap-1.5 py-2.5 px-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all duration-200 rounded-lg whitespace-nowrap"
         >
           Finalizado <span className="opacity-70 text-[10px]">({grouped.finalizado.length})</span>
         </TabsTrigger>
