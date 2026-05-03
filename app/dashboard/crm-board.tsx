@@ -65,17 +65,29 @@ export function CRMBoard({ analyses: initialAnalyses }: CRMBoardProps) {
 
   return (
     <Tabs defaultValue="analisado" className="w-full">
-      <TabsList className="grid grid-cols-4 w-full mb-6">
-        <TabsTrigger value="analisado" className="text-xs sm:text-sm gap-1.5">
+      <TabsList className="grid grid-cols-4 w-full mb-6 bg-muted/50 p-1">
+        <TabsTrigger 
+          value="analisado" 
+          className="text-xs sm:text-sm gap-1.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md transition-all duration-200"
+        >
           Analisado <span className="opacity-50 text-[10px] sm:text-xs">({grouped.analisado.length})</span>
         </TabsTrigger>
-        <TabsTrigger value="candidatado" className="text-xs sm:text-sm gap-1.5">
+        <TabsTrigger 
+          value="candidatado" 
+          className="text-xs sm:text-sm gap-1.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md transition-all duration-200"
+        >
           Candidatado <span className="opacity-50 text-[10px] sm:text-xs">({grouped.candidatado.length})</span>
         </TabsTrigger>
-        <TabsTrigger value="entrevista" className="text-xs sm:text-sm gap-1.5">
+        <TabsTrigger 
+          value="entrevista" 
+          className="text-xs sm:text-sm gap-1.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md transition-all duration-200"
+        >
           Entrevista <span className="opacity-50 text-[10px] sm:text-xs">({grouped.entrevista.length})</span>
         </TabsTrigger>
-        <TabsTrigger value="finalizado" className="text-xs sm:text-sm gap-1.5">
+        <TabsTrigger 
+          value="finalizado" 
+          className="text-xs sm:text-sm gap-1.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md transition-all duration-200"
+        >
           Finalizado <span className="opacity-50 text-[10px] sm:text-xs">({grouped.finalizado.length})</span>
         </TabsTrigger>
       </TabsList>
@@ -147,52 +159,47 @@ function AnalysisCard({ analysis, onStatusChange }: { analysis: Analysis, onStat
           </Link>
         </div>
 
-        <div className="bg-muted/30 px-5 py-2.5 border-t border-border/40 flex items-center justify-end gap-3">
+        <div className="bg-muted/30 px-5 py-2.5 border-t border-border/40 flex flex-wrap items-center justify-end gap-2 sm:gap-3">
           <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 mr-auto">Mover:</span>
-          <div className="flex items-center gap-1">
+          <div className="flex flex-wrap items-center gap-1.5">
             {analysis.status !== 'analisado' && (
               <button 
                 onClick={() => onStatusChange('analisado')}
-                title="Analisado"
-                className="text-[10px] font-bold px-2 py-1 rounded bg-background border border-border hover:border-blue-500/50 hover:text-blue-400 transition-colors shadow-sm"
+                className="text-[9px] sm:text-[10px] font-bold px-2 py-1 rounded bg-background border border-border hover:border-blue-500/50 hover:text-blue-400 transition-colors shadow-sm whitespace-nowrap"
               >
-                A
+                Analisado
               </button>
             )}
             {analysis.status !== 'candidatado' && (
               <button 
                 onClick={() => onStatusChange('candidatado')}
-                title="Candidatado"
-                className="text-[10px] font-bold px-2 py-1 rounded bg-background border border-border hover:border-purple-500/50 hover:text-purple-400 transition-colors shadow-sm"
+                className="text-[9px] sm:text-[10px] font-bold px-2 py-1 rounded bg-background border border-border hover:border-purple-500/50 hover:text-purple-400 transition-colors shadow-sm whitespace-nowrap"
               >
-                C
+                Candidatado
               </button>
             )}
             {analysis.status !== 'entrevista' && (
               <button 
                 onClick={() => onStatusChange('entrevista')}
-                title="Entrevista"
-                className="text-[10px] font-bold px-2 py-1 rounded bg-background border border-border hover:border-amber-500/50 hover:text-amber-400 transition-colors shadow-sm"
+                className="text-[9px] sm:text-[10px] font-bold px-2 py-1 rounded bg-background border border-border hover:border-amber-500/50 hover:text-amber-400 transition-colors shadow-sm whitespace-nowrap"
               >
-                E
+                Entrevista
               </button>
             )}
             {analysis.status !== 'feedback' && (
               <button 
                 onClick={() => onStatusChange('feedback')}
-                title="Feedback"
-                className="text-[10px] font-bold px-2 py-1 rounded bg-background border border-border hover:border-emerald-500/50 hover:text-emerald-400 transition-colors shadow-sm"
+                className="text-[9px] sm:text-[10px] font-bold px-2 py-1 rounded bg-background border border-border hover:border-emerald-500/50 hover:text-emerald-400 transition-colors shadow-sm whitespace-nowrap"
               >
-                F
+                Feedback
               </button>
             )}
             {analysis.status !== 'reprovado' && (
               <button 
                 onClick={() => onStatusChange('reprovado')}
-                title="Reprovado"
-                className="text-[10px] font-bold px-2 py-1 rounded bg-background border border-border hover:border-red-500/50 hover:text-red-400 transition-colors shadow-sm"
+                className="text-[9px] sm:text-[10px] font-bold px-2 py-1 rounded bg-background border border-border hover:border-red-500/50 hover:text-red-400 transition-colors shadow-sm whitespace-nowrap"
               >
-                R
+                Reprovado
               </button>
             )}
           </div>

@@ -1,7 +1,13 @@
 // app/admin/coupons-section.tsx
+'use client'
+
+import { useState } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
-import { Ticket, Calendar, Users, CheckCircle2, XCircle } from 'lucide-react'
+import { Ticket, Calendar, Users, CheckCircle2, XCircle, Plus } from 'lucide-react'
+import { CouponForm } from './coupon-form'
+import { Button } from '@/components/ui/button'
+import { useRouter } from 'next/navigation'
 
 interface Coupon {
   id: string
@@ -15,12 +21,38 @@ interface Coupon {
 }
 
 export function CouponsSection({ coupons }: { coupons: Coupon[] }) {
+  const [showForm, setShowForm] = useState(false)
+  const router = useRouter()
+
   return (
     <div className="space-y-4">
-      <div className="flex items-center gap-2 mb-4">
-        <Ticket className="w-5 h-5 text-primary" />
-        <h2 className="font-display font-bold text-xl">Cupons Ativos</h2>
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-2">
+          <Ticket className="w-5 h-5 text-primary" />
+          <h2 className="font-display font-bold text-xl">Cupons Ativos</h2>
+        </div>
+        {!showForm && (
+          <Button size="sm" onClick={() => setShowForm(true)} className="gap-2">
+            <Plus className="w-4 h-4" />
+            Novo Cupom
+          </Button>
+        )}
       </div>
+
+      {showForm && (
+        <Card className="border-primary/20 bg-primary/5 animate-in fade-in slide-in-from-top-2 duration-300">
+          <CardContent className="p-6">
+            <h3 className="font-bold mb-4 flex items-center gap-2">
+              <Plus className="w-4 h-4 text-primary" />
+              Criar Novo Cupom
+            </h3>
+            <CouponForm onDone={() => {
+              setShowForm(false)
+              router.refresh()
+            }} />
+          </CardContent>
+        </Card>
+      )}
 
       {coupons.length === 0 ? (
         <div className="text-center py-10 bg-muted/20 rounded-xl border border-dashed border-border">
@@ -32,7 +64,7 @@ export function CouponsSection({ coupons }: { coupons: Coupon[] }) {
             <Card key={coupon.id} className="overflow-hidden border-border/60">
               <CardContent className="p-4 flex items-center justify-between gap-4">
                 <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
                     <Ticket className="w-5 h-5 text-primary" />
                   </div>
                   <div>
@@ -43,7 +75,7 @@ export function CouponsSection({ coupons }: { coupons: Coupon[] }) {
                       </Badge>
                     </div>
                     <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                      <span className="flex items-center gap-1">
+                      <span className="flex items-center gap-1 font-semibold text-foreground/80">
                         {coupon.discount_type === 'percent' ? `${coupon.discount_value}% OFF` : `R$ ${coupon.discount_value} OFF`}
                       </span>
                       <div className="w-1 h-1 rounded-full bg-border" />
@@ -79,3 +111,4 @@ export function CouponsSection({ coupons }: { coupons: Coupon[] }) {
     </div>
   )
 }
+

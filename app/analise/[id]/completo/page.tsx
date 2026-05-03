@@ -4,6 +4,7 @@ import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { DiagnosticoSchema, CartaSchema, PerguntasSchema } from '@/lib/schemas'
 import { GenerateFlow } from '@/components/generate-flow'
 import { CompleteResult } from '@/components/complete-result'
+import { MainNav } from '@/components/main-nav'
 
 interface Props {
   params: { id: string }
@@ -17,6 +18,9 @@ export default async function CompletePage({ params }: Props) {
   const supabase = createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect(`/login?next=/analise/${params.id}/completo`)
+  
+  const adminEmails = (process.env.ADMIN_EMAIL ?? '').split(',').map(e => e.trim().toLowerCase())
+  const isAdmin = user.email ? adminEmails.includes(user.email.toLowerCase()) : false
 
   const serviceClient = createServiceClient()
 
@@ -47,23 +51,10 @@ export default async function CompletePage({ params }: Props) {
     .eq('user_id', user.id)
     .maybeSingle()
 
-  const nav = (
-    <nav className="border-b border-border/60 bg-background/80 backdrop-blur-md px-4 py-3">
-      <div className="max-w-3xl mx-auto flex items-center justify-between">
-        <Link href="/" className="font-display font-bold text-lg tracking-tight">
-          Alinhei
-        </Link>
-        <Link href="/analise" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-          Nova análise
-        </Link>
-      </div>
-    </nav>
-  )
-
   if (!generation || (!generation.curriculo_otimizado && !generation.carta && !generation.perguntas)) {
     return (
       <div className="min-h-screen bg-background">
-        {nav}
+        <MainNav isAdmin={isAdmin} />
         <GenerateFlow analysisId={params.id} userEmail={user.email ?? ''} />
       </div>
     )
@@ -74,7 +65,7 @@ export default async function CompletePage({ params }: Props) {
 
   return (
     <div className="min-h-screen bg-background">
-      {nav}
+      <MainNav isAdmin={isAdmin} />
       <CompleteResult
         diagnostico={diagnosticoData}
         curriculoOtimizado={generation.curriculo_otimizado as string | null}
