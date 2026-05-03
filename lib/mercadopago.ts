@@ -1,28 +1,21 @@
 import { MercadoPagoConfig, Preference } from 'mercadopago'
 import crypto from 'crypto'
-
 import { createServiceClient } from '@/lib/supabase/server'
+import { DEFAULT_PRODUCTS, type ProductSku, type Products } from './products'
 
-export const DEFAULT_PRODUCTS = {
-  single: { label: '1 análise completa', price: 9.90, credits: 1, expirationDays: 30 },
-  pack3: { label: '3 análises completas', price: 19.90, credits: 3, expirationDays: 30 },
-  pack10: { label: '10 análises completas', price: 49.90, credits: 10, expirationDays: 90 },
-} as const
+export { DEFAULT_PRODUCTS, type ProductSku, type Products }
+export const PRODUCTS = DEFAULT_PRODUCTS // Legacy support
 
-export type ProductSku = keyof typeof DEFAULT_PRODUCTS
-
-export async function getDynamicProducts() {
+export async function getDynamicProducts(): Promise<Products> {
   try {
     const supabase = createServiceClient()
     const { data } = await supabase.from('settings').select('value').eq('id', 'prices').maybeSingle()
-    if (data?.value) return data.value as typeof DEFAULT_PRODUCTS
+    if (data?.value) return data.value as Products
   } catch (err) {
     console.error('[getDynamicProducts] Error fetching prices, using defaults:', err)
   }
   return DEFAULT_PRODUCTS
 }
-
-export const PRODUCTS = DEFAULT_PRODUCTS // Legacy support
 
 export function getMpClient() {
   const token = (process.env.MERCADOPAGO_ACCESS_TOKEN ?? '').trim()

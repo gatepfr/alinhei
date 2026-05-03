@@ -5,7 +5,7 @@ import { LogoutButton } from '@/components/logout-button'
 import { UserRow } from './user-row'
 import { CouponsSection } from './coupons-section'
 import { PriceEditor } from './price-editor'
-import { DEFAULT_PRODUCTS } from '@/lib/mercadopago'
+import { DEFAULT_PRODUCTS } from '@/lib/products'
 import { Users, BarChart2, Coins, FileText, Settings } from 'lucide-react'
 
 export const dynamic = 'force-dynamic'

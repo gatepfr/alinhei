@@ -4,9 +4,9 @@ import { useState } from 'react'
 import { Plus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { PaywallModal } from '@/components/paywall-modal'
-import type { DEFAULT_PRODUCTS } from '@/lib/mercadopago'
+import type { Products } from '@/lib/products'
 
-export function DashboardPurchaseButton({ balance, products }: { balance: number, products?: typeof DEFAULT_PRODUCTS }) {
+export function DashboardPurchaseButton({ balance, products }: { balance: number, products?: Products }) {
   const [showPaywall, setShowPaywall] = useState(false)
 
   return (
