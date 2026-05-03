@@ -5,6 +5,8 @@ import { cn } from '@/lib/utils'
 import { createClient } from '@/lib/supabase/server'
 import { LogoutButton } from '@/components/logout-button'
 
+import Image from 'next/image'
+
 export default async function LandingPage() {
   const supabase = createClient()
   const { data: { user } } = await supabase.auth.getUser()
@@ -14,9 +16,16 @@ export default async function LandingPage() {
       {/* Nav */}
       <nav className="sticky top-0 z-40 border-b border-border/60 bg-background/80 backdrop-blur-md px-4 py-3">
         <div className="max-w-5xl mx-auto flex items-center justify-between">
-          <span className="font-display text-xl font-bold tracking-tight">
-            Alinhei
-          </span>
+          <Link href="/" className="flex items-center gap-2">
+            <Image 
+              src="/logo.png" 
+              alt="Alinhei" 
+              width={110} 
+              height={32} 
+              className="h-8 w-auto" 
+              priority
+            />
+          </Link>
           <div className="flex items-center gap-3">
             {user ? (
               <>
