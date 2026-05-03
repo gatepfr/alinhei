@@ -44,8 +44,7 @@ export async function createPreference(opts: {
       payer: { email: opts.userEmail },
       payment_methods: { 
         excluded_payment_methods: [], 
-        excluded_payment_types: [],
-        default_payment_method_id: 'pix'
+        excluded_payment_types: []
       },
       notification_url: opts.notificationUrl,
       back_urls: { success: opts.successUrl, failure: opts.failureUrl, pending: opts.successUrl },
