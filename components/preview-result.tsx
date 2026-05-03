@@ -8,6 +8,7 @@ import { cn } from '@/lib/utils'
 import { PaywallModal } from '@/components/paywall-modal'
 import { trackEvent } from '@/lib/analytics'
 import type { Diagnostico } from '@/lib/schemas'
+import type { DEFAULT_PRODUCTS } from '@/lib/mercadopago'
 
 interface PreviewResultProps {
   diagnostic: Diagnostico
@@ -16,6 +17,7 @@ interface PreviewResultProps {
   balance: number
   hasGeneration?: boolean
   showPaywallInitial?: boolean
+  products?: typeof DEFAULT_PRODUCTS
 }
 
 function scoreColor(nota: number): string {
@@ -78,6 +80,7 @@ export function PreviewResult({
   balance,
   hasGeneration = false,
   showPaywallInitial = false,
+  products,
 }: PreviewResultProps) {
   const { preview_publico, pontos_fortes, gaps_criticos, resumo_nota } = diagnostic
   const [showPaywall, setShowPaywall] = useState(showPaywallInitial)
@@ -89,7 +92,7 @@ export function PreviewResult({
   return (
     <div className="space-y-5">
       {showPaywall && (
-        <PaywallModal analysisId={analysisId} onClose={() => setShowPaywall(false)} />
+        <PaywallModal products={products} analysisId={analysisId} onClose={() => setShowPaywall(false)} />
       )}
 
       {/* Score */}
@@ -150,6 +153,7 @@ export function PreviewResult({
           balance={balance}
           hasGeneration={hasGeneration}
           onOpenPaywall={() => setShowPaywall(true)}
+          products={products}
         />
       </div>
     </div>
@@ -162,12 +166,14 @@ function PaywallCTA({
   balance,
   hasGeneration,
   onOpenPaywall,
+  products,
 }: {
   analysisId: string
   userId: string | null
   balance: number
   hasGeneration: boolean
   onOpenPaywall: () => void
+  products?: typeof DEFAULT_PRODUCTS
 }) {
   if (hasGeneration) {
     return (
@@ -219,6 +225,8 @@ function PaywallCTA({
     )
   }
 
+  const singlePrice = products?.single.price ?? 9.90
+
   return (
     <div className="bg-card rounded-2xl p-6 text-center border border-border">
       <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center mx-auto mb-3">
@@ -235,7 +243,7 @@ function PaywallCTA({
           className="h-12 px-8 text-base font-semibold bg-primary text-primary-foreground hover:bg-primary/90 group gap-2"
           onClick={onOpenPaywall}
         >
-          Liberar pacote — R$ 9,90 no PIX
+          Liberar pacote — R$ {singlePrice.toLocaleString('pt-BR', { minimumFractionDigits: 2 })} no PIX
           <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
         </Button>
       ) : (
@@ -251,7 +259,11 @@ function PaywallCTA({
         </Link>
       )}
       <p className="text-xs text-muted-foreground mt-4">
-        Também disponível: 3 análises por R$ 19,90 · 10 análises por R$ 49,90
+        {products ? (
+          `Também disponível: ${products.pack3.credits} análises por R$ ${products.pack3.price.toLocaleString('pt-BR', { minimumFractionDigits: 2 })} · ${products.pack10.credits} por R$ ${products.pack10.price.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`
+        ) : (
+          'Também disponível: 3 análises por R$ 19,90 · 10 análises por R$ 49,90'
+        )}
       </p>
     </div>
   )

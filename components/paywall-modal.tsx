@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { X, Zap, Tag, CheckCircle, AlertCircle, ArrowRight, Loader2 } from 'lucide-react'
 import { PRODUCTS, type ProductSku } from '@/lib/mercadopago'
 import { trackEvent } from '@/lib/analytics'
@@ -35,10 +36,11 @@ interface Discount {
 
 interface PaywallModalProps {
   analysisId?: string
+  products?: typeof DEFAULT_PRODUCTS
   onClose: () => void
 }
 
-export function PaywallModal({ analysisId, onClose }: PaywallModalProps) {
+export function PaywallModal({ analysisId, products: dynamicProducts, onClose }: PaywallModalProps) {
   const [loading, setLoading] = useState<ProductSku | null>(null)
   const [showCoupon, setShowCoupon] = useState(false)
   const [couponInput, setCouponInput] = useState('')
@@ -47,8 +49,12 @@ export function PaywallModal({ analysisId, onClose }: PaywallModalProps) {
   const [appliedCoupon, setAppliedCoupon] = useState<{ code: string; discount: Discount } | null>(null)
   const [variant, setVariant] = useState<'A' | 'B'>('A')
   const [paymentOpened, setPaymentOpened] = useState(false)
+  const [mounted, setMounted] = useState(false)
+
+  const activeProducts = dynamicProducts || PRODUCTS
 
   useEffect(() => {
+    setMounted(true)
     const v = getAbVariant()
     setVariant(v)
     trackEvent('paywall_shown', { variant: v })
@@ -115,8 +121,10 @@ export function PaywallModal({ analysisId, onClose }: PaywallModalProps) {
 
   const copy = COPY[variant]
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center">
+  if (!mounted) return null
+
+  return createPortal(
+    <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center">
       {/* Backdrop */}
       <div
         className="absolute inset-0 bg-black/70 backdrop-blur-sm"
@@ -145,7 +153,7 @@ export function PaywallModal({ analysisId, onClose }: PaywallModalProps) {
         {/* SKUs */}
         <div className="space-y-2.5 mb-5">
           {SKUS.map(({ sku, highlight }) => {
-            const product = PRODUCTS[sku]
+            const product = activeProducts[sku]
             const basePrice = product.price
             const finalPrice = appliedCoupon ? applyDiscount(basePrice, appliedCoupon.discount) : basePrice
             const isLoading = loading === sku
@@ -303,6 +311,7 @@ export function PaywallModal({ analysisId, onClose }: PaywallModalProps) {
           PIX ou cartão · Pagamento seguro via Mercado Pago
         </p>
       </div>
-    </div>
+    </div>,
+    document.body
   )
 }
