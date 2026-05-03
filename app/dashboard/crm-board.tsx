@@ -49,10 +49,12 @@ export function CRMBoard({ analyses: initialAnalyses }: CRMBoardProps) {
         body: JSON.stringify({ status: newStatus }),
       })
 
-      if (!res.ok) throw new Error('Failed to update status')
-    } catch {
+      const data = await res.json()
+      if (!res.ok || !data.success) throw new Error(data.error || 'Failed to update status')
+    } catch (err) {
+      console.error('[CRMBoard] Status update error:', err)
       setAnalyses(previousAnalyses)
-      alert('Erro ao atualizar status. Tente novamente.')
+      alert('Erro ao atualizar status no banco de dados. Tente novamente.')
     }
   }
 
@@ -65,37 +67,37 @@ export function CRMBoard({ analyses: initialAnalyses }: CRMBoardProps) {
 
   return (
     <Tabs defaultValue="analisado" className="w-full">
-      <TabsList className="grid grid-cols-4 w-full mb-6 bg-muted p-1 rounded-lg">
+      <TabsList className="grid grid-cols-4 w-full mb-6 bg-muted p-1 rounded-xl border border-border/50">
         <TabsTrigger 
           value="analisado" 
-          className="text-xs sm:text-sm gap-1.5 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm transition-all duration-200"
+          className="text-xs sm:text-sm gap-1.5 py-2.5 data-[state=active]:bg-background data-[state=active]:text-primary data-[state=active]:shadow-sm data-[state=active]:ring-1 data-[state=active]:ring-primary/20 transition-all duration-200"
         >
           Analisado <span className="opacity-50 text-[10px] sm:text-xs">({grouped.analisado.length})</span>
         </TabsTrigger>
         <TabsTrigger 
           value="candidatado" 
-          className="text-xs sm:text-sm gap-1.5 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm transition-all duration-200"
+          className="text-xs sm:text-sm gap-1.5 py-2.5 data-[state=active]:bg-background data-[state=active]:text-primary data-[state=active]:shadow-sm data-[state=active]:ring-1 data-[state=active]:ring-primary/20 transition-all duration-200"
         >
           Candidatado <span className="opacity-50 text-[10px] sm:text-xs">({grouped.candidatado.length})</span>
         </TabsTrigger>
         <TabsTrigger 
           value="entrevista" 
-          className="text-xs sm:text-sm gap-1.5 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm transition-all duration-200"
+          className="text-xs sm:text-sm gap-1.5 py-2.5 data-[state=active]:bg-background data-[state=active]:text-primary data-[state=active]:shadow-sm data-[state=active]:ring-1 data-[state=active]:ring-primary/20 transition-all duration-200"
         >
           Entrevista <span className="opacity-50 text-[10px] sm:text-xs">({grouped.entrevista.length})</span>
         </TabsTrigger>
         <TabsTrigger 
           value="finalizado" 
-          className="text-xs sm:text-sm gap-1.5 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm transition-all duration-200"
+          className="text-xs sm:text-sm gap-1.5 py-2.5 data-[state=active]:bg-background data-[state=active]:text-primary data-[state=active]:shadow-sm data-[state=active]:ring-1 data-[state=active]:ring-primary/20 transition-all duration-200"
         >
           Finalizado <span className="opacity-50 text-[10px] sm:text-xs">({grouped.finalizado.length})</span>
         </TabsTrigger>
       </TabsList>
 
       {Object.entries(grouped).map(([key, items]) => (
-        <TabsContent key={key} value={key} className="space-y-4">
+        <TabsContent key={key} value={key} className="space-y-4 outline-none">
           {items.length === 0 ? (
-            <div className="text-center py-12 bg-card rounded-2xl border border-dashed border-border">
+            <div className="text-center py-12 bg-card rounded-2xl border border-dashed border-border/60">
               <p className="text-sm text-muted-foreground">Nenhuma candidatura nesta etapa.</p>
             </div>
           ) : (
@@ -123,7 +125,7 @@ function AnalysisCard({ analysis, onStatusChange }: { analysis: Analysis, onStat
   const Icon = config.icon
 
   return (
-    <Card className="overflow-hidden border-border/60 hover:border-primary/30 transition-all group">
+    <Card className="overflow-hidden border-border/60 hover:border-primary/30 transition-all group shadow-sm">
       <CardContent className="p-0">
         <div className="p-5 flex items-start justify-between gap-4">
           <div className="space-y-1 flex-1">
@@ -159,13 +161,13 @@ function AnalysisCard({ analysis, onStatusChange }: { analysis: Analysis, onStat
           </Link>
         </div>
 
-        <div className="bg-muted/30 px-5 py-2.5 border-t border-border/40 flex flex-wrap items-center justify-end gap-2 sm:gap-3">
-          <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 mr-auto">Mover:</span>
+        <div className="bg-muted/30 px-5 py-3 border-t border-border/40 flex flex-wrap items-center justify-end gap-2 sm:gap-3">
+          <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 mr-auto">Mover para:</span>
           <div className="flex flex-wrap items-center gap-1.5">
             {analysis.status !== 'analisado' && (
               <button 
                 onClick={() => onStatusChange('analisado')}
-                className="text-[9px] sm:text-[10px] font-bold px-2 py-1 rounded bg-background border border-border hover:border-blue-500/50 hover:text-blue-400 transition-colors shadow-sm whitespace-nowrap"
+                className="text-[9px] sm:text-[10px] font-bold px-3 py-1.5 rounded-lg bg-background border border-border hover:border-blue-500/50 hover:text-blue-500 transition-all shadow-sm whitespace-nowrap"
               >
                 Analisado
               </button>
@@ -173,7 +175,7 @@ function AnalysisCard({ analysis, onStatusChange }: { analysis: Analysis, onStat
             {analysis.status !== 'candidatado' && (
               <button 
                 onClick={() => onStatusChange('candidatado')}
-                className="text-[9px] sm:text-[10px] font-bold px-2 py-1 rounded bg-background border border-border hover:border-purple-500/50 hover:text-purple-400 transition-colors shadow-sm whitespace-nowrap"
+                className="text-[9px] sm:text-[10px] font-bold px-3 py-1.5 rounded-lg bg-background border border-border hover:border-purple-500/50 hover:text-purple-500 transition-all shadow-sm whitespace-nowrap"
               >
                 Candidatado
               </button>
@@ -181,7 +183,7 @@ function AnalysisCard({ analysis, onStatusChange }: { analysis: Analysis, onStat
             {analysis.status !== 'entrevista' && (
               <button 
                 onClick={() => onStatusChange('entrevista')}
-                className="text-[9px] sm:text-[10px] font-bold px-2 py-1 rounded bg-background border border-border hover:border-amber-500/50 hover:text-amber-400 transition-colors shadow-sm whitespace-nowrap"
+                className="text-[9px] sm:text-[10px] font-bold px-3 py-1.5 rounded-lg bg-background border border-border hover:border-amber-500/50 hover:text-amber-500 transition-all shadow-sm whitespace-nowrap"
               >
                 Entrevista
               </button>
@@ -189,7 +191,7 @@ function AnalysisCard({ analysis, onStatusChange }: { analysis: Analysis, onStat
             {analysis.status !== 'feedback' && (
               <button 
                 onClick={() => onStatusChange('feedback')}
-                className="text-[9px] sm:text-[10px] font-bold px-2 py-1 rounded bg-background border border-border hover:border-emerald-500/50 hover:text-emerald-400 transition-colors shadow-sm whitespace-nowrap"
+                className="text-[9px] sm:text-[10px] font-bold px-3 py-1.5 rounded-lg bg-background border border-border hover:border-emerald-500/50 hover:text-emerald-500 transition-all shadow-sm whitespace-nowrap"
               >
                 Feedback
               </button>
@@ -197,7 +199,7 @@ function AnalysisCard({ analysis, onStatusChange }: { analysis: Analysis, onStat
             {analysis.status !== 'reprovado' && (
               <button 
                 onClick={() => onStatusChange('reprovado')}
-                className="text-[9px] sm:text-[10px] font-bold px-2 py-1 rounded bg-background border border-border hover:border-red-500/50 hover:text-red-400 transition-colors shadow-sm whitespace-nowrap"
+                className="text-[9px] sm:text-[10px] font-bold px-3 py-1.5 rounded-lg bg-background border border-border hover:border-red-500/50 hover:text-red-500 transition-all shadow-sm whitespace-nowrap"
               >
                 Reprovado
               </button>
