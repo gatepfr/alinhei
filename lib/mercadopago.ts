@@ -61,13 +61,27 @@ export function validateWebhookSignature(
   rawBody: string,
   xSignature: string,
   xRequestId: string,
-  dataId: string,
+  dataIdFromQuery: string,
 ): boolean {
   const secret = process.env.MERCADOPAGO_WEBHOOK_SECRET
   if (!secret) {
-    console.error('[MP Webhook] Secret não configurado')
+    console.error('[MP Webhook] Secret não configurado (MERCADOPAGO_WEBHOOK_SECRET)')
     return false
   }
+
+  // 1. Extrair ID do body se não vier na query
+  let dataId = dataIdFromQuery
+  if (!dataId) {
+    try {
+      const payload = JSON.parse(rawBody)
+      dataId = String(payload.data?.id || payload.id || '')
+    } catch (e) {
+      // Ignora erro de parse, tentaremos com a string vazia
+    }
+  }
+
+  // Se o ID for string, deve ser lowercase para o manifesto v2
+  if (dataId) dataId = dataId.toLowerCase()
 
   const parts = xSignature.split(',').reduce<Record<string, string>>((acc, part) => {
     const [k, v] = part.split('=')
@@ -78,23 +92,27 @@ export function validateWebhookSignature(
   const ts = parts['ts']
   const v1 = parts['v1']
   if (!ts || !v1) {
-    console.error('[MP Webhook] Assinatura incompleta:', { xSignature })
+    console.error('[MP Webhook] Assinatura incompleta no header:', { xSignature })
     return false
   }
 
+  // O manifesto v2 exige id, request-id e ts, com ponto e vírgula final
   const manifest = `id:${dataId};request-id:${xRequestId};ts:${ts};`
   const hmac = crypto.createHmac('sha256', secret)
   const expected = hmac.update(manifest).digest('hex')
   
   const isValid = expected === v1
   if (!isValid) {
-    console.error('[MP Webhook] Assinatura inválida!', {
+    console.error('[MP Webhook] Assinatura INVÁLIDA!', {
       expected,
       received: v1,
       manifest,
       dataId,
-      xRequestId
+      xRequestId,
+      ts
     })
+  } else {
+    console.log('[MP Webhook] Assinatura validada com sucesso:', { dataId, xRequestId })
   }
 
   return isValid

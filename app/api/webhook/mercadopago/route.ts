@@ -9,9 +9,16 @@ export async function POST(request: NextRequest) {
   const rawBody = await request.text()
   const xSignature = request.headers.get('x-signature') ?? ''
   const xRequestId = request.headers.get('x-request-id') ?? ''
-  const dataId = request.nextUrl.searchParams.get('data.id') ?? ''
+  const dataIdFromQuery = request.nextUrl.searchParams.get('data.id') ?? ''
 
-  if (!validateWebhookSignature(rawBody, xSignature, xRequestId, dataId)) {
+  console.log('[MP Webhook] Recebido:', { 
+    dataIdFromQuery, 
+    xRequestId, 
+    xSignature: xSignature.substring(0, 30) + '...',
+    body: rawBody.substring(0, 100) + '...'
+  })
+
+  if (!validateWebhookSignature(rawBody, xSignature, xRequestId, dataIdFromQuery)) {
     return NextResponse.json({ error: 'invalid signature' }, { status: 401 })
   }
 
@@ -23,17 +30,22 @@ export async function POST(request: NextRequest) {
   }
 
   if (payload.type !== 'payment' || !payload.data?.id) {
+    console.log('[MP Webhook] Ignorando tipo não-pagamento:', payload.type)
     return NextResponse.json({ ok: true })
   }
 
   const paymentId = String(payload.data.id)
+  console.log('[MP Webhook] Buscando pagamento:', paymentId)
 
-  let payment: Awaited<ReturnType<InstanceType<typeof Payment>['get']>>
+  let payment: any
   try {
     payment = await new Payment(getMpClient()).get({ id: paymentId })
-  } catch {
+  } catch (err) {
+    console.error('[MP Webhook] Erro ao buscar pagamento no MP:', err)
     return NextResponse.json({ error: 'failed to fetch payment' }, { status: 500 })
   }
+
+  console.log('[MP Webhook] Status do pagamento:', payment.status)
 
   if (payment.status !== 'approved') {
     return NextResponse.json({ ok: true })
@@ -42,7 +54,10 @@ export async function POST(request: NextRequest) {
   const userId = payment.metadata?.user_id as string | undefined
   const sku = payment.metadata?.sku as ProductSku | undefined
 
+  console.log('[MP Webhook] Metadata extraída:', { userId, sku })
+
   if (!userId || !sku || !PRODUCTS[sku]) {
+    console.error('[MP Webhook] Metadados ausentes ou inválidos:', payment.metadata)
     return NextResponse.json({ error: 'missing metadata' }, { status: 400 })
   }
 
