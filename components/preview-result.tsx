@@ -173,7 +173,7 @@ function PaywallCTA({
   balance: number
   hasGeneration: boolean
   onOpenPaywall: () => void
-  products?: typeof DEFAULT_PRODUCTS
+  products?: Products
 }) {
   if (hasGeneration) {
     return (
