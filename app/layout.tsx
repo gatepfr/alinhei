@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   description:
     'Suba seu currículo, cole a vaga e receba diagnóstico de aderência, currículo reescrito, carta de apresentação e simulado de entrevista em menos de 1 minuto.',
   icons: {
-    icon: '/icon.png',
+    icon: '/favicon.png',
   },
   openGraph: {
     title: 'Alinhei — Analise seu currículo com IA',
