@@ -6,35 +6,23 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Loader2, Save } from 'lucide-react'
-
-interface Product {
-  label: string
-  price: number
-  credits: number
-  expirationDays: number
-}
-
-interface Prices {
-  single: Product
-  pack3: Product
-  pack10: Product
-}
+import type { Products, ProductSku } from '@/lib/products'
 
 interface Props {
-  initialPrices: Prices
+  initialPrices: Products
 }
 
 export function PriceEditor({ initialPrices }: Props) {
-  const [prices, setPrices] = useState<Prices>(initialPrices)
+  const [prices, setPrices] = useState<Products>(initialPrices)
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
 
-  const handleChange = (sku: keyof Prices, field: keyof Product, value: string | number) => {
+  const handleChange = (sku: ProductSku, field: string, value: string | number) => {
     setPrices(prev => ({
       ...prev,
       [sku]: {
         ...prev[sku],
-        [field]: field === 'price' ? parseFloat(value.toString()) : parseInt(value.toString())
+        [field]: field === 'label' ? value : field === 'price' ? parseFloat(value.toString()) : parseInt(value.toString())
       }
     }))
     setSuccess(false)

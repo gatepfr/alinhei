@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { X, Zap, Tag, CheckCircle, AlertCircle, ArrowRight, Loader2 } from 'lucide-react'
-import { PRODUCTS, type ProductSku } from '@/lib/mercadopago'
+import { PRODUCTS, type ProductSku, type Products } from '@/lib/products'
 import { trackEvent } from '@/lib/analytics'
 
 const SKUS: Array<{ sku: ProductSku; highlight?: boolean }> = [
@@ -36,7 +36,7 @@ interface Discount {
 
 interface PaywallModalProps {
   analysisId?: string
-  products?: typeof DEFAULT_PRODUCTS
+  products?: Products
   onClose: () => void
 }
 

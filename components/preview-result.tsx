@@ -8,7 +8,7 @@ import { cn } from '@/lib/utils'
 import { PaywallModal } from '@/components/paywall-modal'
 import { trackEvent } from '@/lib/analytics'
 import type { Diagnostico } from '@/lib/schemas'
-import type { DEFAULT_PRODUCTS } from '@/lib/mercadopago'
+import type { Products } from '@/lib/products'
 
 interface PreviewResultProps {
   diagnostic: Diagnostico
@@ -17,7 +17,7 @@ interface PreviewResultProps {
   balance: number
   hasGeneration?: boolean
   showPaywallInitial?: boolean
-  products?: typeof DEFAULT_PRODUCTS
+  products?: Products
 }
 
 function scoreColor(nota: number): string {
