@@ -21,16 +21,24 @@ export default async function AnaliseResultPage({ params, searchParams }: Props)
   const serviceClient = createServiceClient()
   const showPaywall = searchParams.buy === 'true'
 
+  const { id } = params
+  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)) {
+    notFound()
+  }
+
   const { data: analysis } = await serviceClient
     .from('analyses')
     .select('id, diagnostic')
-    .eq('id', params.id)
+    .eq('id', id)
     .maybeSingle()
 
   if (!analysis) notFound()
 
   const parsed = DiagnosticoSchema.safeParse(analysis.diagnostic)
-  if (!parsed.success) notFound()
+  if (!parsed.success) {
+    console.error(`[analise/${id}] Invalid diagnostic data:`, parsed.error.format())
+    notFound()
+  }
 
   const supabase = createClient()
   const { data: { user } } = await supabase.auth.getUser()
