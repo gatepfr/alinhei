@@ -42,7 +42,11 @@ export async function createPreference(opts: {
     body: {
       items: [{ id: opts.sku, title: `Alinhei — ${product.label}`, currency_id: 'BRL', unit_price: unitPrice, quantity: 1 }],
       payer: { email: opts.userEmail },
-      payment_methods: { excluded_payment_methods: [], excluded_payment_types: [], installments: 1 },
+      payment_methods: { 
+        excluded_payment_methods: [], 
+        excluded_payment_types: [],
+        default_payment_method_id: 'pix'
+      },
       notification_url: opts.notificationUrl,
       back_urls: { success: opts.successUrl, failure: opts.failureUrl, pending: opts.successUrl },
       auto_return: 'approved',
