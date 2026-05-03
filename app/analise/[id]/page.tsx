@@ -5,6 +5,7 @@ import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { LogoutButton } from '@/components/logout-button'
 import { PreviewResult } from '@/components/preview-result'
 import { CheckoutPolling } from '@/components/checkout-polling'
+import { MainNav } from '@/components/main-nav'
 import { DiagnosticoSchema } from '@/lib/schemas'
 import { getBalance } from '@/lib/credits'
 import { getDynamicProducts } from '@/lib/mercadopago'
@@ -49,6 +50,9 @@ export default async function AnaliseResultPage({ params, searchParams }: Props)
 
   const supabase = createClient()
   const { data: { user } } = await supabase.auth.getUser()
+  
+  const adminEmails = (process.env.ADMIN_EMAIL ?? '').split(',').map(e => e.trim().toLowerCase())
+  const isAdmin = user?.email ? adminEmails.includes(user.email.toLowerCase()) : false
 
   const balance = user ? await getBalance(user.id) : 0
   const showPolling = searchParams.checkout === 'success' && !!user && balance === 0
@@ -67,26 +71,7 @@ export default async function AnaliseResultPage({ params, searchParams }: Props)
 
   return (
     <div className="min-h-screen bg-background">
-      <nav className="border-b border-border/60 bg-background/80 backdrop-blur-md px-4 py-3">
-        <div className="max-w-3xl mx-auto flex items-center justify-between">
-          <Link href="/" className="font-display font-bold text-lg tracking-tight">
-            Alinhei
-          </Link>
-          <div className="flex items-center gap-4">
-            <Link href="/analise" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-              Nova análise
-            </Link>
-            {user && (
-              <>
-                <Link href="/dashboard" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                  Minhas análises
-                </Link>
-                <LogoutButton />
-              </>
-            )}
-          </div>
-        </div>
-      </nav>
+      <MainNav isAdmin={isAdmin} />
 
       <div className="max-w-3xl mx-auto px-4 py-12">
         <div className="mb-8 animate-fade-up">

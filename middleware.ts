@@ -35,6 +35,11 @@ export async function middleware(request: NextRequest) {
   const { data: { user }, error: authError } = await supabase.auth.getUser()
   if (authError) console.error('[middleware] auth.getUser error:', authError.message)
 
+  // Redireciona usuários logados da landing page para o dashboard
+  if (user && request.nextUrl.pathname === '/') {
+    return NextResponse.redirect(new URL('/dashboard', request.url))
+  }
+
   const isProtected =
     (request.nextUrl.pathname.startsWith('/analise') &&
       request.nextUrl.pathname.endsWith('/completo')) ||

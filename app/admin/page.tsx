@@ -1,10 +1,9 @@
-import Link from 'next/link'
 import { createClient as createSupabaseAdminClient } from '@supabase/supabase-js'
 import { createServiceClient } from '@/lib/supabase/server'
-import { LogoutButton } from '@/components/logout-button'
 import { UserRow } from './user-row'
 import { CouponsSection } from './coupons-section'
 import { PriceEditor } from './price-editor'
+import { MainNav } from '@/components/main-nav'
 import { DEFAULT_PRODUCTS } from '@/lib/products'
 import { Users, BarChart2, Coins, FileText, Settings } from 'lucide-react'
 
@@ -84,16 +83,7 @@ export default async function AdminPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <nav className="border-b border-border/60 bg-background/80 backdrop-blur-md px-4 py-3">
-        <div className="max-w-4xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Link href="/" className="font-bold text-lg tracking-tight">Alinhei</Link>
-            <span className="text-muted-foreground text-sm">/</span>
-            <span className="text-sm font-medium text-muted-foreground">Admin</span>
-          </div>
-          <LogoutButton />
-        </div>
-      </nav>
+      <MainNav isAdmin={true} />
 
       <div className="max-w-4xl mx-auto px-4 py-10 space-y-12">
 
