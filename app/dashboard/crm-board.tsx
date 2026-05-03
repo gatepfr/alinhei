@@ -65,28 +65,28 @@ export function CRMBoard({ analyses: initialAnalyses }: CRMBoardProps) {
 
   return (
     <Tabs defaultValue="analisado" className="w-full">
-      <TabsList className="grid grid-cols-4 w-full mb-6 bg-muted/50 p-1">
+      <TabsList className="grid grid-cols-4 w-full mb-6 bg-muted p-1 rounded-lg">
         <TabsTrigger 
           value="analisado" 
-          className="text-xs sm:text-sm gap-1.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md transition-all duration-200"
+          className="text-xs sm:text-sm gap-1.5 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm transition-all duration-200"
         >
           Analisado <span className="opacity-50 text-[10px] sm:text-xs">({grouped.analisado.length})</span>
         </TabsTrigger>
         <TabsTrigger 
           value="candidatado" 
-          className="text-xs sm:text-sm gap-1.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md transition-all duration-200"
+          className="text-xs sm:text-sm gap-1.5 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm transition-all duration-200"
         >
           Candidatado <span className="opacity-50 text-[10px] sm:text-xs">({grouped.candidatado.length})</span>
         </TabsTrigger>
         <TabsTrigger 
           value="entrevista" 
-          className="text-xs sm:text-sm gap-1.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md transition-all duration-200"
+          className="text-xs sm:text-sm gap-1.5 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm transition-all duration-200"
         >
           Entrevista <span className="opacity-50 text-[10px] sm:text-xs">({grouped.entrevista.length})</span>
         </TabsTrigger>
         <TabsTrigger 
           value="finalizado" 
-          className="text-xs sm:text-sm gap-1.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md transition-all duration-200"
+          className="text-xs sm:text-sm gap-1.5 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm transition-all duration-200"
         >
           Finalizado <span className="opacity-50 text-[10px] sm:text-xs">({grouped.finalizado.length})</span>
         </TabsTrigger>
