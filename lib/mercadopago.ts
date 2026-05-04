@@ -19,7 +19,7 @@ export async function getDynamicProducts(): Promise<Products> {
 
 export function getMpClient() {
   const token = (process.env.MERCADOPAGO_ACCESS_TOKEN ?? '').trim()
-  if (!token) throw new Error('MERCADOPAGO_ACCESS_TOKEN não configurado')
+  if (!token) throw new Error('MERCADOPAGO_ACCESS_TOKEN nao configurado')
   return new MercadoPagoConfig({ accessToken: token })
 }
 
