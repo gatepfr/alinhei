@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient, createServiceClient } from '@/lib/supabase/server'
+import { createClient } from '@/lib/supabase/server'
 import { createClient as createSupabaseAdminClient } from '@supabase/supabase-js'
 
 function isAdmin(email: string | null | undefined): boolean {

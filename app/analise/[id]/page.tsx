@@ -1,12 +1,10 @@
 // app/analise/[id]/page.tsx
 import { notFound } from 'next/navigation'
-import Link from 'next/link'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
-import { LogoutButton } from '@/components/logout-button'
 import { PreviewResult } from '@/components/preview-result'
 import { CheckoutPolling } from '@/components/checkout-polling'
 import { MainNav } from '@/components/main-nav'
-import { DiagnosticoSchema } from '@/lib/schemas'
+import { DiagnosticoSchema, type Diagnostico } from '@/lib/schemas'
 import { getBalance } from '@/lib/credits'
 import { getDynamicProducts } from '@/lib/mercadopago'
 
@@ -46,7 +44,7 @@ export default async function AnaliseResultPage({ params, searchParams }: Props)
     console.error(`[analise/${id}] Invalid diagnostic data:`, parsed.error.format())
   }
 
-  const diagnosticData = parsed.success ? parsed.data : (analysis.diagnostic as any)
+  const diagnosticData = parsed.success ? parsed.data : (analysis.diagnostic as unknown as Diagnostico)
 
   const supabase = createClient()
   const { data: { user } } = await supabase.auth.getUser()

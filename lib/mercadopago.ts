@@ -76,7 +76,9 @@ export function validateWebhookSignature(
     try {
       const payload = JSON.parse(rawBody)
       dataId = String(payload.data?.id || payload.id || '')
-    } catch (e) {}
+    } catch {
+      // ignore parse error
+    }
   }
 
   if (!dataId) {

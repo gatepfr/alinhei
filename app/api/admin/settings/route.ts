@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: false, error: 'JSON inválido.' }, { status: 400 })
   }
 
-  const { id, value } = body as { id: string, value: any }
+  const { id, value } = body as { id: string, value: unknown }
   if (!id || !value) {
     return NextResponse.json({ ok: false, error: 'Dados insuficientes.' }, { status: 400 })
   }

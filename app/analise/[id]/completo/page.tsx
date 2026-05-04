@@ -1,7 +1,6 @@
 import { notFound, redirect } from 'next/navigation'
-import Link from 'next/link'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
-import { DiagnosticoSchema, CartaSchema, PerguntasSchema } from '@/lib/schemas'
+import { DiagnosticoSchema, CartaSchema, PerguntasSchema, type Diagnostico } from '@/lib/schemas'
 import { GenerateFlow } from '@/components/generate-flow'
 import { CompleteResult } from '@/components/complete-result'
 import { MainNav } from '@/components/main-nav'
@@ -42,7 +41,7 @@ export default async function CompletePage({ params }: Props) {
     console.error(`[analise/${id}/completo] Invalid diagnostic data:`, diagnosticoResult.error.format())
   }
 
-  const diagnosticoData = diagnosticoResult.success ? diagnosticoResult.data : (analysis.diagnostic as any)
+  const diagnosticoData = diagnosticoResult.success ? diagnosticoResult.data : (analysis.diagnostic as unknown as Diagnostico)
 
   const { data: generation } = await serviceClient
     .from('generations')

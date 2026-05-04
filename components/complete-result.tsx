@@ -237,9 +237,8 @@ export function CompleteResult({
                   <p className="text-sm leading-relaxed whitespace-pre-wrap text-muted-foreground">{carta.linkedin}</p>
                 </div>
                 <p className="text-xs text-muted-foreground mt-2">
-                  Use em "Adicionar uma nota" ao se candidatar no LinkedIn (max 300 caracteres).
-                </p>
-              </div>
+                  Use em &quot;Adicionar uma nota&quot; ao se candidatar no LinkedIn (max 300 caracteres).
+                </p>              </div>
 
               <div className="border-t border-border" />
 
