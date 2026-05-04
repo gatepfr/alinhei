@@ -14,9 +14,6 @@ export function CheckoutPolling({ analysisId }: { analysisId: string }) {
   const router = useRouter()
 
   useEffect(() => {
-    // Escondendo o ID para passar no lint, mas mantendo a estrutura se precisar usar no futuro
-    const _id = analysisId
-
     const interval = setInterval(async () => {
       try {
         const res = await fetch('/api/balance')

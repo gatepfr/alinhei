@@ -5,6 +5,23 @@ import { validateWebhookSignature, PRODUCTS, getMpClient, type ProductSku } from
 import { createServiceClient } from '@/lib/supabase/server'
 import { grantCredits } from '@/lib/credits'
 
+interface MPWebhookPayload {
+  type: string
+  data?: { id: string }
+}
+
+interface MPPayment {
+  status: string
+  metadata?: {
+    user_id?: string
+    sku?: string
+    coupon_code?: string
+  }
+  preference_id?: string
+  payer?: { email?: string }
+  payment_type_id?: string
+}
+
 export async function POST(request: NextRequest) {
   const requestId = request.headers.get('x-request-id') || 'unknown'
   
@@ -23,7 +40,7 @@ export async function POST(request: NextRequest) {
     }
 
     // 2. Parse do Payload
-    let payload: any
+    let payload: MPWebhookPayload
     try {
       payload = JSON.parse(rawBody)
     } catch {
@@ -42,13 +59,14 @@ export async function POST(request: NextRequest) {
 
     // 4. Buscar detalhes no Mercado Pago
     const mpClient = getMpClient()
-    let payment: any
+    let payment: MPPayment | null = null
     try {
       const paymentResponse = await new Payment(mpClient).get({ id: paymentId })
       // O SDK v2 pode retornar o objeto diretamente ou dentro de um body
-      payment = (paymentResponse as any).body || paymentResponse
-    } catch (err: any) {
-      console.error(`[MP Webhook][${requestId}] Erro ao buscar pagamento no MP:`, err?.message || err)
+      payment = ((paymentResponse as unknown as { body: MPPayment }).body || paymentResponse) as MPPayment
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err)
+      console.error(`[MP Webhook][${requestId}] Erro ao buscar pagamento no MP:`, msg)
       return NextResponse.json({ error: 'failed to fetch payment' }, { status: 500 })
     }
 
@@ -162,10 +180,11 @@ export async function POST(request: NextRequest) {
     console.log(`[MP Webhook][${requestId}] Sucesso!`)
     return NextResponse.json({ ok: true })
 
-  } catch (err: any) {
-    console.error(`[MP Webhook][${requestId}] ERRO FATAL:`, err?.message || err)
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : String(err)
+    console.error(`[MP Webhook][${requestId}] ERRO FATAL:`, msg)
     return NextResponse.json(
-      { error: 'internal server error', message: err?.message || 'Unknown error' },
+      { error: 'internal server error', message: msg },
       { status: 500 }
     )
   }

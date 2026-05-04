@@ -6,10 +6,10 @@ import { getBalance } from '@/lib/credits'
 import { generateReferralCode } from '@/lib/referral'
 import { getDynamicProducts } from '@/lib/mercadopago'
 import { ReferralCopy } from './referral-copy'
-import { CRMBoard } from './crm-board'
+import { CRMBoard, type Analysis } from './crm-board'
 import { DashboardPurchaseButton } from './purchase-button'
 import { MainNav } from '@/components/main-nav'
-import { Gift, Coins, FileText, Plus, ArrowRight, Sparkles } from 'lucide-react'
+import { Gift, Coins, FileText, Plus, Sparkles } from 'lucide-react'
 
 export const metadata = { title: 'Dashboard — Alinhei' }
 
@@ -154,7 +154,7 @@ export default async function DashboardPage() {
               </Link>
             </div>
           ) : (
-            <CRMBoard analyses={analyses as any} />
+            <CRMBoard analyses={analyses as unknown as Analysis[]} />
           )}
         </div>
 

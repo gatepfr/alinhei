@@ -10,16 +10,18 @@ import { cn } from '@/lib/utils'
 
 type Status = 'analisado' | 'candidatado' | 'entrevista' | 'feedback' | 'reprovado'
 
-interface Analysis {
+export interface AnalysisDiagnostic {
+  nota_aderencia?: number
+  preview_publico?: { nota?: number; ponto_forte_destaque?: string }
+}
+
+export interface Analysis {
   id: string
   created_at: string
   status: Status
   job_title: string | null
   company_name: string | null
-  diagnostic: {
-    nota_aderencia?: number
-    preview_publico?: { nota?: number; ponto_forte_destaque?: string }
-  }
+  diagnostic: AnalysisDiagnostic
 }
 
 interface CRMBoardProps {
@@ -116,7 +118,7 @@ export function CRMBoard({ analyses: initialAnalyses }: CRMBoardProps) {
 }
 
 function AnalysisCard({ analysis, onStatusChange }: { analysis: Analysis, onStatusChange: (status: Status) => void }) {
-  const diagnostic = analysis.diagnostic as any
+  const diagnostic = analysis.diagnostic
   const cargo = analysis.job_title || diagnostic?.preview_publico?.ponto_forte_destaque || 'Análise de currículo'
   const empresa = analysis.company_name || 'Empresa não informada'
   const nota = diagnostic?.nota_aderencia ?? diagnostic?.preview_publico?.nota

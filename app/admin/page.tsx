@@ -4,7 +4,7 @@ import { UserRow } from './user-row'
 import { CouponsSection } from './coupons-section'
 import { PriceEditor } from './price-editor'
 import { MainNav } from '@/components/main-nav'
-import { DEFAULT_PRODUCTS } from '@/lib/products'
+import { DEFAULT_PRODUCTS, type Products } from '@/lib/products'
 import { Users, BarChart2, Coins, FileText, Settings } from 'lucide-react'
 
 export const dynamic = 'force-dynamic'
@@ -37,7 +37,7 @@ export default async function AdminPage() {
     service.from('settings').select('value').eq('id', 'prices').maybeSingle(),
   ])
 
-  const currentPrices = (settingsRes?.value as any) || DEFAULT_PRODUCTS
+  const currentPrices = (settingsRes?.value as Products) || DEFAULT_PRODUCTS
 
   // Compute per-user balance from credits rows
   const now = new Date()
