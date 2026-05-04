@@ -31,6 +31,8 @@ export async function POST(request: NextRequest) {
   try {
     console.log(`[MP Webhook][${requestId}] Step 1: Start`)
     
+    const xSignature = request.headers.get('x-signature') ?? ''
+    
     // Log headers (sanitized)
     console.log(`[MP Webhook][${requestId}] Headers:`, {
       signature: xSignature ? 'present' : 'missing',
@@ -39,7 +41,6 @@ export async function POST(request: NextRequest) {
     })
 
     const rawBody = await request.text()
-    const xSignature = request.headers.get('x-signature') ?? ''
     const dataIdFromQuery = request.nextUrl.searchParams.get('data.id') ?? ''
 
     console.log(`[MP Webhook][${requestId}] Step 2: Body received`, { bodyLength: rawBody.length })
@@ -55,7 +56,7 @@ export async function POST(request: NextRequest) {
     let payload: MPWebhookPayload
     try {
       payload = JSON.parse(rawBody)
-    } catch (parseErr) {
+    } catch {
       console.error(`[MP Webhook][${requestId}] JSON Parse failure:`, rawBody.substring(0, 100))
       return NextResponse.json({ error: 'invalid json' }, { status: 400 })
     }
