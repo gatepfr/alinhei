@@ -42,6 +42,8 @@ export async function createPreference(opts: {
     body: {
       items: [{ id: opts.sku, title: `Alinhei — ${product.label}`, currency_id: 'BRL', unit_price: unitPrice, quantity: 1 }],
       payer: { email: opts.userEmail },
+      statement_descriptor: 'ALINHEI',
+      external_reference: opts.userId,
       payment_methods: { 
         excluded_payment_methods: [], 
         excluded_payment_types: []
