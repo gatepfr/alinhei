@@ -31,17 +31,12 @@ export async function POST(request: NextRequest) {
   try {
     console.log(`[MP Webhook][${requestId}] Step 1: Start`)
     
-    // Check Env Vars
-    const hasMPToken = !!process.env.MERCADOPAGO_ACCESS_TOKEN
-    const hasMPSecret = !!process.env.MERCADOPAGO_WEBHOOK_SECRET
-    const hasSupaURL = !!process.env.NEXT_PUBLIC_SUPABASE_URL
-    const hasSupaKey = !!process.env.SUPABASE_SERVICE_ROLE_KEY
-    
-    console.log(`[MP Webhook][${requestId}] Config Check:`, { hasMPToken, hasMPSecret, hasSupaURL, hasSupaKey })
-
-    if (!hasMPToken || !hasMPSecret) {
-      console.error(`[MP Webhook][${requestId}] CRITICAL: Missing MP environment variables`)
-    }
+    // Log headers (sanitized)
+    console.log(`[MP Webhook][${requestId}] Headers:`, {
+      signature: xSignature ? 'present' : 'missing',
+      requestId: requestId,
+      contentType: request.headers.get('content-type')
+    })
 
     const rawBody = await request.text()
     const xSignature = request.headers.get('x-signature') ?? ''
