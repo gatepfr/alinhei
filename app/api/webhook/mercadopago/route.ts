@@ -7,6 +7,7 @@ import { grantCredits } from '@/lib/credits'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
+export const maxDuration = 30
 
 interface MPWebhookPayload {
   type: string

@@ -1,4 +1,6 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {};
+const nextConfig = {
+  serverExternalPackages: ['mercadopago', 'pdf-parse'],
+};
 
 export default nextConfig;
