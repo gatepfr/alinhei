@@ -88,13 +88,16 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ ok: true })
     }
 
-    // 6. Extrair metadados
-    const metadata = payment.metadata || {}
-    const userId = metadata.user_id
-    const sku = metadata.sku as ProductSku
+    // 6. Extrair metadados — MP SDK v2 pode retornar snake_case ou camelCase
+    const rawMeta = (payment.metadata || {}) as Record<string, string>
+    const userId = rawMeta['user_id'] || rawMeta['userId'] || ''
+    const sku = (rawMeta['sku'] || '') as ProductSku
+    const couponFromMeta = rawMeta['coupon_code'] || rawMeta['couponCode'] || ''
+
+    console.log(`[MP Webhook][${requestId}] Metadata keys:`, Object.keys(rawMeta))
 
     if (!userId || !sku || !PRODUCTS[sku]) {
-      console.error(`[MP Webhook][${requestId}] Missing metadata:`, metadata)
+      console.error(`[MP Webhook][${requestId}] Missing metadata — userId:${userId} sku:${sku} meta:`, rawMeta)
       return NextResponse.json({ error: 'missing metadata' }, { status: 400 })
     }
 
@@ -113,19 +116,31 @@ export async function POST(request: NextRequest) {
       throw existingError
     }
 
-    if (existing) {
-      console.log(`[MP Webhook][${requestId}] Already processed:`, paymentId)
-      return NextResponse.json({ ok: true })
-    }
-
     // 8. Preparar dados
     const product = PRODUCTS[sku]
     const expiresAt = new Date()
     expiresAt.setDate(expiresAt.getDate() + product.expirationDays)
 
+    if (existing) {
+      // Pagamento já registrado — verificar se créditos foram concedidos
+      const { count: creditCount } = await supabase
+        .from('credits')
+        .select('id', { count: 'exact', head: true })
+        .eq('reference_id', existing.id)
+        .gt('amount', 0)
+
+      if ((creditCount || 0) === 0) {
+        console.warn(`[MP Webhook][${requestId}] Payment exists but credits missing — granting now`)
+        await grantCredits(userId, product.credits, `purchase:${sku}`, existing.id, expiresAt)
+      } else {
+        console.log(`[MP Webhook][${requestId}] Already fully processed:`, paymentId)
+      }
+      return NextResponse.json({ ok: true })
+    }
+
     console.log(`[MP Webhook][${requestId}] Step 5: Recording payment and granting credits`)
 
-    // 9. Registrar e conceder creditos
+    // 9. Registrar pagamento
     const { data: paymentRecord, error: paymentError } = await supabase
       .from('payments')
       .insert({
@@ -150,7 +165,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'failed to save payment' }, { status: 500 })
     }
 
-    // Creditos
+    // Conceder créditos
     await grantCredits(userId, product.credits, `purchase:${sku}`, paymentRecord.id, expiresAt)
     console.log(`[MP Webhook][${requestId}] Step 6: Credits granted`)
 
@@ -158,8 +173,8 @@ export async function POST(request: NextRequest) {
     try {
       console.log(`[MP Webhook][${requestId}] Step 7: Secondary tasks`)
       // Cupom
-      const couponCode = metadata.coupon_code
-      if (couponCode) {
+      if (couponFromMeta) {
+        const couponCode = couponFromMeta
         const { data: coupon } = await supabase.from('coupons').select('id, uses_count').ilike('code', couponCode).maybeSingle()
         if (coupon) {
           await supabase.from('coupons').update({ uses_count: coupon.uses_count + 1 }).eq('id', coupon.id)
