@@ -22,25 +22,22 @@ export async function GET(
     .ilike('code', code)
     .maybeSingle()
 
+  // Use a single generic error for all invalid states to prevent coupon enumeration
+  const genericInvalid = NextResponse.json(
+    { ok: false, error: { code: 'INVALID_COUPON', message: 'Cupom inválido ou expirado' } },
+    { status: 422 }
+  )
+
   if (!coupon) {
-    return NextResponse.json(
-      { ok: false, error: { code: 'NOT_FOUND', message: 'Cupom não encontrado' } },
-      { status: 404 }
-    )
+    return genericInvalid
   }
 
   if (coupon.valid_until && new Date(coupon.valid_until) < new Date()) {
-    return NextResponse.json(
-      { ok: false, error: { code: 'EXPIRED', message: 'Cupom expirado' } },
-      { status: 422 }
-    )
+    return genericInvalid
   }
 
   if (coupon.max_uses !== null && coupon.uses_count >= coupon.max_uses) {
-    return NextResponse.json(
-      { ok: false, error: { code: 'EXHAUSTED', message: 'Cupom esgotado' } },
-      { status: 422 }
-    )
+    return genericInvalid
   }
 
   return NextResponse.json({
