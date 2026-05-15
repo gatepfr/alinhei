@@ -17,6 +17,7 @@ export function UploadForm({ initialVaga = '' }: { initialVaga?: string }) {
   const [fileName, setFileName] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [activeTab, setActiveTab] = useState<'texto' | 'pdf'>('texto')
 
   async function handleFile(file: File) {
     const formData = new FormData()
@@ -70,22 +71,28 @@ export function UploadForm({ initialVaga = '' }: { initialVaga?: string }) {
       {/* Currículo */}
       <div className="space-y-3">
         <Label className="text-sm font-semibold text-foreground">Seu currículo</Label>
-        <Tabs defaultValue="texto">
+        <Tabs defaultValue="texto" onValueChange={(v) => setActiveTab(v as 'texto' | 'pdf')}>
           <TabsList className="w-full grid grid-cols-2 bg-secondary border border-border mb-3 h-11 p-1 gap-1">
             <TabsTrigger
               value="texto"
-              className="flex items-center gap-2 text-sm font-medium rounded-md border border-transparent
-                text-muted-foreground hover:text-foreground hover:bg-background/60 transition-all
-                data-active:bg-primary data-active:text-primary-foreground data-active:border-primary/20 data-active:shadow-sm"
+              className={[
+                'flex items-center gap-2 text-sm font-medium rounded-md border transition-all',
+                activeTab === 'texto'
+                  ? 'bg-primary text-primary-foreground border-primary shadow-sm ring-2 ring-primary/20'
+                  : 'border-transparent text-muted-foreground hover:text-foreground hover:bg-background/60',
+              ].join(' ')}
             >
               <ClipboardPaste className="w-4 h-4" />
               Colar texto
             </TabsTrigger>
             <TabsTrigger
               value="pdf"
-              className="flex items-center gap-2 text-sm font-medium rounded-md border border-transparent
-                text-muted-foreground hover:text-foreground hover:bg-background/60 transition-all
-                data-active:bg-primary data-active:text-primary-foreground data-active:border-primary/20 data-active:shadow-sm"
+              className={[
+                'flex items-center gap-2 text-sm font-medium rounded-md border transition-all',
+                activeTab === 'pdf'
+                  ? 'bg-primary text-primary-foreground border-primary shadow-sm ring-2 ring-primary/20'
+                  : 'border-transparent text-muted-foreground hover:text-foreground hover:bg-background/60',
+              ].join(' ')}
             >
               <FileUp className="w-4 h-4" />
               Subir PDF
