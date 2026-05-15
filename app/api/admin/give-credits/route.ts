@@ -35,10 +35,10 @@ export async function POST(req: NextRequest) {
 
   const { userId, amount, source } = parsed.data
 
-  // Verificar que o usuário existe
+  // Verificar que o usuário existe via auth admin (credits table may be empty for new users)
   const serviceClient = createServiceClient()
-  const { data: credits } = await serviceClient.from('credits').select('id').eq('user_id', userId).limit(1)
-  if (credits === null) {
+  const { data: authUser } = await serviceClient.auth.admin.getUserById(userId)
+  if (!authUser.user) {
     return NextResponse.json({ ok: false, error: 'Usuário não encontrado.' }, { status: 404 })
   }
 
