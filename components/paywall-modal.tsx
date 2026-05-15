@@ -48,7 +48,6 @@ export function PaywallModal({ analysisId, products: dynamicProducts, onClose }:
   const [couponError, setCouponError] = useState<string | null>(null)
   const [appliedCoupon, setAppliedCoupon] = useState<{ code: string; discount: Discount } | null>(null)
   const [variant, setVariant] = useState<'A' | 'B'>('A')
-  const [paymentOpened, setPaymentOpened] = useState(false)
   const [mounted, setMounted] = useState(false)
 
   const activeProducts = dynamicProducts || PRODUCTS
@@ -106,9 +105,7 @@ export function PaywallModal({ analysisId, products: dynamicProducts, onClose }:
       })
       const data = await res.json() as { ok: boolean; initPoint?: string; error?: { message: string } }
       if (data.ok && data.initPoint) {
-        window.open(data.initPoint, '_blank', 'noopener,noreferrer')
-        setPaymentOpened(true)
-        setLoading(null)
+        window.location.href = data.initPoint
       } else {
         alert(data.error?.message ?? 'Erro ao iniciar pagamento. Tente novamente.')
         setLoading(null)
@@ -212,39 +209,6 @@ export function PaywallModal({ analysisId, products: dynamicProducts, onClose }:
             )
           })}
         </div>
-
-        {/* Pagamento Aberto */}
-        {paymentOpened && (
-          <div className="mb-6 p-4 rounded-xl bg-primary/5 border border-primary/20 animate-in fade-in slide-in-from-top-2">
-            <div className="flex items-start gap-3">
-              <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
-                <CheckCircle className="w-4 h-4 text-primary" />
-              </div>
-              <div className="flex-1">
-                <p className="text-sm font-bold text-foreground mb-1">Pagamento aberto em nova aba</p>
-                <p className="text-xs text-muted-foreground leading-relaxed mb-3">
-                  Conclua o pagamento e retorne aqui. Pode levar alguns segundos para confirmar.
-                </p>
-                <div className="flex flex-col gap-2">
-                  <button
-                    type="button"
-                    onClick={() => window.location.reload()}
-                    className="w-full py-2 bg-primary text-primary-foreground rounded-lg text-xs font-bold hover:bg-primary/90 transition-colors"
-                  >
-                    Já paguei — verificar
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setPaymentOpened(false)}
-                    className="w-full py-2 bg-secondary text-muted-foreground rounded-lg text-xs font-medium hover:text-foreground transition-colors"
-                  >
-                    Tentar outro método
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
 
         {/* Cupom */}
         <div className="mb-5">
