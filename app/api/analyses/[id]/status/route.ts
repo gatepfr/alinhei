@@ -3,10 +3,17 @@ import { NextResponse } from 'next/server'
 
 const VALID_STATUSES = ['analisado', 'candidatado', 'entrevista', 'feedback', 'reprovado']
 
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+
 export async function PATCH(
   request: Request,
   { params }: { params: { id: string } }
 ) {
+  const { id } = params
+  if (!UUID_RE.test(id)) {
+    return NextResponse.json({ error: 'Invalid ID' }, { status: 400 })
+  }
+
   const supabase = createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
