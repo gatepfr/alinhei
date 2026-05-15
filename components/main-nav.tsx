@@ -27,7 +27,7 @@ export function MainNav({ isAdmin }: MainNavProps) {
     <nav className="sticky top-0 z-40 border-b border-border/60 bg-background/80 backdrop-blur-md px-4 py-2">
       <div className="max-w-5xl mx-auto flex items-center justify-between">
         <div className="flex items-center gap-8">
-          <Link href="/dashboard" className="flex items-center gap-2">
+          <Link href="/" className="flex items-center gap-2">
             <Image
               src="/logo.png"
               alt="Alinhei"

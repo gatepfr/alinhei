@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 import { createClient } from '@/lib/supabase/server'
 import { LoginForm } from './login-form'
 
@@ -19,8 +20,8 @@ export default async function LoginPage({ searchParams }: Props) {
     <div className="min-h-screen bg-background">
       <nav className="border-b border-border/60 bg-background/80 backdrop-blur-md px-4 py-3">
         <div className="max-w-3xl mx-auto">
-          <Link href="/" className="font-display font-bold text-lg tracking-tight">
-            Alinhei
+          <Link href="/" className="flex items-center">
+            <Image src="/logo.png" alt="Alinhei" width={110} height={32} className="h-8 w-auto" priority />
           </Link>
         </div>
       </nav>
