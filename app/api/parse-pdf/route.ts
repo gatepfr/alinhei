@@ -9,6 +9,10 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: false, error: { code: 'NO_FILE', message: 'Nenhum arquivo enviado.' } }, { status: 400 })
   }
 
+  if (!file.type.includes('pdf')) {
+    return NextResponse.json({ ok: false, error: { code: 'INVALID_TYPE', message: 'Apenas PDFs são aceitos.' } }, { status: 400 })
+  }
+
   if (file.size > 5 * 1024 * 1024) {
     return NextResponse.json({ ok: false, error: { code: 'FILE_TOO_LARGE', message: 'PDF maior que 5 MB.' } }, { status: 400 })
   }
