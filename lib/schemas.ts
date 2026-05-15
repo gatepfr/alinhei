@@ -24,8 +24,15 @@ export const DiagnosticoSchema = z.object({
 
 export type Diagnostico = z.infer<typeof DiagnosticoSchema>
 
+function trimLinkedin(s: string, max = 300): string {
+  if (s.length <= max) return s
+  const cut = s.slice(0, max)
+  const lastSpace = cut.lastIndexOf(' ')
+  return lastSpace > max * 0.8 ? cut.slice(0, lastSpace) : cut
+}
+
 export const CartaSchema = z.object({
-  linkedin: z.string(),
+  linkedin: z.string().transform(s => trimLinkedin(s)),
   email: z.string(),
 })
 
