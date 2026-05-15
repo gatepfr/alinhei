@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { Sora, DM_Sans } from 'next/font/google'
+import Script from 'next/script'
 import './globals.css'
 
 const sora = Sora({
@@ -34,6 +35,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="pt-BR" className={`${sora.variable} ${dmSans.variable}`}>
       <body className="font-sans antialiased bg-background text-foreground">
         {children}
+        <Script src="https://www.googletagmanager.com/gtag/js?id=G-P66XRS7RZ5" strategy="afterInteractive" />
+        <Script id="google-analytics" strategy="afterInteractive">{`
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-P66XRS7RZ5');
+        `}</Script>
       </body>
     </html>
   )
