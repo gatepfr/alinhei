@@ -32,6 +32,9 @@ export async function POST(request: NextRequest) {
 
   const { sku, analysisId, couponCode } = parsed.data
   const appUrl = (process.env.NEXT_PUBLIC_APP_URL ?? new URL(request.url).origin).trim()
+  // Notification URL must use the canonical www domain to avoid Vercel's non-www→www redirect
+  // (MP doesn't follow 301 redirects on POST, so the webhook would silently fail)
+  const webhookBase = (process.env.APP_WEBHOOK_URL ?? process.env.NEXT_PUBLIC_APP_URL ?? new URL(request.url).origin).trim()
 
   // Valida cupom e calcula desconto
   let discountedPrice: number | undefined
@@ -69,7 +72,7 @@ export async function POST(request: NextRequest) {
       sku,
       userId: user.id,
       userEmail: user.email!,
-      notificationUrl: `${appUrl}/api/webhook/mercadopago`,
+      notificationUrl: `${webhookBase}/api/webhook/mercadopago`,
       successUrl: analysisId 
         ? `${appUrl}/analise/${analysisId}?checkout=success`
         : `${appUrl}/dashboard?checkout=success`,
