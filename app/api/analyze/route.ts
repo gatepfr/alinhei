@@ -40,19 +40,28 @@ export async function POST(req: NextRequest) {
 
   const supabase = createServiceClient()
 
-  // Cache: se o mesmo par já foi analisado nas últimas 24h, reutilizar
-  const { data: cached } = await supabase
-    .from('analyses')
-    .select('id')
-    .eq('curriculo_hash', curriculoHash)
-    .eq('vaga_hash', vagaHash)
-    .gte('created_at', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString())
-    .order('created_at', { ascending: false })
-    .limit(1)
-    .maybeSingle()
+  const sessionId = req.cookies.get('session_id')?.value ?? null
+  const { data: { user } } = await createClient().auth.getUser()
 
-  if (cached) {
-    return NextResponse.json({ ok: true, analysisId: cached.id })
+  // Cache: se o mesmo par já foi analisado nas últimas 24h pelo mesmo usuário/sessão, reutilizar.
+  // Scoped to the caller so analysis IDs are never shared across users (privacy).
+  const userOrSessionFilter = user?.id
+    ? { user_id: user.id }
+    : sessionId ? { session_id: sessionId } : null
+
+  if (userOrSessionFilter) {
+    const { data: cached } = await supabase
+      .from('analyses')
+      .select('id')
+      .match({ ...userOrSessionFilter, curriculo_hash: curriculoHash, vaga_hash: vagaHash })
+      .gte('created_at', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString())
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle()
+
+    if (cached) {
+      return NextResponse.json({ ok: true, analysisId: cached.id })
+    }
   }
 
   // Chamar LLM
@@ -80,9 +89,6 @@ export async function POST(req: NextRequest) {
 
   // Custo aproximado Haiku: $0.80/MTok input, $4/MTok output → em BRL ~5.5x
   const costBrlCents = Math.round((inputTokens * 0.0008 + outputTokens * 0.004) / 1000 * 5.5 * 100)
-
-  const sessionId = req.cookies.get('session_id')?.value ?? null
-  const { data: { user } } = await createClient().auth.getUser()
 
   const { data: analysis, error: dbError } = await supabase
     .from('analyses')
