@@ -176,12 +176,12 @@ export async function POST(request: NextRequest) {
     // 10. Tarefas Secundarias
     try {
       console.log(`[MP Webhook][${requestId}] Step 7: Secondary tasks`)
-      // Cupom
+      // Cupom — atomic increment via RPC to avoid read-then-write race condition
       if (couponFromMeta) {
         const couponCode = couponFromMeta
-        const { data: coupon } = await supabase.from('coupons').select('id, uses_count').ilike('code', couponCode).maybeSingle()
+        const { data: coupon } = await supabase.from('coupons').select('id').ilike('code', couponCode).maybeSingle()
         if (coupon) {
-          await supabase.from('coupons').update({ uses_count: coupon.uses_count + 1 }).eq('id', coupon.id)
+          await supabase.rpc('increment_coupon_uses', { coupon_id: coupon.id })
         }
       }
 
