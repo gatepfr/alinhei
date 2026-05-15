@@ -109,9 +109,13 @@ export function validateWebhookSignature(
   
   const hmac = crypto.createHmac('sha256', secret)
   const expected = hmac.update(manifest).digest('hex')
-  
-  const isValid = expected === v1
-  
+
+  // Use timing-safe comparison to prevent timing-based side-channel attacks
+  const expectedBuf = Buffer.from(expected, 'hex')
+  const receivedBuf = Buffer.from(v1, 'hex')
+  const isValid = expectedBuf.length === receivedBuf.length &&
+    crypto.timingSafeEqual(expectedBuf, receivedBuf)
+
   if (!isValid) {
     console.error('[MP Webhook] Falha na validação!', {
       id: normalizedId,
