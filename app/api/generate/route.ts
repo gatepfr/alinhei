@@ -191,6 +191,16 @@ export async function POST(req: NextRequest) {
   const carta = cartaResult.status === 'fulfilled' ? cartaResult.value.data : null
   const perguntas = perguntasResult.status === 'fulfilled' ? perguntasResult.value.data : null
 
+  // If all three LLM calls failed the user's credit was debited but nothing was produced.
+  // Roll back by deleting the generation row so the next attempt can debit and retry cleanly.
+  if (!curriculo_otimizado && !carta && !perguntas) {
+    await serviceClient.from('generations').delete().eq('id', generation.id)
+    return NextResponse.json(
+      { ok: false, error: { code: 'LLM_ERROR', message: 'Erro ao gerar o pacote. Tente novamente.' } },
+      { status: 500 }
+    )
+  }
+
   let totalInput = 0
   let totalOutput = 0
   if (curriculoResult.status === 'fulfilled') {
