@@ -52,16 +52,17 @@ export default async function DashboardPage() {
 
   if (!referralCode) {
     referralCode = generateReferralCode()
-    const { error } = await serviceClient
+    // upsert with ignoreDuplicates handles concurrent session inserts gracefully,
+    // then re-fetch to get the actual stored code in case of conflict
+    await serviceClient
       .from('profiles')
-      .insert({ user_id: user.id, referral_code: referralCode })
-    
-    if (error) {
-      referralCode = generateReferralCode()
-      await serviceClient
-        .from('profiles')
-        .insert({ user_id: user.id, referral_code: referralCode })
-    }
+      .upsert({ user_id: user.id, referral_code: referralCode }, { onConflict: 'user_id', ignoreDuplicates: true })
+    const { data: profile } = await serviceClient
+      .from('profiles')
+      .select('referral_code')
+      .eq('user_id', user.id)
+      .maybeSingle()
+    referralCode = profile?.referral_code ?? referralCode
   }
 
   const analyses = analysesRes.data ?? []
