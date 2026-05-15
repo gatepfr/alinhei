@@ -21,7 +21,7 @@ export default async function LandingPage() {
               alt="Alinhei"
               width={110}
               height={32}
-              className="h-8 w-auto brightness-0 invert"
+              className="h-8 w-auto"
               priority
             />
           </Link>
@@ -274,7 +274,7 @@ export default async function LandingPage() {
               alt="Alinhei"
               width={80}
               height={24}
-              className="h-6 w-auto brightness-0 invert opacity-50"
+              className="h-6 w-auto opacity-60"
             />
           </div>
           <p>© 2025 Alinhei. Feito no Brasil para brasileiros.</p>

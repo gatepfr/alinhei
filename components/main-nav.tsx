@@ -33,7 +33,7 @@ export function MainNav({ isAdmin }: MainNavProps) {
               alt="Alinhei"
               width={110}
               height={32}
-              className="h-8 w-auto brightness-0 invert"
+              className="h-8 w-auto"
               priority
             />
           </Link>
