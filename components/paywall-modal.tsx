@@ -42,6 +42,7 @@ interface PaywallModalProps {
 
 export function PaywallModal({ analysisId, products: dynamicProducts, onClose }: PaywallModalProps) {
   const [loading, setLoading] = useState<ProductSku | null>(null)
+  const [checkoutError, setCheckoutError] = useState<string | null>(null)
   const [showCoupon, setShowCoupon] = useState(false)
   const [couponInput, setCouponInput] = useState('')
   const [couponLoading, setCouponLoading] = useState(false)
@@ -92,6 +93,7 @@ export function PaywallModal({ analysisId, products: dynamicProducts, onClose }:
 
   async function handleCheckout(sku: ProductSku) {
     setLoading(sku)
+    setCheckoutError(null)
     trackEvent('checkout_started', { sku, variant, coupon: appliedCoupon?.code ?? '' })
     try {
       const res = await fetch('/api/checkout', {
@@ -107,11 +109,11 @@ export function PaywallModal({ analysisId, products: dynamicProducts, onClose }:
       if (data.ok && data.initPoint) {
         window.location.href = data.initPoint
       } else {
-        alert(data.error?.message ?? 'Erro ao iniciar pagamento. Tente novamente.')
+        setCheckoutError(data.error?.message ?? 'Erro ao iniciar pagamento. Tente novamente.')
         setLoading(null)
       }
     } catch {
-      alert('Erro de rede. Tente novamente.')
+      setCheckoutError('Erro de rede. Tente novamente.')
       setLoading(null)
     }
   }
@@ -270,6 +272,13 @@ export function PaywallModal({ analysisId, products: dynamicProducts, onClose }:
             </div>
           )}
         </div>
+
+        {checkoutError && (
+          <p className="flex items-center gap-1.5 text-sm text-destructive mb-3">
+            <AlertCircle className="w-4 h-4 shrink-0" />
+            {checkoutError}
+          </p>
+        )}
 
         <p className="text-xs text-center text-muted-foreground">
           PIX ou cartão · Pagamento seguro via Mercado Pago

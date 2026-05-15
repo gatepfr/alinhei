@@ -1,5 +1,6 @@
 // app/analise/[id]/page.tsx
 import { notFound } from 'next/navigation'
+import { AlertCircle } from 'lucide-react'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { PreviewResult } from '@/components/preview-result'
 import { CheckoutPolling } from '@/components/checkout-polling'
@@ -81,6 +82,15 @@ export default async function AnaliseResultPage({ params, searchParams }: Props)
         </div>
 
         {showPolling && <CheckoutPolling analysisId={params.id} />}
+
+        {searchParams.checkout === 'failure' && (
+          <div className="mb-6 p-4 rounded-xl bg-destructive/10 border border-destructive/20 flex items-center gap-3 animate-in fade-in slide-in-from-top-2">
+            <AlertCircle className="w-4 h-4 text-destructive shrink-0" />
+            <p className="text-sm font-medium text-destructive">
+              Pagamento não concluído. Tente novamente quando quiser.
+            </p>
+          </div>
+        )}
 
         <PreviewResult
           diagnostic={diagnosticData}
