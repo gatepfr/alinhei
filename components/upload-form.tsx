@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Loader2, Upload, FileCheck, ArrowRight } from 'lucide-react'
+import { Loader2, Upload, FileCheck, ArrowRight, ClipboardPaste, FileUp } from 'lucide-react'
 
 export function UploadForm({ initialVaga = '' }: { initialVaga?: string }) {
   const router = useRouter()
@@ -71,11 +71,23 @@ export function UploadForm({ initialVaga = '' }: { initialVaga?: string }) {
       <div className="space-y-3">
         <Label className="text-sm font-semibold text-foreground">Seu currículo</Label>
         <Tabs defaultValue="texto">
-          <TabsList className="bg-secondary border border-border mb-3 h-9">
-            <TabsTrigger value="texto" className="text-xs data-active:bg-primary data-active:text-primary-foreground">
+          <TabsList className="w-full grid grid-cols-2 bg-secondary border border-border mb-3 h-11 p-1 gap-1">
+            <TabsTrigger
+              value="texto"
+              className="flex items-center gap-2 text-sm font-medium rounded-md border border-transparent
+                text-muted-foreground hover:text-foreground hover:bg-background/60 transition-all
+                data-active:bg-primary data-active:text-primary-foreground data-active:border-primary/20 data-active:shadow-sm"
+            >
+              <ClipboardPaste className="w-4 h-4" />
               Colar texto
             </TabsTrigger>
-            <TabsTrigger value="pdf" className="text-xs data-active:bg-primary data-active:text-primary-foreground">
+            <TabsTrigger
+              value="pdf"
+              className="flex items-center gap-2 text-sm font-medium rounded-md border border-transparent
+                text-muted-foreground hover:text-foreground hover:bg-background/60 transition-all
+                data-active:bg-primary data-active:text-primary-foreground data-active:border-primary/20 data-active:shadow-sm"
+            >
+              <FileUp className="w-4 h-4" />
               Subir PDF
             </TabsTrigger>
           </TabsList>
