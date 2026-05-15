@@ -46,8 +46,8 @@ function ScoreRing({ score }: { score: number }) {
         <circle
           cx="68" cy="68" r={radius}
           fill="none"
-          stroke="oklch(0.929 0.013 255.508)"
           strokeWidth="10"
+          style={{ stroke: 'var(--border)' }}
         />
         <circle
           cx="68" cy="68" r={radius}

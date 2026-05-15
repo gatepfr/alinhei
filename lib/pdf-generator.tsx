@@ -24,7 +24,7 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
   },
   headerLeft: { flex: 1 },
-  brand: { fontSize: 18, fontFamily: 'Helvetica-Bold', color: '#6366f1', marginBottom: 2 },
+  brand: { fontSize: 18, fontFamily: 'Helvetica-Bold', color: '#d97706', marginBottom: 2 },
   headerSub: { fontSize: 9, color: '#888' },
   score: { fontSize: 32, fontFamily: 'Helvetica-Bold' },
   headerDivider: { borderBottomWidth: 1, borderBottomColor: '#e5e7eb', marginTop: 12, marginBottom: 16 },
@@ -158,7 +158,7 @@ function DiagnosticoPDF({ diagnostico }: { diagnostico: Diagnostico }) {
 
 // ── ATS Curriculum PDF ───────────────────────────────────────────────────────
 
-function CurriculoPDF({ curriculo }: { curriculo: string }) {
+function parseCurriculoElements(curriculo: string): React.ReactNode[] {
   const lines = curriculo.split('\n')
   const elements: React.ReactNode[] = []
 
@@ -218,10 +218,14 @@ function CurriculoPDF({ curriculo }: { curriculo: string }) {
     )
   }
 
+  return elements
+}
+
+function CurriculoPDF({ curriculo }: { curriculo: string }) {
   return (
     <Document>
       <Page size="A4" style={ats.page}>
-        {elements}
+        {parseCurriculoElements(curriculo)}
       </Page>
     </Document>
   )
@@ -273,11 +277,8 @@ function AlinheiPDF({ data }: { data: PDFData }) {
       </Page>
 
       {curriculoOtimizado ? (
-        <Page style={styles.page}>
-          <Text style={styles.brand}>Alinhei</Text>
-          <View style={styles.headerDivider} />
-          <Text style={styles.sectionTitle}>Currículo Otimizado para ATS</Text>
-          <Text style={{ fontSize: 9, color: '#333', lineHeight: 1.6 }}>{curriculoOtimizado}</Text>
+        <Page size="A4" style={ats.page}>
+          {parseCurriculoElements(curriculoOtimizado)}
         </Page>
       ) : null}
 

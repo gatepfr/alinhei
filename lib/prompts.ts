@@ -122,7 +122,7 @@ NOME DA EMPRESA: ${nomeEmpresa}
 Escreva 2 versões e retorne neste JSON:
 
 {
-  "linkedin": "<mensagem de candidatura via LinkedIn, 300-400 caracteres, tom mais conversacional, sem saudação formal nem assinatura>",
+  "linkedin": "<mensagem de candidatura via LinkedIn, máximo 300 caracteres, tom mais conversacional, sem saudação formal nem assinatura>",
   "email": "<carta formato e-mail, 150-200 palavras, com saudação 'Olá, [recrutador/equipe]' e despedida 'Atenciosamente,\\n[Nome do candidato]'>"
 }`
 }

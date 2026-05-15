@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { Download, Copy, Check, Share2, TrendingUp, AlertTriangle, ChevronDown, ChevronUp } from 'lucide-react'
+import { Download, Copy, Check, Share2, TrendingUp, AlertTriangle, ChevronDown, ChevronUp, ChevronsUpDown } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import type { Diagnostico, Carta, Perguntas } from '@/lib/schemas'
@@ -62,7 +62,7 @@ function ScoreRing({ score }: { score: number }) {
   return (
     <div className="relative inline-flex items-center justify-center">
       <svg width="136" height="136" style={{ transform: 'rotate(-90deg)' }}>
-        <circle cx="68" cy="68" r={radius} fill="none" stroke="oklch(0.929 0.013 255.508)" strokeWidth="10" />
+        <circle cx="68" cy="68" r={radius} fill="none" strokeWidth="10" style={{ stroke: 'var(--border)' }} />
         <circle
           cx="68" cy="68" r={radius}
           fill="none"
@@ -85,6 +85,86 @@ function ScoreRing({ score }: { score: number }) {
   )
 }
 
+// ── Inline markdown renderer for the curriculum tab ──────────────────────────
+
+function parseInlineNodes(text: string): React.ReactNode[] {
+  const parts = text.split(/(\*\*[^*]+\*\*|\*[^*]+\*)/g)
+  return parts.map((part, i) => {
+    if (part.startsWith('**') && part.endsWith('**')) return <strong key={i}>{part.slice(2, -2)}</strong>
+    if (part.startsWith('*') && part.endsWith('*')) return <em key={i}>{part.slice(1, -1)}</em>
+    return part
+  })
+}
+
+function MarkdownCurriculo({ text }: { text: string }) {
+  const lines = text.split('\n')
+  const elements: React.ReactNode[] = []
+  let bullets: string[] = []
+  let bulletKey = 0
+
+  function flushBullets() {
+    if (!bullets.length) return
+    elements.push(
+      <ul key={`b${bulletKey++}`} className="list-disc pl-5 my-1 space-y-0.5">
+        {bullets.map((b, j) => (
+          <li key={j} className="text-sm text-muted-foreground leading-relaxed">
+            {parseInlineNodes(b)}
+          </li>
+        ))}
+      </ul>
+    )
+    bullets = []
+  }
+
+  for (let i = 0; i < lines.length; i++) {
+    const trimmed = lines[i].trim()
+
+    if (trimmed.startsWith('- ')) { bullets.push(trimmed.slice(2)); continue }
+    flushBullets()
+
+    if (!trimmed) { elements.push(<div key={i} className="h-2" />); continue }
+
+    if (trimmed.startsWith('# ')) {
+      elements.push(<h1 key={i} className="font-display text-xl font-bold text-foreground mt-0 mb-0.5">{trimmed.slice(2)}</h1>)
+      continue
+    }
+    if (trimmed.startsWith('## ')) {
+      elements.push(
+        <h2 key={i} className="font-display font-semibold text-xs uppercase tracking-widest text-foreground border-b border-border pb-1 mt-5 mb-2">
+          {trimmed.slice(3)}
+        </h2>
+      )
+      continue
+    }
+    if (trimmed.startsWith('### ')) {
+      elements.push(<h3 key={i} className="font-semibold text-sm text-foreground mt-3 mb-0">{parseInlineNodes(trimmed.slice(4))}</h3>)
+      continue
+    }
+
+    // *italic line* — dates / location
+    if (trimmed.startsWith('*') && trimmed.endsWith('*') && !trimmed.startsWith('**')) {
+      elements.push(<p key={i} className="text-xs text-muted-foreground/70 italic mb-1">{trimmed.slice(1, -1)}</p>)
+      continue
+    }
+
+    // Contact line: immediately after H1 and contains ·
+    let prevNonEmpty = ''
+    for (let j = i - 1; j >= 0; j--) { if (lines[j].trim()) { prevNonEmpty = lines[j].trim(); break } }
+    const isContact = prevNonEmpty.startsWith('# ') && trimmed.includes('·')
+
+    elements.push(
+      <p key={i} className={isContact ? 'text-xs text-muted-foreground mb-1' : 'text-sm text-muted-foreground leading-relaxed'}>
+        {parseInlineNodes(trimmed)}
+      </p>
+    )
+  }
+
+  flushBullets()
+  return <div className="font-sans">{elements}</div>
+}
+
+// ── Main component ───────────────────────────────────────────────────────────
+
 export function CompleteResult({
   diagnostico,
   curriculoOtimizado,
@@ -97,6 +177,18 @@ export function CompleteResult({
   const appUrl = typeof window !== 'undefined' ? window.location.origin : ''
   const pageUrl = `${appUrl}/analise/${analysisId}/completo`
   const linkedinShareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(pageUrl)}`
+
+  // Controlled open states for STAR accordion
+  const [starStates, setStarStates] = useState<boolean[]>(() =>
+    perguntas?.perguntas.map(() => false) ?? []
+  )
+  const anyStarOpen = starStates.some(Boolean)
+  function toggleStar(i: number) {
+    setStarStates(s => s.map((v, j) => j === i ? !v : v))
+  }
+  function toggleAllStar() {
+    setStarStates(s => s.map(() => !anyStarOpen))
+  }
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-10">
@@ -202,16 +294,20 @@ export function CompleteResult({
         <TabsContent value="curriculo">
           {curriculoOtimizado ? (
             <div className="space-y-3">
-              <div className="flex justify-end">
+              <div className="flex justify-end gap-2">
+                <Link href={`/api/pdf/${generationId}/curriculo`} target="_blank">
+                  <Button variant="outline" size="sm" className="gap-2 border-border bg-secondary hover:bg-secondary/80 text-foreground">
+                    <Download className="w-3.5 h-3.5" />
+                    Baixar PDF
+                  </Button>
+                </Link>
                 <CopyButton text={curriculoOtimizado} label="Copiar currículo" />
               </div>
               <div className="bg-card rounded-xl border border-border p-6">
-                <pre className="whitespace-pre-wrap font-mono text-sm leading-relaxed text-muted-foreground">
-                  {curriculoOtimizado}
-                </pre>
+                <MarkdownCurriculo text={curriculoOtimizado} />
               </div>
               <p className="text-xs text-muted-foreground text-center">
-                Copie o texto acima e cole no seu editor de documentos favorito.
+                Copie o texto acima ou baixe o PDF formatado para ATS.
               </p>
             </div>
           ) : (
@@ -231,14 +327,20 @@ export function CompleteResult({
                     </div>
                     LinkedIn — candidatura
                   </h3>
-                  <CopyButton text={carta.linkedin} label="Copiar" />
+                  <div className="flex items-center gap-2">
+                    <span className={`text-xs font-mono tabular-nums ${carta.linkedin.length > 300 ? 'text-red-400' : 'text-emerald-400'}`}>
+                      {carta.linkedin.length} / 300
+                    </span>
+                    <CopyButton text={carta.linkedin} label="Copiar" />
+                  </div>
                 </div>
                 <div className="bg-card rounded-xl border border-blue-500/20 p-5">
                   <p className="text-sm leading-relaxed whitespace-pre-wrap text-muted-foreground">{carta.linkedin}</p>
                 </div>
                 <p className="text-xs text-muted-foreground mt-2">
                   Use em &quot;Adicionar uma nota&quot; ao se candidatar no LinkedIn (max 300 caracteres).
-                </p>              </div>
+                </p>
+              </div>
 
               <div className="border-t border-border" />
 
@@ -261,8 +363,19 @@ export function CompleteResult({
         <TabsContent value="entrevista">
           {perguntas ? (
             <div className="space-y-3">
+              <div className="flex justify-end">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={toggleAllStar}
+                  className="gap-2 border-border bg-secondary hover:bg-secondary/80 text-foreground text-xs"
+                >
+                  <ChevronsUpDown className="w-3.5 h-3.5" />
+                  {anyStarOpen ? 'Recolher todos' : 'Expandir todos'}
+                </Button>
+              </div>
               {perguntas.perguntas.map((p, i) => (
-                <STARItem key={i} index={i + 1} item={p} />
+                <STARItem key={i} index={i + 1} item={p} open={starStates[i] ?? false} onToggle={() => toggleStar(i)} />
               ))}
             </div>
           ) : (
@@ -276,13 +389,12 @@ export function CompleteResult({
 
 type PerguntaItem = Perguntas['perguntas'][number]
 
-function STARItem({ index, item }: { index: number; item: PerguntaItem }) {
-  const [open, setOpen] = useState(false)
+function STARItem({ index, item, open, onToggle }: { index: number; item: PerguntaItem; open: boolean; onToggle: () => void }) {
   const isBehavioral = item.tipo === 'comportamental'
 
   return (
     <div className={`bg-card rounded-xl border p-5 transition-colors ${isBehavioral ? 'border-primary/20' : 'border-border'}`}>
-      <button className="w-full text-left" onClick={() => setOpen((v) => !v)}>
+      <button className="w-full text-left" onClick={onToggle}>
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-start gap-3">
             <span className="text-muted-foreground/50 font-mono text-sm mt-0.5 shrink-0">{index}.</span>

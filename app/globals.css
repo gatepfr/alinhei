@@ -82,25 +82,25 @@
 
 @layer base {
   :root {
-    --background: oklch(0.09 0.012 250);
-    --foreground: oklch(0.97 0.005 80);
-    --card: oklch(0.13 0.014 250);
-    --card-foreground: oklch(0.97 0.005 80);
-    --popover: oklch(0.13 0.014 250);
-    --popover-foreground: oklch(0.97 0.005 80);
-    --primary: oklch(0.72 0.18 55);
-    --primary-foreground: oklch(0.09 0.02 55);
-    --secondary: oklch(0.17 0.012 250);
-    --secondary-foreground: oklch(0.97 0.005 80);
-    --muted: oklch(0.17 0.012 250);
-    --muted-foreground: oklch(0.54 0.022 260);
-    --accent: oklch(0.18 0.022 55);
-    --accent-foreground: oklch(0.72 0.18 55);
-    --destructive: oklch(0.6 0.22 25);
-    --destructive-foreground: oklch(0.97 0.005 80);
-    --border: oklch(0.22 0.014 250);
-    --input: oklch(0.19 0.013 250);
-    --ring: oklch(0.72 0.18 55);
+    --background: oklch(0.98 0.003 250);
+    --foreground: oklch(0.13 0.012 250);
+    --card: oklch(1 0 0);
+    --card-foreground: oklch(0.13 0.012 250);
+    --popover: oklch(1 0 0);
+    --popover-foreground: oklch(0.13 0.012 250);
+    --primary: oklch(0.63 0.19 55);
+    --primary-foreground: oklch(0.99 0.005 80);
+    --secondary: oklch(0.94 0.006 250);
+    --secondary-foreground: oklch(0.13 0.012 250);
+    --muted: oklch(0.94 0.006 250);
+    --muted-foreground: oklch(0.5 0.022 260);
+    --accent: oklch(0.96 0.04 55);
+    --accent-foreground: oklch(0.55 0.19 55);
+    --destructive: oklch(0.58 0.22 25);
+    --destructive-foreground: oklch(0.99 0.005 80);
+    --border: oklch(0.88 0.008 250);
+    --input: oklch(0.92 0.007 250);
+    --ring: oklch(0.63 0.19 55);
     --radius: 0.75rem;
   }
 
@@ -113,8 +113,8 @@
   }
 
   ::selection {
-    background: oklch(0.72 0.18 55 / 0.25);
-    color: oklch(0.97 0.005 80);
+    background: oklch(0.63 0.19 55 / 0.2);
+    color: oklch(0.13 0.012 250);
   }
 
   ::-webkit-scrollbar {
@@ -127,11 +127,11 @@
   }
 
   ::-webkit-scrollbar-thumb {
-    background: oklch(0.28 0.015 250);
+    background: oklch(0.78 0.008 250);
     border-radius: 3px;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    background: oklch(0.38 0.02 250);
+    background: oklch(0.68 0.01 250);
   }
 }
