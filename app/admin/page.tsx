@@ -1,5 +1,6 @@
 import { createClient as createSupabaseAdminClient } from '@supabase/supabase-js'
-import { createServiceClient } from '@/lib/supabase/server'
+import { createClient, createServiceClient } from '@/lib/supabase/server'
+import { redirect } from 'next/navigation'
 import { UserRow } from './user-row'
 import { CouponsSection } from './coupons-section'
 import { PriceEditor } from './price-editor'
@@ -28,6 +29,13 @@ function fmtBRL(cents: number) {
 }
 
 export default async function AdminPage() {
+  // Server-side admin guard — defence-in-depth beyond middleware
+  const { data: { user: currentUser } } = await createClient().auth.getUser()
+  const adminEmails = (process.env.ADMIN_EMAIL ?? '').split(',').map(e => e.trim().toLowerCase())
+  if (!currentUser?.email || !adminEmails.includes(currentUser.email.toLowerCase())) {
+    redirect('/')
+  }
+
   const supabase = adminClient()
   const service = createServiceClient()
 
