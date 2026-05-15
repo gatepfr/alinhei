@@ -65,15 +65,8 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  // Captura ?ref=<userId> e salva em cookie por 30 dias
-  const refParam = request.nextUrl.searchParams.get('ref')
-  if (refParam && /^[0-9a-f-]{36}$/.test(refParam)) {
-    supabaseResponse.cookies.set('vc_ref', refParam, {
-      maxAge: 60 * 60 * 24 * 30,
-      path: '/',
-      sameSite: 'lax',
-    })
-  }
+  // NOTE: ?ref=<uuid> path removed — raw UUIDs are not validated against profiles.
+  // Referral tracking now only happens via /r/[code] which validates against profiles table.
 
   // Atribui variante A/B para o copy do paywall (50/50, persistida por 90 dias)
   if (!request.cookies.get('ab_paywall')) {
