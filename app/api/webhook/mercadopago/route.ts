@@ -16,6 +16,7 @@ interface MPWebhookPayload {
 
 interface MPPayment {
   status: string
+  transaction_amount?: number
   metadata?: {
     user_id?: string
     sku?: string
@@ -150,7 +151,9 @@ export async function POST(request: NextRequest) {
         mp_preference_id: payment.preference_id || null,
         status: 'approved',
         product_sku: sku,
-        amount_brl_cents: Math.round(product.price * 100),
+        amount_brl_cents: payment.transaction_amount != null
+          ? Math.round(payment.transaction_amount * 100)
+          : Math.round(product.price * 100),
         credits_granted: product.credits,
         payer_email: payment.payer?.email || null,
         payment_method: payment.payment_type_id || null,
