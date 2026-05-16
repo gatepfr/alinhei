@@ -28,7 +28,7 @@ export function PriceEditor({ initialPrices }: Props) {
       [sku]: {
         ...prev[sku],
         [field]: field === 'label' ? value
-          : field === 'price' ? parseFloat(value.toString()) || 0
+          : field === 'price' ? parseFloat(value.toString().replace(',', '.')) || 0
           : parseInt(value.toString()) || 0,
       }
     }))
@@ -65,10 +65,14 @@ export function PriceEditor({ initialPrices }: Props) {
         ))}
       </div>
 
-      {(Object.keys(prices) as Array<ProductSku>).map((sku, i) => {
+      {(Object.keys(prices) as Array<ProductSku>)
+        .sort((a, b) => prices[a].price - prices[b].price)
+        .map((sku, i, arr) => {
         const p = prices[sku]
-        const pricePerCredit = p.credits > 0 ? (p.price / p.credits).toFixed(2) : '—'
-        const isLast = i === Object.keys(prices).length - 1
+        const pricePerCredit = p.credits > 0
+          ? (p.price / p.credits).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+          : '—'
+        const isLast = i === arr.length - 1
 
         return (
           <div
@@ -91,10 +95,9 @@ export function PriceEditor({ initialPrices }: Props) {
               <div className="relative">
                 <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">R$</span>
                 <Input
-                  type="number"
-                  step="0.01"
-                  min="0.01"
-                  value={p.price}
+                  type="text"
+                  inputMode="decimal"
+                  value={p.price.toFixed(2)}
                   onChange={e => handleChange(sku, 'price', e.target.value)}
                   className="h-8 text-sm bg-secondary border-border pl-7"
                 />
@@ -126,7 +129,7 @@ export function PriceEditor({ initialPrices }: Props) {
               </div>
               <div className="space-y-1.5">
                 <Label className="text-xs text-muted-foreground">Preço (R$)</Label>
-                <Input type="number" step="0.01" min="0.01" value={p.price} onChange={e => handleChange(sku, 'price', e.target.value)} className="h-9 text-sm" />
+                <Input type="text" inputMode="decimal" value={p.price.toFixed(2)} onChange={e => handleChange(sku, 'price', e.target.value)} className="h-9 text-sm" />
               </div>
               <div className="space-y-1.5">
                 <Label className="text-xs text-muted-foreground">Créditos</Label>
