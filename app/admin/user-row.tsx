@@ -116,9 +116,9 @@ export function UserRow({ user }: Props) {
           <GiveCreditsForm
             userId={user.id}
             userEmail={user.email}
-            onDone={() => {
+            onDone={(delta) => {
               setShowForm(false)
-              setBalance(b => b + 1)
+              if (delta) setBalance(b => b + delta)
             }}
           />
         </div>

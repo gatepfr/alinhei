@@ -6,7 +6,7 @@ import { grantCredits } from '@/lib/credits'
 
 const RequestSchema = z.object({
   userId: z.string().uuid(),
-  amount: z.number().int().min(1).max(100),
+  amount: z.number().int().min(-100).max(100).refine(n => n !== 0, 'Amount cannot be zero'),
   source: z.string().min(1).default('admin:grant'),
 })
 
