@@ -10,6 +10,7 @@ import { trackEvent } from '@/lib/analytics'
 
 interface ContactInfo {
   name: string
+  email: string
   phone: string
   linkedin_url: string
   city: string
@@ -26,7 +27,7 @@ export function GenerateFlow({ analysisId, userEmail }: GenerateFlowProps) {
   const router = useRouter()
   const [stage, setStage] = useState<Stage>('loading')
   const [error, setError] = useState<string | null>(null)
-  const [contact, setContact] = useState<ContactInfo>({ name: '', phone: '', linkedin_url: '', city: '' })
+  const [contact, setContact] = useState<ContactInfo>({ name: '', email: userEmail, phone: '', linkedin_url: '', city: '' })
   const generating = useRef(false)
 
   async function startGeneration(c: ContactInfo) {
@@ -43,7 +44,7 @@ export function GenerateFlow({ analysisId, userEmail }: GenerateFlowProps) {
           analysis_id: analysisId,
           contact_info: {
             name: c.name || undefined,
-            email: userEmail || undefined,
+            email: c.email || userEmail || undefined,
             phone: c.phone || undefined,
             linkedin_url: c.linkedin_url || undefined,
             city: c.city || undefined,
@@ -76,6 +77,7 @@ export function GenerateFlow({ analysisId, userEmail }: GenerateFlowProps) {
           const p = data.profile
           const c: ContactInfo = {
             name: p.full_name ?? '',
+            email: userEmail,
             phone: p.phone ?? '',
             linkedin_url: p.linkedin_url ?? '',
             city: p.city ?? '',
@@ -162,9 +164,16 @@ export function GenerateFlow({ analysisId, userEmail }: GenerateFlowProps) {
                 onChange={e => setContact(c => ({ ...c, linkedin_url: e.target.value }))}
               />
             </div>
-            <p className="text-xs text-muted-foreground pt-1">
-              E-mail: <span className="text-foreground font-medium">{userEmail}</span>
-            </p>
+            <div>
+              <Label htmlFor="gen-email" className="text-xs mb-1.5 block">E-mail</Label>
+              <Input
+                id="gen-email"
+                type="email"
+                placeholder="seu@email.com"
+                value={contact.email}
+                onChange={e => setContact(c => ({ ...c, email: e.target.value }))}
+              />
+            </div>
             <Button type="submit" className="w-full mt-2">
               Gerar pacote completo →
             </Button>
