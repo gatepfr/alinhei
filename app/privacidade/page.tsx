@@ -100,7 +100,7 @@ export default function PrivacidadePage() {
           <p>Não vendemos, alugamos ou comercializamos seus dados.</p>
         </Section>
 
-        <Section title="5. Retenção e Exclusão">
+        <Section title="5. Retenção e exclusão">
           <ul>
             <li>
               O texto do currículo é excluído automaticamente em até{' '}
@@ -116,7 +116,7 @@ export default function PrivacidadePage() {
           </ul>
         </Section>
 
-        <Section title="6. Seus Direitos (LGPD — art. 18)">
+        <Section title="6. Seus direitos (LGPD — art. 18)">
           <p>Você tem direito a:</p>
           <ul>
             <li>Confirmar a existência de tratamento dos seus dados;</li>
@@ -170,7 +170,7 @@ export default function PrivacidadePage() {
       <footer className="border-t border-border/40 py-10 px-4 mt-8">
         <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
           <Image src="/logo.png" alt="Alinhei" width={80} height={24} className="h-6 w-auto opacity-60" />
-          <p>© 2025 Alinhei. Feito no Brasil para brasileiros.</p>
+          <p>© 2026 Alinhei. Feito no Brasil para brasileiros.</p>
           <div className="flex items-center gap-4">
             <Link href="/termos" className="hover:text-foreground transition-colors">Termos de Uso</Link>
             <Link href="/privacidade" className="hover:text-foreground transition-colors">Privacidade</Link>

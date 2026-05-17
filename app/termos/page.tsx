@@ -114,7 +114,7 @@ export default function TermosPage() {
       <footer className="border-t border-border/40 py-10 px-4 mt-8">
         <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
           <Image src="/logo.png" alt="Alinhei" width={80} height={24} className="h-6 w-auto opacity-60" />
-          <p>© 2025 Alinhei. Feito no Brasil para brasileiros.</p>
+          <p>© 2026 Alinhei. Feito no Brasil para brasileiros.</p>
           <div className="flex items-center gap-4">
             <Link href="/termos" className="hover:text-foreground transition-colors">Termos de Uso</Link>
             <Link href="/privacidade" className="hover:text-foreground transition-colors">Privacidade</Link>
