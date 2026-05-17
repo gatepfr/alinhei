@@ -168,47 +168,84 @@ export default async function LandingPage() {
         </div>
       </section>
 
-      {/* O que está incluído */}
+      {/* Comparação */}
       <section className="py-24 px-4 relative overflow-hidden">
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] bg-primary/[0.04] blur-[100px] rounded-full" />
         </div>
-        <div className="relative max-w-3xl mx-auto text-center">
-          <p className="text-xs font-semibold text-primary uppercase tracking-widest mb-3">Pacote completo</p>
-          <h2 className="font-display text-3xl sm:text-4xl font-bold mb-3">
-            O que um coach cobraria R$ 300
-          </h2>
-          <p className="text-muted-foreground mb-12">
-            Você paga <span className="text-primary font-bold text-xl">R$ 9,90</span>
-          </p>
-          <div className="grid sm:grid-cols-2 gap-3 text-left mb-12">
-            {[
-              'Diagnóstico completo com 3 pontos fortes e 3 gaps',
-              'Currículo reescrito e otimizado para ATS',
-              'Carta de apresentação para LinkedIn',
-              'Carta de apresentação para e-mail',
-              '5 perguntas de entrevista com respostas STAR',
-              'PDF pronto para download',
-            ].map((item) => (
-              <div
-                key={item}
-                className="flex items-start gap-3 p-4 rounded-xl border border-border bg-card card-glow"
-              >
-                <CheckCircle className="w-4 h-4 text-primary shrink-0 mt-0.5" />
-                <span className="text-sm text-muted-foreground">{item}</span>
-              </div>
-            ))}
+        <div className="relative max-w-5xl mx-auto">
+          <div className="text-center mb-12">
+            <p className="text-xs font-semibold text-primary uppercase tracking-widest mb-3">O que você recebe</p>
+            <h2 className="font-display text-3xl sm:text-4xl font-bold mb-3">
+              De candidato invisível a candidato preparado
+            </h2>
+            <p className="text-muted-foreground">
+              Tudo que um coach de carreira cobraria R$ 300+ — por{' '}
+              <span className="text-primary font-bold text-xl">R$ 9,90</span>
+            </p>
           </div>
-          <Link
-            href="/analise"
-            className={cn(
-              buttonVariants({ size: 'lg' }),
-              'bg-primary text-primary-foreground hover:bg-primary/90 h-13 px-8 text-base font-semibold group gap-2'
-            )}
-          >
-            Começar análise grátis
-            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-          </Link>
+
+          <div className="grid md:grid-cols-2 gap-4 max-w-3xl mx-auto mb-10">
+            {/* Sem Alinhei */}
+            <div className="bg-card rounded-2xl border border-border p-6">
+              <div className="flex items-center gap-2 mb-5">
+                <XCircle className="w-4 h-4 text-destructive/60" />
+                <h3 className="font-semibold text-sm text-muted-foreground">Sem o Alinhei</h3>
+              </div>
+              <ul className="space-y-3">
+                {[
+                  'Currículo genérico para todas as vagas',
+                  'Sem saber se passa pelo filtro ATS',
+                  'Sem identificar os gaps críticos',
+                  'Entrevista sem preparação específica',
+                  'Sem carta de apresentação personalizada',
+                ].map((item) => (
+                  <li key={item} className="flex items-start gap-2.5 text-sm text-muted-foreground/70">
+                    <XCircle className="w-3.5 h-3.5 text-destructive/40 shrink-0 mt-0.5" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Com Alinhei */}
+            <div className="bg-primary/[0.05] rounded-2xl border border-primary/20 p-6">
+              <div className="flex items-center gap-2 mb-5">
+                <CheckCircle className="w-4 h-4 text-primary" />
+                <h3 className="font-semibold text-sm text-primary">Com o Alinhei</h3>
+              </div>
+              <ul className="space-y-3">
+                {[
+                  'Currículo reescrito para essa vaga específica',
+                  'Nota de aderência + gaps com como resolver',
+                  '3 pontos fortes e 3 gaps críticos detalhados',
+                  '5 perguntas de entrevista com respostas STAR',
+                  '2 cartas de apresentação (LinkedIn + e-mail)',
+                ].map((item) => (
+                  <li key={item} className="flex items-start gap-2.5 text-sm text-foreground">
+                    <CheckCircle className="w-3.5 h-3.5 text-primary shrink-0 mt-0.5" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+
+          <div className="text-center">
+            <Link
+              href="/analise"
+              className={cn(
+                buttonVariants({ size: 'lg' }),
+                'bg-primary text-primary-foreground hover:bg-primary/90 h-13 px-8 text-base font-semibold group gap-2'
+              )}
+            >
+              Começar análise grátis
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            </Link>
+            <p className="text-xs text-muted-foreground mt-3">
+              Diagnóstico gratuito · Pacote completo a partir de R$ 9,90
+            </p>
+          </div>
         </div>
       </section>
 
