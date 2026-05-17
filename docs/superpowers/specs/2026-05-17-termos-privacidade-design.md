@@ -93,7 +93,7 @@ Podemos alterar estes Termos a qualquer momento. Alterações significativas ser
 ### 9. Contato e Foro
 Dúvidas: suporte@alinhei.com.br
 
-Fica eleito o foro da Comarca de São Paulo — SP para dirimir quaisquer controvérsias decorrentes destes Termos.
+Fica eleito o foro da Comarca de Apucarana — PR para dirimir quaisquer controvérsias decorrentes destes Termos.
 
 ---
 
