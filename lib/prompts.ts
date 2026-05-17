@@ -40,6 +40,7 @@ Avalie a aderência do currículo à vaga e retorne JSON com este formato exato:
       "como_resolver": "<sugestão prática e específica de como mitigar no próprio currículo, mesmo sem fazer curso novo>"
     }
   ],
+  "keywords_faltantes": ["<keyword ou expressão exata da vaga que não aparece nem sinônimo no currículo — máximo 6 itens, só incluir se realmente ausente>"],
   "preview_publico": {
     "nota": <mesmo número de nota_aderencia>,
     "ponto_forte_destaque": "<o título do pontos_fortes[0]>",

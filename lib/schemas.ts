@@ -15,6 +15,7 @@ export const DiagnosticoSchema = z.object({
     // modelo às vezes omite o campo — aceitar ausente e normalizar para string vazia
     como_resolver: z.preprocess(val => (typeof val === 'string' ? val : ''), z.string()),
   })).min(1),
+  keywords_faltantes: z.array(z.string()).min(0).max(8).default([]),
   preview_publico: z.object({
     nota: z.coerce.number().int().min(0).max(100),
     ponto_forte_destaque: z.string(),
