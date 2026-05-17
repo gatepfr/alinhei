@@ -134,7 +134,7 @@ export default function PrivacidadePage() {
           </p>
         </Section>
 
-        <Section title="7. Cookies e Rastreamento">
+        <Section title="7. Cookies e rastreamento">
           <p>Usamos:</p>
           <ul>
             <li>
@@ -155,7 +155,7 @@ export default function PrivacidadePage() {
           </p>
         </Section>
 
-        <Section title="9. Contato e Encarregado de Dados (DPO)">
+        <Section title="9. Contato e encarregado de dados (DPO)">
           <p><strong className="text-foreground">PAULO FABRICIO MAGRI DOS REIS</strong></p>
           <p>CNPJ: 66.301.043/0001-15</p>
           <p>

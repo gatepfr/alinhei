@@ -455,7 +455,7 @@ export default async function LandingPage() {
               className="h-6 w-auto opacity-60"
             />
           </div>
-          <p>© 2025 Alinhei. Feito no Brasil para brasileiros.</p>
+          <p>© 2026 Alinhei. Feito no Brasil para brasileiros.</p>
           <div className="flex items-center gap-4">
             <Link href="/termos" className="hover:text-foreground transition-colors">Termos de Uso</Link>
             <Link href="/privacidade" className="hover:text-foreground transition-colors">Privacidade</Link>
