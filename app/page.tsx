@@ -136,6 +136,8 @@ export default async function LandingPage() {
         </div>
       </section>
 
+      <ProblemSection />
+
       {/* Como funciona */}
       <section className="py-24 px-4">
         <div className="max-w-5xl mx-auto">
@@ -431,5 +433,67 @@ function Testimonial({ name, role, text, score }: { name: string; role: string; 
         ))}
       </div>
     </div>
+  )
+}
+
+function ProblemSection() {
+  const problems = [
+    {
+      icon: <AlertTriangle className="w-4 h-4" />,
+      color: 'bg-amber-500/10 border-amber-500/20 text-amber-400',
+      title: 'Filtros ATS invisíveis',
+      description:
+        '3 em cada 4 vagas passam por sistemas automáticos que rejeitam currículos sem as palavras certas — antes de qualquer recrutador ver.',
+    },
+    {
+      icon: <XCircle className="w-4 h-4" />,
+      color: 'bg-red-500/10 border-red-500/20 text-red-400',
+      title: 'Keywords da vaga ausentes',
+      description:
+        'Você pode ter toda a experiência necessária. Mas se as palavras exatas da vaga não aparecem no currículo, o filtro te elimina.',
+    },
+    {
+      icon: <FileText className="w-4 h-4" />,
+      color: 'bg-orange-500/10 border-orange-500/20 text-orange-400',
+      title: 'Currículo genérico',
+      description:
+        'Um currículo mandado para 20 vagas diferentes tem ~5% de conversão. Personalizado para a vaga: até 3x mais chances de entrevista.',
+    },
+    {
+      icon: <Users className="w-4 h-4" />,
+      color: 'bg-purple-500/10 border-purple-500/20 text-purple-400',
+      title: 'Concorrência já usa IA',
+      description:
+        'Candidatos que otimizam currículo com IA para cada vaga saem na frente. O campo de jogo mudou — mas você pode equilibrar agora.',
+    },
+  ]
+
+  return (
+    <section className="py-24 px-4 border-t border-border/40">
+      <div className="max-w-5xl mx-auto">
+        <div className="text-center mb-14">
+          <p className="text-xs font-semibold text-primary uppercase tracking-widest mb-3">O problema</p>
+          <h2 className="font-display text-3xl sm:text-4xl font-bold mb-3">
+            Por que bons candidatos perdem vagas
+          </h2>
+          <p className="text-muted-foreground max-w-xl mx-auto">
+            Não é falta de qualificação. É a forma como o currículo é apresentado para o sistema errado.
+          </p>
+        </div>
+        <div className="grid sm:grid-cols-2 gap-4">
+          {problems.map((p) => (
+            <div key={p.title} className="flex gap-4 p-5 bg-card rounded-2xl border border-border card-glow">
+              <div className={`w-9 h-9 rounded-xl border flex items-center justify-center shrink-0 mt-0.5 ${p.color}`}>
+                {p.icon}
+              </div>
+              <div>
+                <h3 className="font-semibold text-sm mb-1">{p.title}</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">{p.description}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
   )
 }
