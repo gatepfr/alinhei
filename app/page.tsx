@@ -258,7 +258,7 @@ export default async function LandingPage() {
       {/* Social proof strip */}
       <section className="py-5 px-4 border-y border-border/40 bg-card/30">
         <div className="max-w-5xl mx-auto">
-          <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-3 text-sm">
+          <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-3 text-xs sm:text-sm">
             <StatItem value="2.400+" label="análises feitas" />
             <div className="w-px h-4 bg-border hidden sm:block" />
             <StatItem value="4.8★" label="avaliação média" />
