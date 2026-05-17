@@ -122,7 +122,15 @@ export function PreviewResult({
           <p className="font-semibold text-emerald-400 text-sm mb-1">{pontos_fortes[0].titulo}</p>
           <p className="text-sm text-muted-foreground leading-relaxed">{pontos_fortes[0].explicacao}</p>
         </div>
-        <LockedItems count={2} label="pontos fortes" colorClass="border-emerald-500/10 text-emerald-400/50" />
+        {pontos_fortes.slice(1).map((item) => (
+          <BlurredLockedItem
+            key={item.titulo}
+            titulo={item.titulo}
+            explicacao={item.explicacao}
+            borderClass="border-emerald-500/15"
+            textClass="text-emerald-400"
+          />
+        ))}
       </div>
 
       <div className="border-t border-border" />
@@ -140,7 +148,15 @@ export function PreviewResult({
           <p className="font-semibold text-amber-400 text-sm mb-1">{gaps_criticos[0].titulo}</p>
           <p className="text-sm text-muted-foreground leading-relaxed">{gaps_criticos[0].explicacao}</p>
         </div>
-        <LockedItems count={2} label="gaps críticos com como resolver" colorClass="border-amber-500/10 text-amber-400/50" />
+        {gaps_criticos.slice(1).map((item) => (
+          <BlurredLockedItem
+            key={item.titulo}
+            titulo={item.titulo}
+            explicacao={item.explicacao}
+            borderClass="border-amber-500/15"
+            textClass="text-amber-400"
+          />
+        ))}
       </div>
 
       <div className="border-t border-border" />
@@ -269,21 +285,27 @@ function PaywallCTA({
   )
 }
 
-function LockedItems({
-  count,
-  label,
-  colorClass,
+function BlurredLockedItem({
+  titulo,
+  explicacao,
+  borderClass,
+  textClass,
 }: {
-  count: number
-  label: string
-  colorClass: string
+  titulo: string
+  explicacao: string
+  borderClass: string
+  textClass: string
 }) {
   return (
-    <div className={`mt-2 border ${colorClass} rounded-xl p-3 flex items-center gap-2 bg-secondary/30`}>
-      <Lock className="w-3.5 h-3.5 text-muted-foreground/50 shrink-0" />
-      <p className="text-xs text-muted-foreground/60">
-        + {count} outros {label} no pacote completo
-      </p>
+    <div className={`mt-2 border ${borderClass} rounded-xl p-4 relative overflow-hidden select-none`}>
+      <div className="blur-[3px] pointer-events-none" aria-hidden>
+        <p className={`font-semibold text-sm mb-1 ${textClass}`}>{titulo}</p>
+        <p className="text-xs text-muted-foreground leading-relaxed">{explicacao}</p>
+      </div>
+      <div className="absolute inset-0 flex items-center justify-center gap-1.5">
+        <Lock className="w-3.5 h-3.5 text-muted-foreground/60" />
+        <span className="text-xs text-muted-foreground/60 font-medium">Pacote completo</span>
+      </div>
     </div>
   )
 }
