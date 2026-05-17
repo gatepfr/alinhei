@@ -279,6 +279,8 @@ export default async function LandingPage() {
         </div>
       </section>
 
+      <FaqSection />
+
       {/* Final CTA */}
       <section className="py-20 px-4">
         <div className="max-w-2xl mx-auto">
@@ -470,6 +472,60 @@ function Testimonial({ name, role, text, score }: { name: string; role: string; 
         ))}
       </div>
     </div>
+  )
+}
+
+function FaqSection() {
+  const faqs = [
+    {
+      q: 'A análise é genérica ou considera a vaga que quero?',
+      a: 'É 100% específica para a vaga. Nossa IA compara seu currículo linha por linha com a descrição da vaga que você colou. Não existe diagnóstico genérico — cada análise é única para aquela combinação de currículo + vaga.',
+    },
+    {
+      q: 'O currículo reescrito vai ter experiências que não tenho?',
+      a: 'Não. Nunca inventamos ou fabricamos informações. O currículo reescrito reorganiza e reformula o que você já tem, usando a linguagem exata que a vaga pede. Sua história permanece 100% verdadeira.',
+    },
+    {
+      q: 'O que está incluído no pacote completo?',
+      a: 'Diagnóstico com nota de aderência, 3 pontos fortes e 3 gaps críticos com como resolver; currículo reescrito e otimizado para ATS; carta de apresentação para LinkedIn (até 300 caracteres); carta de apresentação para e-mail; e 5 perguntas de entrevista com respostas completas no formato STAR. Tudo disponível para download em PDF.',
+    },
+    {
+      q: 'Em quanto tempo fico com os resultados?',
+      a: 'O diagnóstico gratuito fica pronto em ~30 segundos. Após o pagamento, o pacote completo (currículo reescrito + cartas + simulado de entrevista) é gerado em 1–2 minutos. O PDF fica disponível imediatamente para download.',
+    },
+    {
+      q: 'Posso usar para vagas diferentes?',
+      a: 'Sim. Cada análise é para uma vaga específica — é exatamente esse o ponto. Se você tem 3 vagas em vista, o pacote de 3 análises por R$ 19,90 sai a R$ 6,63 por vaga.',
+    },
+  ]
+
+  return (
+    <section className="py-24 px-4 border-t border-border/40">
+      <div className="max-w-2xl mx-auto">
+        <div className="text-center mb-12">
+          <p className="text-xs font-semibold text-primary uppercase tracking-widest mb-3">Dúvidas</p>
+          <h2 className="font-display text-3xl font-bold">Perguntas frequentes</h2>
+        </div>
+        <div className="space-y-2">
+          {faqs.map(({ q, a }) => (
+            <details
+              key={q}
+              className="group bg-card border border-border rounded-xl overflow-hidden"
+            >
+              <summary className="flex items-center justify-between gap-4 cursor-pointer px-5 py-4 text-sm font-semibold text-foreground select-none [&::-webkit-details-marker]:hidden list-none">
+                {q}
+                <span className="shrink-0 text-muted-foreground text-base group-open:rotate-180 transition-transform duration-200 inline-block">
+                  ↓
+                </span>
+              </summary>
+              <div className="px-5 pb-5 text-sm text-muted-foreground leading-relaxed border-t border-border/60 pt-3">
+                {a}
+              </div>
+            </details>
+          ))}
+        </div>
+      </div>
+    </section>
   )
 }
 
