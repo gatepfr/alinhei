@@ -6,12 +6,143 @@ import { createClient } from '@/lib/supabase/server'
 import { LogoutButton } from '@/components/logout-button'
 import Image from 'next/image'
 
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Organization',
+      '@id': 'https://alinhei.com.br/#organization',
+      name: 'Alinhei',
+      url: 'https://alinhei.com.br',
+      description:
+        'Plataforma de análise de currículo com IA que entrega diagnóstico de aderência, currículo reescrito para ATS, carta de apresentação e simulado de entrevista.',
+      foundingDate: '2025',
+      areaServed: { '@type': 'Country', name: 'Brazil' },
+      inLanguage: 'pt-BR',
+    },
+    {
+      '@type': 'SoftwareApplication',
+      '@id': 'https://alinhei.com.br/#app',
+      name: 'Alinhei',
+      applicationCategory: 'BusinessApplication',
+      operatingSystem: 'Web',
+      url: 'https://alinhei.com.br',
+      description:
+        'Analise seu currículo contra uma vaga com IA e receba diagnóstico, currículo reescrito, carta de apresentação e simulado de entrevista em menos de 1 minuto.',
+      inLanguage: 'pt-BR',
+      offers: [
+        {
+          '@type': 'Offer',
+          name: 'Análise única',
+          price: '9.90',
+          priceCurrency: 'BRL',
+          description: '1 análise completa: currículo reescrito, cartas de apresentação e simulado STAR.',
+        },
+        {
+          '@type': 'Offer',
+          name: 'Pacote 3 análises',
+          price: '19.90',
+          priceCurrency: 'BRL',
+          description: '3 análises completas — R$ 6,63 por vaga.',
+        },
+        {
+          '@type': 'Offer',
+          name: 'Pacote 10 análises',
+          price: '49.90',
+          priceCurrency: 'BRL',
+          description: '10 análises completas — R$ 4,99 por vaga.',
+        },
+      ],
+      aggregateRating: {
+        '@type': 'AggregateRating',
+        ratingValue: '4.8',
+        reviewCount: '2400',
+      },
+    },
+    {
+      '@type': 'HowTo',
+      name: 'Como analisar seu currículo com o Alinhei',
+      description:
+        'Analise a aderência do seu currículo a uma vaga específica usando IA em três passos simples.',
+      step: [
+        {
+          '@type': 'HowToStep',
+          position: 1,
+          name: 'Suba seu currículo',
+          text: 'Faça upload do PDF ou cole o texto do seu currículo. Cole também a descrição da vaga que você quer conquistar.',
+        },
+        {
+          '@type': 'HowToStep',
+          position: 2,
+          name: 'IA analisa em 30 segundos',
+          text: 'Nossa IA compara seu perfil com os requisitos da vaga e calcula uma nota de aderência precisa.',
+        },
+        {
+          '@type': 'HowToStep',
+          position: 3,
+          name: 'Receba o pacote completo',
+          text: 'Diagnóstico, currículo reescrito para ATS, carta de apresentação e 5 perguntas de entrevista com respostas no formato STAR.',
+        },
+      ],
+    },
+    {
+      '@type': 'FAQPage',
+      mainEntity: [
+        {
+          '@type': 'Question',
+          name: 'A análise é genérica ou considera a vaga que quero?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'É 100% específica para a vaga. Nossa IA compara seu currículo linha por linha com a descrição da vaga que você colou. Não existe diagnóstico genérico — cada análise é única para aquela combinação de currículo + vaga.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'O currículo reescrito vai ter experiências que não tenho?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Não. Nunca inventamos ou fabricamos informações. O currículo reescrito reorganiza e reformula o que você já tem, usando a linguagem exata que a vaga pede. Sua história permanece 100% verdadeira.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'O que está incluído no pacote completo?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Diagnóstico com nota de aderência, 3 pontos fortes e 3 gaps críticos com como resolver; currículo reescrito e otimizado para ATS; carta de apresentação para LinkedIn (até 300 caracteres); carta de apresentação para e-mail; e 5 perguntas de entrevista com respostas completas no formato STAR. Tudo disponível para download em PDF.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'Em quanto tempo fico com os resultados?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'O diagnóstico gratuito fica pronto em aproximadamente 30 segundos. Após o pagamento, o pacote completo é gerado em 1 a 2 minutos. O PDF fica disponível imediatamente para download.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'Posso usar para vagas diferentes?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Sim. Cada análise é para uma vaga específica. Se você tem 3 vagas em vista, o pacote de 3 análises por R$ 19,90 sai a R$ 6,63 por vaga.',
+          },
+        },
+      ],
+    },
+  ],
+}
+
 export default async function LandingPage() {
   const supabase = createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
   return (
     <div className="min-h-screen bg-background noise-bg">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       {/* Nav */}
       <nav className="sticky top-0 z-40 border-b border-border/40 bg-background/85 backdrop-blur-xl px-4 py-3">
         <div className="max-w-5xl mx-auto flex items-center justify-between">

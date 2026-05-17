@@ -1,6 +1,7 @@
 import { UploadForm } from '@/components/upload-form'
 import { createClient } from '@/lib/supabase/server'
 import { MainNav } from '@/components/main-nav'
+import { AuthEventFirer } from '@/components/auth-event-firer'
 
 export const metadata = {
   title: 'Analisar currículo — Alinhei',
@@ -18,9 +19,11 @@ export default async function AnalisePage({
   const isAdmin = user?.email ? adminEmails.includes(user.email.toLowerCase()) : false
 
   const initialVaga = typeof searchParams.vaga === 'string' ? searchParams.vaga : ''
+  const authEvt = typeof searchParams._evt === 'string' ? searchParams._evt : null
 
   return (
     <div className="min-h-screen bg-background">
+      <AuthEventFirer evt={authEvt} />
       <MainNav isAdmin={isAdmin} />
 
       <div className="max-w-3xl mx-auto px-4 py-14">

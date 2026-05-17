@@ -14,8 +14,23 @@ interface Props {
   searchParams: { checkout?: string; buy?: string }
 }
 
-export const metadata = {
-  title: 'Resultado da análise — Alinhei',
+export async function generateMetadata({ params }: { params: { id: string } }) {
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? ''
+  const ogImage = `${appUrl}/api/og/${params.id}`
+  return {
+    title: 'Resultado da análise — Alinhei',
+    openGraph: {
+      title: 'Veja minha nota de aderência ao currículo — Alinhei',
+      description: 'Analisei meu currículo com IA e recebi diagnóstico, currículo reescrito e simulado de entrevista.',
+      images: [{ url: ogImage, width: 1200, height: 630 }],
+      locale: 'pt_BR',
+      type: 'website',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      images: [ogImage],
+    },
+  }
 }
 
 export default async function AnaliseResultPage({ params, searchParams }: Props) {

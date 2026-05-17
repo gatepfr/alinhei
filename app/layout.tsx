@@ -16,7 +16,11 @@ const dmSans = DM_Sans({
 })
 
 export const metadata: Metadata = {
-  title: 'Alinhei — Analise seu currículo com IA',
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? 'https://alinhei.com.br'),
+  title: {
+    default: 'Alinhei — Analise seu currículo com IA',
+    template: '%s — Alinhei',
+  },
   description:
     'Suba seu currículo, cole a vaga e receba diagnóstico de aderência, currículo reescrito, carta de apresentação e simulado de entrevista em menos de 1 minuto.',
   icons: {
@@ -27,6 +31,16 @@ export const metadata: Metadata = {
     description: 'Pacote completo de aplicação para a vaga dos seus sonhos por R$ 9,90.',
     locale: 'pt_BR',
     type: 'website',
+    siteName: 'Alinhei',
+    url: '/',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Alinhei — Analise seu currículo com IA',
+    description: 'Pacote completo de aplicação para a vaga dos seus sonhos por R$ 9,90.',
+  },
+  alternates: {
+    canonical: '/',
   },
 }
 

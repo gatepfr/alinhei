@@ -1,12 +1,13 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Loader2, Upload, FileCheck, ArrowRight, ClipboardPaste, FileUp } from 'lucide-react'
+import { trackEvent } from '@/lib/analytics'
 
 export function UploadForm({ initialVaga = '' }: { initialVaga?: string }) {
   const router = useRouter()
@@ -18,6 +19,18 @@ export function UploadForm({ initialVaga = '' }: { initialVaga?: string }) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [activeTab, setActiveTab] = useState<'texto' | 'pdf'>('texto')
+  const [elapsed, setElapsed] = useState(0)
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
+
+  useEffect(() => {
+    if (loading) {
+      setElapsed(0)
+      timerRef.current = setInterval(() => setElapsed(s => s + 1), 1000)
+    } else {
+      if (timerRef.current) clearInterval(timerRef.current)
+    }
+    return () => { if (timerRef.current) clearInterval(timerRef.current) }
+  }, [loading])
 
   async function handleFile(file: File) {
     const formData = new FormData()
@@ -46,6 +59,8 @@ export function UploadForm({ initialVaga = '' }: { initialVaga?: string }) {
     }
 
     setLoading(true)
+    trackEvent('analysis_started')
+    localStorage.setItem('analysis_start', Date.now().toString())
     try {
       const res = await fetch('/api/analyze', {
         method: 'POST',
@@ -193,7 +208,7 @@ export function UploadForm({ initialVaga = '' }: { initialVaga?: string }) {
         {loading ? (
           <>
             <Loader2 className="w-4 h-4 animate-spin" />
-            Analisando... (~20 segundos)
+            Analisando{elapsed > 0 ? ` — ${elapsed}s` : '…'}
           </>
         ) : (
           <>

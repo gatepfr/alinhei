@@ -4,6 +4,7 @@
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Loader2 } from 'lucide-react'
+import { trackEvent } from '@/lib/analytics'
 
 /**
  * Componente que fica verificando se o saldo do usuário mudou
@@ -22,7 +23,8 @@ export function CheckoutPolling({ analysisId }: { analysisId: string }) {
         // Se o saldo for maior que zero, o pagamento foi processado!
         if (data.ok && data.balance > 0) {
           clearInterval(interval)
-          router.refresh() // Recarrega os dados da página
+          trackEvent('payment_completed')
+          router.refresh()
         }
       } catch (err) {
         console.error('Polling error:', err)

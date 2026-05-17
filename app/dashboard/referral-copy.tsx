@@ -32,12 +32,12 @@ export function ReferralCopy({ referralCode }: { referralCode: string }) {
       <input
         readOnly
         value={referralUrl}
-        className="flex-1 text-sm border border-gray-200 rounded-lg px-3 py-2 bg-gray-50 text-muted-foreground font-mono truncate"
+        className="flex-1 text-sm border border-border rounded-lg px-3 py-2 bg-secondary text-muted-foreground font-mono truncate"
       />
       <button
         type="button"
         onClick={handleCopy}
-        className="flex items-center gap-1.5 text-sm px-3 py-2 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors whitespace-nowrap"
+        className="flex items-center gap-1.5 text-sm px-3 py-2 border border-border rounded-lg hover:bg-secondary/80 transition-colors whitespace-nowrap"
       >
         {copied ? (
           <>

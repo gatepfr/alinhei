@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { Download, Copy, Check, Share2, TrendingUp, AlertTriangle, ChevronDown, ChevronUp, ChevronsUpDown } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { trackEvent } from '@/lib/analytics'
 import type { Diagnostico, Carta, Perguntas } from '@/lib/schemas'
 
 interface CompleteResultProps {
@@ -200,19 +201,19 @@ export function CompleteResult({
           <p className="text-muted-foreground mt-1 text-sm">Currículo, cartas e simulado de entrevista.</p>
         </div>
         <div className="flex items-center gap-2 flex-wrap">
-          <Link href={`/api/pdf/${generationId}/curriculo`} target="_blank">
+          <Link href={`/api/pdf/${generationId}/curriculo`} target="_blank" onClick={() => trackEvent('pdf_downloaded', { type: 'curriculo' })}>
             <Button variant="outline" size="sm" className="gap-2 border-border bg-secondary hover:bg-secondary/80 text-foreground">
               <Download className="w-4 h-4" />
               Currículo ATS
             </Button>
           </Link>
-          <Link href={`/api/pdf/${generationId}/diagnostico`} target="_blank">
+          <Link href={`/api/pdf/${generationId}/diagnostico`} target="_blank" onClick={() => trackEvent('pdf_downloaded', { type: 'diagnostico' })}>
             <Button variant="outline" size="sm" className="gap-2 border-border bg-secondary hover:bg-secondary/80 text-foreground">
               <Download className="w-4 h-4" />
               Diagnóstico
             </Button>
           </Link>
-          <Link href={linkedinShareUrl} target="_blank" rel="noopener noreferrer">
+          <Link href={linkedinShareUrl} target="_blank" rel="noopener noreferrer" onClick={() => trackEvent('linkedin_share_clicked', { channel: 'linkedin' })}>
             <Button variant="outline" size="sm" className="gap-2 border-border bg-secondary hover:bg-secondary/80 text-foreground">
               <Share2 className="w-4 h-4" />
               Compartilhar
@@ -295,7 +296,7 @@ export function CompleteResult({
           {curriculoOtimizado ? (
             <div className="space-y-3">
               <div className="flex justify-end gap-2">
-                <Link href={`/api/pdf/${generationId}/curriculo`} target="_blank">
+                <Link href={`/api/pdf/${generationId}/curriculo`} target="_blank" onClick={() => trackEvent('pdf_downloaded', { type: 'curriculo' })}>
                   <Button variant="outline" size="sm" className="gap-2 border-border bg-secondary hover:bg-secondary/80 text-foreground">
                     <Download className="w-3.5 h-3.5" />
                     Baixar PDF

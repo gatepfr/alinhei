@@ -6,6 +6,7 @@ import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { trackEvent } from '@/lib/analytics'
 
 type Mode = 'signin' | 'signup'
 
@@ -34,6 +35,7 @@ export function LoginForm({ next }: LoginFormProps) {
       if (error) {
         setError('E-mail ou senha incorretos.')
       } else {
+        trackEvent('login_completed', { method: 'email' })
         const destination = /^\/[^/\\]/.test(next ?? '') ? next! : '/analise'
         router.refresh()
         router.push(destination)
@@ -47,6 +49,7 @@ export function LoginForm({ next }: LoginFormProps) {
       if (error) {
         setError(error.message)
       } else {
+        trackEvent('signup_completed', { method: 'email' })
         setMessage('Confirme seu e-mail para ativar a conta.')
       }
     }
@@ -57,10 +60,11 @@ export function LoginForm({ next }: LoginFormProps) {
   async function handleGoogle() {
     setLoading(true)
     const safeNext = /^\/[^/\\]/.test(next ?? '') ? next! : '/analise'
+    const evt = mode === 'signup' ? 'signup_completed' : 'login_completed'
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(safeNext)}`,
+        redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(safeNext)}&_evt=${evt}`,
       },
     })
     if (error) {
