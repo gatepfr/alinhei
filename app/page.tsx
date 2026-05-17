@@ -457,6 +457,8 @@ export default async function LandingPage() {
           </div>
           <p>© 2025 Alinhei. Feito no Brasil para brasileiros.</p>
           <div className="flex items-center gap-4">
+            <Link href="/termos" className="hover:text-foreground transition-colors">Termos de Uso</Link>
+            <Link href="/privacidade" className="hover:text-foreground transition-colors">Privacidade</Link>
             <Link href="/login" className="hover:text-foreground transition-colors">Entrar</Link>
             <Link href="/analise" className="hover:text-foreground transition-colors">Analisar</Link>
           </div>
