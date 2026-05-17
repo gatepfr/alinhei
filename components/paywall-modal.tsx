@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
-import { X, Zap, Tag, CheckCircle, AlertCircle, ArrowRight, Loader2 } from 'lucide-react'
+import { X, Zap, Tag, CheckCircle, AlertCircle, ArrowRight, Loader2, Shield } from 'lucide-react'
 import { PRODUCTS, type ProductSku, type Products } from '@/lib/products'
 import { trackEvent } from '@/lib/analytics'
 
@@ -147,6 +147,22 @@ export function PaywallModal({ analysisId, products: dynamicProducts, onClose }:
           </div>
           <h2 className="font-display text-xl font-bold mb-1">{copy.title}</h2>
           <p className="text-sm text-muted-foreground">{copy.subtitle}</p>
+          {/* Trust badges */}
+          <div className="flex flex-wrap gap-1.5 justify-center mt-4">
+            {[
+              { icon: <Shield className="w-3 h-3" />, text: 'Nunca inventamos experiências' },
+              { icon: <CheckCircle className="w-3 h-3" />, text: 'Otimizado para ATS' },
+              { icon: <Zap className="w-3 h-3" />, text: 'PDF pronto em minutos' },
+            ].map(({ icon, text }) => (
+              <div
+                key={text}
+                className="flex items-center gap-1 text-xs text-muted-foreground bg-secondary/50 border border-border/60 rounded-full px-2.5 py-1"
+              >
+                <span className="text-primary">{icon}</span>
+                {text}
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* SKUs */}
