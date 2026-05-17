@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { buttonVariants } from '@/components/ui/button'
-import { CheckCircle, FileText, Zap, Star, ArrowRight, Sparkles, Lock, TrendingUp, AlertTriangle, Shield, Clock } from 'lucide-react'
+import { CheckCircle, FileText, Zap, Star, ArrowRight, Sparkles, Lock, TrendingUp, AlertTriangle, Shield, Clock, XCircle, Users } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { createClient } from '@/lib/supabase/server'
 import { LogoutButton } from '@/components/logout-button'
@@ -70,15 +70,16 @@ export default async function LandingPage() {
               </div>
 
               <h1 className="font-display text-5xl sm:text-6xl font-bold tracking-tight text-foreground mb-6 leading-[1.06] text-balance animate-fade-up delay-100">
-                Seu currículo está<br />
-                <span className="text-primary amber-text-glow">pronto para a vaga</span><br />
-                dos seus sonhos?
+                Seu currículo passa<br />
+                <span className="text-primary amber-text-glow">pelo filtro ATS</span><br />
+                ou vai para o lixo?
               </h1>
 
               <p className="text-lg text-muted-foreground mb-10 max-w-lg text-balance animate-fade-up delay-200 leading-relaxed">
-                Suba seu currículo, cole a descrição da vaga e receba um diagnóstico honesto
-                com nota de aderência, pontos fortes e gaps críticos —{' '}
-                <span className="text-foreground font-medium">gratuitamente</span>.
+                75% dos currículos nunca chegam ao recrutador — rejeitados por sistemas automáticos
+                antes de qualquer humano ler. Descubra em 30 segundos os gaps exatos que estão te
+                custando entrevistas —{' '}
+                <span className="text-foreground font-medium">sem cadastro</span>.
               </p>
 
               <div className="flex flex-col sm:flex-row gap-3 animate-fade-up delay-300">
@@ -125,6 +126,11 @@ export default async function LandingPage() {
             <div className="flex items-center gap-2 text-muted-foreground">
               <Clock className="w-3.5 h-3.5 text-primary" />
               <span>Resultado em ~30 segundos</span>
+            </div>
+            <div className="w-px h-4 bg-border hidden sm:block" />
+            <div className="flex items-center gap-2 text-muted-foreground">
+              <CheckCircle className="w-3.5 h-3.5 text-emerald-400" />
+              <span>Nunca inventamos experiências</span>
             </div>
           </div>
         </div>
