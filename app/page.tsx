@@ -1,6 +1,9 @@
 import Link from 'next/link'
 import { buttonVariants } from '@/components/ui/button'
-import { CheckCircle, FileText, Zap, Star, ArrowRight, Sparkles, Lock, TrendingUp, AlertTriangle, Shield, Clock, XCircle, Users } from 'lucide-react'
+import {
+  CheckCircle, FileText, Zap, Star, ArrowRight, Sparkles, Lock,
+  TrendingUp, AlertTriangle, Shield, XCircle, Users, CreditCard,
+} from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { createClient } from '@/lib/supabase/server'
 import { LogoutButton } from '@/components/logout-button'
@@ -206,11 +209,10 @@ export default async function LandingPage() {
                 ou vai para o lixo?
               </h1>
 
-              <p className="text-lg text-muted-foreground mb-10 max-w-lg text-balance animate-fade-up delay-200 leading-relaxed">
+              <p className="text-lg text-muted-foreground mb-8 max-w-lg text-balance animate-fade-up delay-200 leading-relaxed">
                 75% dos currículos nunca chegam ao recrutador — rejeitados por sistemas automáticos
                 antes de qualquer humano ler. Descubra em 30 segundos os gaps exatos que estão te
-                custando entrevistas —{' '}
-                <span className="text-foreground font-medium">sem cadastro</span>.
+                custando entrevistas.
               </p>
 
               <div className="flex flex-col sm:flex-row gap-3 animate-fade-up delay-300">
@@ -226,9 +228,21 @@ export default async function LandingPage() {
                 </Link>
               </div>
 
-              <p className="text-sm text-muted-foreground mt-5 animate-fade-up delay-400">
-                Sem cadastro para o diagnóstico · Pacote completo a partir de R$ 9,90
-              </p>
+              {/* Chips de confiança — mais visíveis que texto corrido */}
+              <div className="flex flex-wrap gap-2 mt-5 animate-fade-up delay-400">
+                <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground bg-card/70 border border-border/60 rounded-full px-3 py-1.5">
+                  <CheckCircle className="w-3 h-3 text-emerald-400" />
+                  Sem cadastro
+                </span>
+                <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground bg-card/70 border border-border/60 rounded-full px-3 py-1.5">
+                  <CreditCard className="w-3 h-3 text-emerald-400" />
+                  Sem cartão de crédito
+                </span>
+                <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground bg-card/70 border border-border/60 rounded-full px-3 py-1.5">
+                  <Zap className="w-3 h-3 text-primary" />
+                  Completo a partir de R$ 9,90
+                </span>
+              </div>
             </div>
 
             {/* Right: floating preview card */}
@@ -250,18 +264,18 @@ export default async function LandingPage() {
             <StatItem value="4.8★" label="avaliação média" />
             <div className="w-px h-4 bg-border hidden sm:block" />
             <div className="flex items-center gap-2 text-muted-foreground">
-              <Shield className="w-3.5 h-3.5 text-primary" />
-              <span>Pagamento seguro via Mercado Pago</span>
+              <TrendingUp className="w-3.5 h-3.5 text-emerald-400" />
+              <span><span className="font-semibold text-foreground">+3x</span> mais entrevistas</span>
             </div>
             <div className="w-px h-4 bg-border hidden sm:block" />
             <div className="flex items-center gap-2 text-muted-foreground">
-              <Clock className="w-3.5 h-3.5 text-primary" />
-              <span>Resultado em ~30 segundos</span>
+              <Shield className="w-3.5 h-3.5 text-primary" />
+              <span>Nunca inventamos experiências</span>
             </div>
             <div className="w-px h-4 bg-border hidden sm:block" />
             <div className="flex items-center gap-2 text-muted-foreground">
               <CheckCircle className="w-3.5 h-3.5 text-emerald-400" />
-              <span>Nunca inventamos experiências</span>
+              <span>Resultado em ~30 segundos</span>
             </div>
           </div>
         </div>
@@ -299,8 +313,11 @@ export default async function LandingPage() {
         </div>
       </section>
 
+      {/* Transformação Before/After */}
+      <BeforeAfterSection />
+
       {/* Comparação */}
-      <section className="py-24 px-4 relative overflow-hidden">
+      <section className="py-24 px-4 relative overflow-hidden border-t border-border/40">
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] bg-primary/[0.04] blur-[100px] rounded-full" />
         </div>
@@ -374,11 +391,14 @@ export default async function LandingPage() {
               <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </Link>
             <p className="text-xs text-muted-foreground mt-3">
-              Diagnóstico gratuito · Pacote completo a partir de R$ 9,90
+              Diagnóstico gratuito · Sem cartão de crédito
             </p>
           </div>
         </div>
       </section>
+
+      {/* Pricing */}
+      <PricingSection />
 
       {/* Depoimentos */}
       <section className="py-24 px-4 border-t border-border/40">
@@ -387,7 +407,7 @@ export default async function LandingPage() {
             <p className="text-xs font-semibold text-primary uppercase tracking-widest mb-3">Depoimentos</p>
             <h2 className="font-display text-3xl font-bold">Quem já usou recomenda</h2>
           </div>
-          <div className="grid sm:grid-cols-3 gap-5">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
             <Testimonial
               name="Mariana S."
               role="Analista de Marketing"
@@ -406,6 +426,42 @@ export default async function LandingPage() {
               text="As perguntas STAR foram exatamente o que o entrevistador perguntou. Me preparei muito melhor do que nas outras entrevistas."
               score={85}
             />
+            <Testimonial
+              name="Lucas F."
+              role="Eng. de Software"
+              text="Mandei 30 currículos em 2 meses sem resposta. Rodei o Alinhei para uma vaga específica e recebi a ligação em 4 dias. A personalização faz diferença real."
+              score={73}
+            />
+            <Testimonial
+              name="Beatriz M."
+              role="Coordenadora de RH"
+              text="Uso em RH para ver como os candidatos são avaliados. O diagnóstico é assustadoramente preciso — identificou exatamente o que eu filtraria manualmente."
+              score={88}
+            />
+            <Testimonial
+              name="André C."
+              role="Analista Financeiro"
+              text="A carta de apresentação para o LinkedIn foi o que mais me surpreendeu. Direta, no tom certo e completamente diferente do que eu escreveria sozinho."
+              score={79}
+            />
+          </div>
+
+          {/* CTA após depoimentos — captura o pico de intenção */}
+          <div className="text-center mt-14 pt-10 border-t border-border/40">
+            <p className="text-muted-foreground mb-5 text-sm">
+              Pronto para ver sua nota de aderência?
+            </p>
+            <Link
+              href="/analise"
+              className={cn(
+                buttonVariants({ size: 'default' }),
+                'bg-primary text-primary-foreground hover:bg-primary/90 font-semibold gap-2 group'
+              )}
+            >
+              Analisar grátis agora
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            </Link>
+            <p className="text-xs text-muted-foreground mt-3">Sem cadastro · Sem cartão</p>
           </div>
         </div>
       </section>
@@ -468,6 +524,8 @@ export default async function LandingPage() {
   )
 }
 
+// ─── Atoms ────────────────────────────────────────────────────────────────────
+
 function StatItem({ value, label }: { value: string; label: string }) {
   return (
     <div className="flex items-baseline gap-1.5">
@@ -478,15 +536,9 @@ function StatItem({ value, label }: { value: string; label: string }) {
 }
 
 function StepCard({
-  step,
-  icon,
-  title,
-  description,
+  step, icon, title, description,
 }: {
-  step: string
-  icon: React.ReactNode
-  title: string
-  description: string
+  step: string; icon: React.ReactNode; title: string; description: string
 }) {
   return (
     <div className="flex flex-col gap-4 p-6 bg-card rounded-2xl border border-border card-glow relative overflow-hidden">
@@ -512,32 +564,18 @@ function HeroPreviewCard() {
 
   return (
     <div className="relative w-[300px]">
-      {/* Glow behind card */}
       <div className="absolute inset-0 bg-primary/20 blur-3xl scale-75 rounded-full" />
-
       <div className="relative bg-card border border-border rounded-2xl p-6 shadow-2xl shadow-black/40">
         <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest mb-5 text-center">
           Nota de aderência
         </p>
-
-        {/* Score ring */}
         <div className="flex justify-center mb-4">
           <div className="relative inline-flex items-center justify-center">
             <svg width="120" height="120" style={{ transform: 'rotate(-90deg)' }}>
+              <circle cx="60" cy="60" r={radius} fill="none" stroke="oklch(0.22 0.014 250)" strokeWidth="8" />
               <circle
-                cx="60" cy="60" r={radius}
-                fill="none"
-                stroke="oklch(0.22 0.014 250)"
-                strokeWidth="8"
-              />
-              <circle
-                cx="60" cy="60" r={radius}
-                fill="none"
-                stroke="#f59e0b"
-                strokeWidth="8"
-                strokeDasharray={circumference}
-                strokeDashoffset={offset}
-                strokeLinecap="round"
+                cx="60" cy="60" r={radius} fill="none" stroke="#f59e0b" strokeWidth="8"
+                strokeDasharray={circumference} strokeDashoffset={offset} strokeLinecap="round"
                 style={{ filter: 'drop-shadow(0 0 8px #f59e0b60)' }}
               />
             </svg>
@@ -547,11 +585,8 @@ function HeroPreviewCard() {
             </div>
           </div>
         </div>
-
         <p className="text-center font-display font-semibold text-amber-400 mb-1 text-sm">Bom</p>
         <p className="text-xs text-center text-muted-foreground mb-5">Acima da média para esta vaga</p>
-
-        {/* Ponto forte */}
         <div className="bg-emerald-500/[0.08] border border-emerald-500/20 rounded-xl p-3 mb-2">
           <div className="flex items-center gap-1.5 mb-1">
             <TrendingUp className="w-3 h-3 text-emerald-400 shrink-0" />
@@ -561,8 +596,6 @@ function HeroPreviewCard() {
             5 anos em gestão de projetos ágeis com resultados comprovados...
           </p>
         </div>
-
-        {/* Gap */}
         <div className="bg-amber-500/[0.06] border border-amber-500/15 rounded-xl p-3 mb-2">
           <div className="flex items-center gap-1.5 mb-1">
             <AlertTriangle className="w-3 h-3 text-amber-400 shrink-0" />
@@ -572,8 +605,6 @@ function HeroPreviewCard() {
             A vaga exige PMP ou equivalente, não encontrado no...
           </p>
         </div>
-
-        {/* Locked */}
         <div className="border border-border/60 rounded-xl p-2.5 flex items-center gap-2 bg-secondary/30">
           <Lock className="w-3 h-3 text-muted-foreground/40 shrink-0" />
           <p className="text-xs text-muted-foreground/50">+ currículo reescrito, cartas, STAR...</p>
@@ -608,55 +639,265 @@ function Testimonial({ name, role, text, score }: { name: string; role: string; 
   )
 }
 
-function FaqSection() {
-  const faqs = [
+// ─── Sections ─────────────────────────────────────────────────────────────────
+
+function BeforeAfterSection() {
+  const dims = [
+    { label: 'ATS',         before: 38, after: 91 },
+    { label: 'Keywords',    before: 45, after: 87 },
+    { label: 'Estrutura',   before: 52, after: 84 },
+    { label: 'Experiência', before: 70, after: 90 },
+  ]
+
+  return (
+    <section className="py-24 px-4 border-t border-border/40 relative overflow-hidden">
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[300px] bg-primary/[0.05] blur-[120px] rounded-full" />
+      </div>
+      <div className="relative max-w-5xl mx-auto">
+        <div className="text-center mb-14">
+          <p className="text-xs font-semibold text-primary uppercase tracking-widest mb-3">Transformação</p>
+          <h2 className="font-display text-3xl sm:text-4xl font-bold">
+            Do descartado ao entrevistado
+          </h2>
+          <p className="text-muted-foreground mt-3 max-w-xl mx-auto">
+            Veja o impacto real de personalizar o currículo para a vaga certa.
+          </p>
+        </div>
+
+        <div className="flex flex-col md:flex-row gap-4 items-stretch max-w-3xl mx-auto">
+          {/* Before */}
+          <div className="flex-1 bg-card border border-border rounded-2xl p-6">
+            <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground/50 mb-5">
+              Sem o Alinhei
+            </p>
+            <div className="flex items-baseline gap-1.5 mb-1">
+              <span className="font-display text-5xl font-bold text-muted-foreground/40">45</span>
+              <span className="text-muted-foreground/40 text-xl">%</span>
+            </div>
+            <p className="text-xs text-red-400/70 font-semibold mb-7">
+              Baixa aderência — descartado pelo ATS
+            </p>
+            <div className="space-y-4">
+              {dims.map((d) => (
+                <div key={d.label}>
+                  <div className="flex justify-between text-xs mb-1.5">
+                    <span className="text-muted-foreground/60">{d.label}</span>
+                    <span className="text-muted-foreground/50">{d.before}%</span>
+                  </div>
+                  <div className="h-1.5 bg-border/50 rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-muted-foreground/20 rounded-full transition-all"
+                      style={{ width: `${d.before}%` }}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Arrow divider */}
+          <div className="flex md:flex-col items-center justify-center gap-3 py-2 md:py-0">
+            <div className="hidden md:flex flex-col items-center gap-1.5">
+              <div className="w-px h-12 bg-gradient-to-b from-transparent to-primary/40" />
+              <div className="w-10 h-10 rounded-full bg-primary/15 border border-primary/25 flex items-center justify-center">
+                <ArrowRight className="w-4 h-4 text-primary rotate-0 md:rotate-0" />
+              </div>
+              <div className="w-px h-12 bg-gradient-to-b from-primary/40 to-transparent" />
+            </div>
+            <div className="md:hidden w-full flex items-center gap-2">
+              <div className="flex-1 h-px bg-gradient-to-r from-transparent to-primary/40" />
+              <div className="w-10 h-10 rounded-full bg-primary/15 border border-primary/25 flex items-center justify-center">
+                <ArrowRight className="w-4 h-4 text-primary" />
+              </div>
+              <div className="flex-1 h-px bg-gradient-to-r from-primary/40 to-transparent" />
+            </div>
+          </div>
+
+          {/* After */}
+          <div className="flex-1 bg-primary/[0.05] border border-primary/25 rounded-2xl p-6">
+            <p className="text-xs font-semibold uppercase tracking-widest text-primary/70 mb-5">
+              Com o Alinhei
+            </p>
+            <div className="flex items-baseline gap-1.5 mb-1">
+              <span className="font-display text-5xl font-bold text-amber-400 amber-text-glow">84</span>
+              <span className="text-amber-400/70 text-xl">%</span>
+            </div>
+            <p className="text-xs text-emerald-400 font-semibold mb-7">
+              Boa aderência — passa pelo filtro e chega ao recrutador
+            </p>
+            <div className="space-y-4">
+              {dims.map((d) => (
+                <div key={d.label}>
+                  <div className="flex justify-between text-xs mb-1.5">
+                    <span className="text-muted-foreground">{d.label}</span>
+                    <span className="text-primary font-semibold">{d.after}%</span>
+                  </div>
+                  <div className="h-1.5 bg-border/50 rounded-full overflow-hidden">
+                    <div
+                      className="h-full rounded-full"
+                      style={{
+                        width: `${d.after}%`,
+                        background: 'linear-gradient(90deg, #f59e0b, #fbbf24)',
+                        boxShadow: '0 0 6px #f59e0b40',
+                      }}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <p className="text-xs text-center text-muted-foreground/40 mt-6">
+          * Exemplo baseado em análise real de currículo para vaga de Gestão de Projetos
+        </p>
+      </div>
+    </section>
+  )
+}
+
+function PricingSection() {
+  const plans = [
     {
-      q: 'A análise é genérica ou considera a vaga que quero?',
-      a: 'É 100% específica para a vaga. Nossa IA compara seu currículo linha por linha com a descrição da vaga que você colou. Não existe diagnóstico genérico — cada análise é única para aquela combinação de currículo + vaga.',
+      name: 'Análise única',
+      price: '9,90',
+      credits: 1,
+      perAnalysis: null,
+      badge: null,
+      highlight: false,
+      features: [
+        '1 crédito de análise completa',
+        'Currículo reescrito para ATS',
+        '2 cartas de apresentação',
+        'Simulado STAR (5 perguntas)',
+        'Download em PDF',
+      ],
     },
     {
-      q: 'O currículo reescrito vai ter experiências que não tenho?',
-      a: 'Não. Nunca inventamos ou fabricamos informações. O currículo reescrito reorganiza e reformula o que você já tem, usando a linguagem exata que a vaga pede. Sua história permanece 100% verdadeira.',
+      name: 'Trio',
+      price: '19,90',
+      credits: 3,
+      perAnalysis: '6,63',
+      badge: 'Mais popular',
+      highlight: true,
+      features: [
+        '3 créditos de análise completa',
+        'Currículo reescrito para ATS',
+        '2 cartas de apresentação',
+        'Simulado STAR (5 perguntas)',
+        'Download em PDF',
+        'R$ 6,63 por análise',
+      ],
     },
     {
-      q: 'O que está incluído no pacote completo?',
-      a: 'Diagnóstico com nota de aderência, 3 pontos fortes e 3 gaps críticos com como resolver; currículo reescrito e otimizado para ATS; carta de apresentação para LinkedIn (até 300 caracteres); carta de apresentação para e-mail; e 5 perguntas de entrevista com respostas completas no formato STAR. Tudo disponível para download em PDF.',
-    },
-    {
-      q: 'Em quanto tempo fico com os resultados?',
-      a: 'O diagnóstico gratuito fica pronto em ~30 segundos. Após o pagamento, o pacote completo (currículo reescrito + cartas + simulado de entrevista) é gerado em 1–2 minutos. O PDF fica disponível imediatamente para download.',
-    },
-    {
-      q: 'Posso usar para vagas diferentes?',
-      a: 'Sim. Cada análise é para uma vaga específica — é exatamente esse o ponto. Se você tem 3 vagas em vista, o pacote de 3 análises por R$ 19,90 sai a R$ 6,63 por vaga.',
+      name: 'Pro',
+      price: '49,90',
+      credits: 10,
+      perAnalysis: '4,99',
+      badge: 'Melhor valor',
+      highlight: false,
+      features: [
+        '10 créditos de análise completa',
+        'Currículo reescrito para ATS',
+        '2 cartas de apresentação',
+        'Simulado STAR (5 perguntas)',
+        'Download em PDF',
+        'R$ 4,99 por análise',
+      ],
     },
   ]
 
   return (
-    <section className="py-24 px-4 border-t border-border/40">
-      <div className="max-w-2xl mx-auto">
-        <div className="text-center mb-12">
-          <p className="text-xs font-semibold text-primary uppercase tracking-widest mb-3">Dúvidas</p>
-          <h2 className="font-display text-3xl font-bold">Perguntas frequentes</h2>
+    <section className="py-24 px-4 border-t border-border/40 relative overflow-hidden">
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[700px] h-[300px] bg-primary/[0.04] blur-[100px] rounded-full" />
+      </div>
+      <div className="relative max-w-5xl mx-auto">
+        <div className="text-center mb-14">
+          <p className="text-xs font-semibold text-primary uppercase tracking-widest mb-3">Preços</p>
+          <h2 className="font-display text-3xl sm:text-4xl font-bold mb-3">
+            Simples e transparente
+          </h2>
+          <p className="text-muted-foreground">
+            Sem assinatura. Sem renovação automática. Pague só pelo que usar.
+          </p>
         </div>
-        <div className="space-y-2">
-          {faqs.map(({ q, a }) => (
-            <details
-              key={q}
-              className="group bg-card border border-border rounded-xl overflow-hidden"
+
+        <div className="grid sm:grid-cols-3 gap-4 max-w-3xl mx-auto">
+          {plans.map((plan) => (
+            <div
+              key={plan.name}
+              className={cn(
+                'rounded-2xl border p-6 flex flex-col relative',
+                plan.highlight
+                  ? 'bg-primary/[0.06] border-primary/30 shadow-lg shadow-primary/10'
+                  : 'bg-card border-border'
+              )}
             >
-              <summary className="flex items-center justify-between gap-4 cursor-pointer px-5 py-4 text-sm font-semibold text-foreground select-none [&::-webkit-details-marker]:hidden list-none">
-                {q}
-                <span className="shrink-0 text-muted-foreground text-base group-open:rotate-180 transition-transform duration-200 inline-block">
-                  ↓
+              {plan.badge && (
+                <div className={cn(
+                  'absolute -top-3.5 left-1/2 -translate-x-1/2 text-xs font-bold px-3 py-1 rounded-full whitespace-nowrap',
+                  plan.highlight
+                    ? 'bg-primary text-primary-foreground'
+                    : 'bg-secondary text-foreground border border-border'
+                )}>
+                  {plan.badge}
+                </div>
+              )}
+
+              <p className="font-display font-bold text-foreground text-lg mb-0.5">{plan.name}</p>
+              <p className="text-xs text-muted-foreground mb-5">
+                {plan.credits} {plan.credits === 1 ? 'crédito' : 'créditos'}
+              </p>
+
+              <div className="flex items-baseline gap-1 mb-1">
+                <span className="text-sm text-muted-foreground">R$</span>
+                <span className={cn(
+                  'font-display text-4xl font-bold',
+                  plan.highlight ? 'text-amber-400 amber-text-glow' : 'text-foreground'
+                )}>
+                  {plan.price}
                 </span>
-              </summary>
-              <div className="px-5 pb-5 text-sm text-muted-foreground leading-relaxed border-t border-border/60 pt-3">
-                {a}
               </div>
-            </details>
+
+              {plan.perAnalysis ? (
+                <p className="text-xs text-muted-foreground mb-6">R$ {plan.perAnalysis} por análise</p>
+              ) : (
+                <div className="mb-6" />
+              )}
+
+              <ul className="space-y-2.5 mb-7 flex-1">
+                {plan.features.map((f) => (
+                  <li key={f} className="flex items-start gap-2 text-xs text-muted-foreground">
+                    <CheckCircle className={cn(
+                      'w-3.5 h-3.5 shrink-0 mt-0.5',
+                      plan.highlight ? 'text-primary' : 'text-emerald-400/70'
+                    )} />
+                    {f}
+                  </li>
+                ))}
+              </ul>
+
+              <Link
+                href="/analise"
+                className={cn(
+                  buttonVariants({ size: 'sm' }),
+                  'w-full justify-center font-semibold',
+                  plan.highlight
+                    ? 'bg-primary text-primary-foreground hover:bg-primary/90'
+                    : 'bg-secondary text-foreground hover:bg-secondary/80'
+                )}
+              >
+                Escolher plano
+              </Link>
+            </div>
           ))}
         </div>
+
+        <p className="text-xs text-center text-muted-foreground/60 mt-6">
+          Pagamento via PIX ou cartão · Processado com segurança pelo Mercado Pago
+        </p>
       </div>
     </section>
   )
@@ -717,6 +958,60 @@ function ProblemSection() {
                 <p className="text-sm text-muted-foreground leading-relaxed">{p.description}</p>
               </div>
             </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+function FaqSection() {
+  const faqs = [
+    {
+      q: 'A análise é genérica ou considera a vaga que quero?',
+      a: 'É 100% específica para a vaga. Nossa IA compara seu currículo linha por linha com a descrição da vaga que você colou. Não existe diagnóstico genérico — cada análise é única para aquela combinação de currículo + vaga.',
+    },
+    {
+      q: 'O currículo reescrito vai ter experiências que não tenho?',
+      a: 'Não. Nunca inventamos ou fabricamos informações. O currículo reescrito reorganiza e reformula o que você já tem, usando a linguagem exata que a vaga pede. Sua história permanece 100% verdadeira.',
+    },
+    {
+      q: 'O que está incluído no pacote completo?',
+      a: 'Diagnóstico com nota de aderência, 3 pontos fortes e 3 gaps críticos com como resolver; currículo reescrito e otimizado para ATS; carta de apresentação para LinkedIn (até 300 caracteres); carta de apresentação para e-mail; e 5 perguntas de entrevista com respostas completas no formato STAR. Tudo disponível para download em PDF.',
+    },
+    {
+      q: 'Em quanto tempo fico com os resultados?',
+      a: 'O diagnóstico gratuito fica pronto em ~30 segundos. Após o pagamento, o pacote completo (currículo reescrito + cartas + simulado de entrevista) é gerado em 1–2 minutos. O PDF fica disponível imediatamente para download.',
+    },
+    {
+      q: 'Posso usar para vagas diferentes?',
+      a: 'Sim. Cada análise é para uma vaga específica — é exatamente esse o ponto. Se você tem 3 vagas em vista, o pacote de 3 análises por R$ 19,90 sai a R$ 6,63 por vaga.',
+    },
+  ]
+
+  return (
+    <section className="py-24 px-4 border-t border-border/40">
+      <div className="max-w-2xl mx-auto">
+        <div className="text-center mb-12">
+          <p className="text-xs font-semibold text-primary uppercase tracking-widest mb-3">Dúvidas</p>
+          <h2 className="font-display text-3xl font-bold">Perguntas frequentes</h2>
+        </div>
+        <div className="space-y-2">
+          {faqs.map(({ q, a }) => (
+            <details
+              key={q}
+              className="group bg-card border border-border rounded-xl overflow-hidden"
+            >
+              <summary className="flex items-center justify-between gap-4 cursor-pointer px-5 py-4 text-sm font-semibold text-foreground select-none [&::-webkit-details-marker]:hidden list-none">
+                {q}
+                <span className="shrink-0 text-muted-foreground text-base group-open:rotate-180 transition-transform duration-200 inline-block">
+                  ↓
+                </span>
+              </summary>
+              <div className="px-5 pb-5 text-sm text-muted-foreground leading-relaxed border-t border-border/60 pt-3">
+                {a}
+              </div>
+            </details>
           ))}
         </div>
       </div>
