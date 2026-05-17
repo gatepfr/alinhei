@@ -82,7 +82,7 @@ export function PreviewResult({
   showPaywallInitial = false,
   products,
 }: PreviewResultProps) {
-  const { preview_publico, pontos_fortes, gaps_criticos, resumo_nota } = diagnostic
+  const { preview_publico, pontos_fortes, gaps_criticos, resumo_nota, keywords_faltantes } = diagnostic
   const [showPaywall, setShowPaywall] = useState(showPaywallInitial)
 
   useEffect(() => {
@@ -158,6 +158,13 @@ export function PreviewResult({
           />
         ))}
       </div>
+
+      {keywords_faltantes.length > 0 && (
+        <>
+          <div className="border-t border-border" />
+          <KeywordGapSection keywords={keywords_faltantes} />
+        </>
+      )}
 
       <div className="border-t border-border" />
 
@@ -281,6 +288,52 @@ function PaywallCTA({
           'Também disponível: 3 análises por R$ 19,90 · 10 análises por R$ 49,90'
         )}
       </p>
+    </div>
+  )
+}
+
+function KeywordGapSection({ keywords }: { keywords: string[] }) {
+  if (keywords.length === 0) return null
+
+  const visible = keywords.slice(0, 2)
+  const locked = keywords.slice(2)
+
+  return (
+    <div className="animate-fade-up delay-150">
+      <div className="flex items-center gap-2 mb-3 px-1">
+        <div className="w-6 h-6 rounded-md bg-red-500/10 border border-red-500/20 flex items-center justify-center">
+          <AlertTriangle className="w-3.5 h-3.5 text-red-400" />
+        </div>
+        <h3 className="font-display font-semibold text-sm">Keywords ausentes no seu currículo</h3>
+        <span className="text-xs bg-secondary text-muted-foreground border border-border rounded-full px-2 py-0.5">grátis</span>
+      </div>
+      <div className="bg-card rounded-xl border border-red-500/20 p-4">
+        <p className="text-xs text-muted-foreground mb-3 leading-relaxed">
+          A vaga pede estas palavras-chave que não aparecem no seu currículo:
+        </p>
+        <div className="flex flex-wrap gap-2">
+          {visible.map((kw) => (
+            <span
+              key={kw}
+              className="inline-flex items-center gap-1 text-xs bg-red-500/10 border border-red-500/20 text-red-400 rounded-full px-2.5 py-1"
+            >
+              ✗ {kw}
+            </span>
+          ))}
+          {locked.length > 0 && (
+            <span className="inline-flex items-center gap-1 text-xs bg-secondary border border-border text-muted-foreground/50 rounded-full px-2.5 py-1 blur-[2px] select-none">
+              <Lock className="w-2.5 h-2.5" />
+              {locked[0]}
+            </span>
+          )}
+          {locked.length > 1 && (
+            <span className="inline-flex items-center gap-1 text-xs bg-secondary border border-border text-muted-foreground/60 rounded-full px-2.5 py-1">
+              <Lock className="w-2.5 h-2.5" />
+              +{locked.length - 1} no pacote
+            </span>
+          )}
+        </div>
+      </div>
     </div>
   )
 }
